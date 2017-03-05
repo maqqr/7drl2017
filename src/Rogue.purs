@@ -2,7 +2,7 @@ module Rogue where
 
 import Prelude
 import Data.Maybe (fromMaybe)
-import Data.Array (index, insertAt, snoc, deleteAt)
+import Data.Array (index, insertAt, snoc, deleteAt, replicate)
 
 type Point = { x :: Int , y :: Int }
 
@@ -24,6 +24,15 @@ newtype GameState = GameState
     , coldStatus :: Int
     , enemies    :: Array Creature
     , items      :: Array { pos :: Point, item :: Item }
+    }
+
+initialGameState :: GameState
+initialGameState = GameState
+    { level:      { tiles: replicate (75*25) Ground, width: 75, height: 25 }
+    , player:     Creature {creatureType: Player {name: "Frozty"}, pos: {x: 10, y: 10}, stats: defaultStats, inv: []}
+    , coldStatus: 100
+    , enemies:    []
+    , items:      []
     }
 
 newtype Creature = Creature
@@ -49,6 +58,9 @@ newtype Stats = Stats
     , dex   :: Int
     , int   :: Int
     }
+
+defaultStats :: Stats
+defaultStats = Stats { hpMax: 20, hp: 20, str: 10, dex: 10, int: 10 }
 
 data Tile = Ground
           | Wall

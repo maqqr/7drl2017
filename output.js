@@ -43,6 +43,17 @@ var PS = {};
 (function(exports) {
     "use strict";
 
+  exports.replicate = function (count) {
+    return function (value) {
+      var result = [];
+      var n = 0;
+      for (var i = 0; i < count; i++) {
+        result[n++] = value;
+      }
+      return result;
+    };
+  };   
+
   //------------------------------------------------------------------------------
   // Array size ------------------------------------------------------------------
   //------------------------------------------------------------------------------
@@ -216,6 +227,7 @@ var PS = {};
   exports["deleteAt"] = deleteAt;
   exports["index"] = index;
   exports["insertAt"] = insertAt;
+  exports["replicate"] = $foreign.replicate;
   exports["snoc"] = $foreign.snoc;
 })(PS["Data.Array"] = PS["Data.Array"] || {});
 (function(exports) {
@@ -480,6 +492,34 @@ var PS = {};
           return $53;
       };
   };
+  var defaultStats = {
+      hpMax: 20, 
+      hp: 20, 
+      str: 10, 
+      dex: 10, 
+      "int": 10
+  };
+  var initialGameState = {
+      level: {
+          tiles: Data_Array.replicate(75 * 25 | 0)(Ground.value), 
+          width: 75, 
+          height: 25
+      }, 
+      player: {
+          creatureType: new Player({
+              name: "Frozty"
+          }), 
+          pos: {
+              x: 10, 
+              y: 10
+          }, 
+          stats: defaultStats, 
+          inv: [  ]
+      }, 
+      coldStatus: 100, 
+      enemies: [  ], 
+      items: [  ]
+  };
   var addItem = function (v) {
       return function (i) {
           var $58 = {};
@@ -518,9 +558,11 @@ var PS = {};
   exports["Sword"] = Sword;
   exports["Axe"] = Axe;
   exports["addItem"] = addItem;
+  exports["defaultStats"] = defaultStats;
   exports["deleteItem"] = deleteItem;
   exports["getName"] = getName;
   exports["getTile"] = getTile;
+  exports["initialGameState"] = initialGameState;
   exports["isTileSolid"] = isTileSolid;
   exports["isTileTransparent"] = isTileTransparent;
   exports["pointEquals"] = pointEquals;
