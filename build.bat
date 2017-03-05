@@ -1,0 +1,1 @@
+pulp build --skip-entry-point --main Rogue --modules Rogue --to output.js
