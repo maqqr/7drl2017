@@ -2,7 +2,7 @@ module Rogue where
 
 import Prelude
 import Data.Maybe (fromMaybe)
-import Data.Array (index)
+import Data.Array (index, singleton, insertAt)
 
 type Point = { x :: Int , y :: Int }
 
@@ -26,12 +26,14 @@ newtype GameState = GameState
     }
 
 newtype Creature = Creature
-    { hp    :: Int
+    { icon  :: Char
+    , pos   :: Point
     , stats :: Stats
     }
 
 newtype Stats = Stats
     { hpMax :: Int
+    , hp    :: Int
     , str   :: Int
     , dex   :: Int
     , int   :: Int
@@ -57,3 +59,6 @@ type Level =
 
 getTile :: GameState -> Point -> Tile
 getTile (GameState gs) p = fromMaybe ErrorTile $ index (gs.level.tiles) (p.y * gs.level.width + p.x)
+
+setTile :: GameState -> Tile -> Point -> GameState
+setTile (GameState gs) t p = GameState ( gs { level { tiles = (fromMaybe (singleton ErrorTile) $ insertAt (p.y * gs.level.width + p.x) t gs.level.tiles) } } )
