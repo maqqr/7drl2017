@@ -2,7 +2,7 @@ module Rogue where
 
 import Prelude
 import Data.Maybe (fromMaybe)
-import Data.Array (index, singleton, insertAt)
+import Data.Array (index, insertAt, snoc, deleteAt)
 
 type Point = { x :: Int , y :: Int }
 
@@ -23,13 +23,24 @@ newtype GameState = GameState
     , player     :: Creature
     , coldStatus :: Int
     , enemies    :: Array Creature
+    , items      :: Array { pos :: Point, item :: Item }
     }
 
 newtype Creature = Creature
-    { icon  :: Char
-    , pos   :: Point
-    , stats :: Stats
+    { creatureType :: CreatureType
+    , pos          :: Point
+    , stats        :: Stats
+    , inv          :: Array Item
     }
+
+data CreatureType = Player { name :: String }
+                  | Wolf
+                  | Ismo
+
+getName :: Creature -> String
+getName (Creature { creatureType : Player p}) = p.name
+getName (Creature { creatureType : Wolf})     = "wolf"
+getName _                                     = "Ismo" 
 
 newtype Stats = Stats
     { hpMax :: Int
@@ -61,4 +72,25 @@ getTile :: GameState -> Point -> Tile
 getTile (GameState gs) p = fromMaybe ErrorTile $ index (gs.level.tiles) (p.y * gs.level.width + p.x)
 
 setTile :: GameState -> Tile -> Point -> GameState
-setTile (GameState gs) t p = GameState ( gs { level { tiles = (fromMaybe (singleton ErrorTile) $ insertAt (p.y * gs.level.width + p.x) t gs.level.tiles) } } )
+setTile (GameState gs) t p = GameState ( gs { level { tiles = (fromMaybe (gs.level.tiles) $ insertAt (p.y * gs.level.width + p.x) t gs.level.tiles) } } )
+
+data Item = Weapon { weaponType :: WeaponType, prefixe :: WeaponPrefix }
+          | Armour { armourType :: ArmourType, prefixe :: ArmourPrefix }
+        --| Scroll { weight :: Int, effect :: Effect }
+        --| Potion { weight :: Int, effect :: Effect }    
+          | Wood
+          | ErrorItem
+
+data WeaponType = Sword | Axe
+
+data WeaponPrefix = Common | Rusty | Masterwork
+
+data ArmourType = Cloak | Chest | Gloves
+
+data ArmourPrefix = CommonA | LightA | ThickA | MasterworkA
+
+addItem :: Creature -> Item -> Creature
+addItem (Creature c) i = Creature ( c { inv = snoc (c.inv) i } )
+
+deleteItem :: Creature -> Int -> Creature
+deleteItem (Creature c) i =  Creature ( c { inv = fromMaybe (c.inv) $ deleteAt i (c.inv) } )
