@@ -413,24 +413,36 @@ var PS = {};
   var setTile = function (v) {
       return function (t) {
           return function (p) {
-              var $22 = {};
-              for (var $23 in v) {
-                  if ({}.hasOwnProperty.call(v, $23)) {
-                      $22[$23] = v[$23];
+              var $25 = {};
+              for (var $26 in v) {
+                  if ({}.hasOwnProperty.call(v, $26)) {
+                      $25[$26] = v[$26];
                   };
               };
-              $22.level = (function () {
-                  var $19 = {};
-                  for (var $20 in v.level) {
-                      if ({}.hasOwnProperty.call(v.level, $20)) {
-                          $19[$20] = v["level"][$20];
+              $25.level = (function () {
+                  var $22 = {};
+                  for (var $23 in v.level) {
+                      if ({}.hasOwnProperty.call(v.level, $23)) {
+                          $22[$23] = v["level"][$23];
                       };
                   };
-                  $19.tiles = Data_Maybe.fromMaybe(v.level.tiles)(Data_Array.insertAt((p.y * v.level.width | 0) + p.x | 0)(t)(v.level.tiles));
-                  return $19;
+                  $22.tiles = Data_Maybe.fromMaybe(v.level.tiles)(Data_Array.insertAt((p.y * v.level.width | 0) + p.x | 0)(t)(v.level.tiles));
+                  return $22;
               })();
-              return $22;
+              return $25;
           };
+      };
+  };
+  var setPlayer = function (v) {
+      return function (pl) {
+          var $30 = {};
+          for (var $31 in v) {
+              if ({}.hasOwnProperty.call(v, $31)) {
+                  $30[$31] = v[$31];
+              };
+          };
+          $30.player = pl;
+          return $30;
       };
   };
   var pointPlus = function (v) {
@@ -471,6 +483,9 @@ var PS = {};
           return Data_Maybe.fromMaybe(ErrorTile.value)(Data_Array.index(v.level.tiles)((p.y * v.level.width | 0) + p.x | 0));
       };
   };
+  var getPlayer = function (v) {
+      return v.player;
+  };
   var getName = function (v) {
       if (v.creatureType instanceof Player) {
           return v.creatureType.value0.name;
@@ -482,14 +497,14 @@ var PS = {};
   };
   var deleteItem = function (v) {
       return function (i) {
-          var $53 = {};
-          for (var $54 in v) {
-              if ({}.hasOwnProperty.call(v, $54)) {
-                  $53[$54] = v[$54];
+          var $62 = {};
+          for (var $63 in v) {
+              if ({}.hasOwnProperty.call(v, $63)) {
+                  $62[$63] = v[$63];
               };
           };
-          $53.inv = Data_Maybe.fromMaybe(v.inv)(Data_Array.deleteAt(i)(v.inv));
-          return $53;
+          $62.inv = Data_Maybe.fromMaybe(v.inv)(Data_Array.deleteAt(i)(v.inv));
+          return $62;
       };
   };
   var defaultStats = {
@@ -522,14 +537,14 @@ var PS = {};
   };
   var addItem = function (v) {
       return function (i) {
-          var $58 = {};
-          for (var $59 in v) {
-              if ({}.hasOwnProperty.call(v, $59)) {
-                  $58[$59] = v[$59];
+          var $67 = {};
+          for (var $68 in v) {
+              if ({}.hasOwnProperty.call(v, $68)) {
+                  $67[$68] = v[$68];
               };
           };
-          $58.inv = Data_Array.snoc(v.inv)(i);
-          return $58;
+          $67.inv = Data_Array.snoc(v.inv)(i);
+          return $67;
       };
   };
   exports["CommonA"] = CommonA;
@@ -561,6 +576,7 @@ var PS = {};
   exports["defaultStats"] = defaultStats;
   exports["deleteItem"] = deleteItem;
   exports["getName"] = getName;
+  exports["getPlayer"] = getPlayer;
   exports["getTile"] = getTile;
   exports["initialGameState"] = initialGameState;
   exports["isTileSolid"] = isTileSolid;
@@ -568,5 +584,6 @@ var PS = {};
   exports["pointEquals"] = pointEquals;
   exports["pointMinus"] = pointMinus;
   exports["pointPlus"] = pointPlus;
+  exports["setPlayer"] = setPlayer;
   exports["setTile"] = setTile;
 })(PS["Rogue"] = PS["Rogue"] || {});
