@@ -380,12 +380,40 @@ var PS = {};
       };
       return Player;
   })();
+  var AlphaWolf = (function () {
+      function AlphaWolf() {
+
+      };
+      AlphaWolf.value = new AlphaWolf();
+      return AlphaWolf;
+  })();
   var Wolf = (function () {
       function Wolf() {
 
       };
       Wolf.value = new Wolf();
       return Wolf;
+  })();
+  var Goblin = (function () {
+      function Goblin() {
+
+      };
+      Goblin.value = new Goblin();
+      return Goblin;
+  })();
+  var Snowman = (function () {
+      function Snowman() {
+
+      };
+      Snowman.value = new Snowman();
+      return Snowman;
+  })();
+  var Tim = (function () {
+      function Tim() {
+
+      };
+      Tim.value = new Tim();
+      return Tim;
   })();
   var Ismo = (function () {
       function Ismo() {
@@ -504,7 +532,7 @@ var PS = {};
           if (!v.value0.frozen) {
               return ".";
           };
-          throw new Error("Failed pattern match at Rogue line 104, column 31 - line 105, column 1: " + [ v.value0.frozen.constructor.name ]);
+          throw new Error("Failed pattern match at Rogue line 112, column 31 - line 113, column 1: " + [ v.value0.frozen.constructor.name ]);
       };
       if (v instanceof Door) {
           return "+";
@@ -615,8 +643,20 @@ var PS = {};
       if (v.creatureType instanceof Player) {
           return v.creatureType.value0.name;
       };
+      if (v.creatureType instanceof AlphaWolf) {
+          return "alpha wolf";
+      };
       if (v.creatureType instanceof Wolf) {
           return "wolf";
+      };
+      if (v.creatureType instanceof Goblin) {
+          return "goblin";
+      };
+      if (v.creatureType instanceof Snowman) {
+          return "snowman";
+      };
+      if (v.creatureType instanceof Tim) {
+          return "evil sorcerer";
       };
       return "Ismo";
   };
@@ -627,7 +667,7 @@ var PS = {};
       if (!v.frozen) {
           return "0.6)";
       };
-      throw new Error("Failed pattern match at Rogue line 112, column 1 - line 113, column 1: " + [ v.constructor.name ]);
+      throw new Error("Failed pattern match at Rogue line 120, column 1 - line 121, column 1: " + [ v.constructor.name ]);
   };
   var tileColor = function (v) {
       if (v instanceof Ground) {
@@ -655,14 +695,14 @@ var PS = {};
   };
   var deleteItem = function (v) {
       return function (i) {
-          var $91 = {};
-          for (var $92 in v) {
-              if ({}.hasOwnProperty.call(v, $92)) {
-                  $91[$92] = v[$92];
+          var $95 = {};
+          for (var $96 in v) {
+              if ({}.hasOwnProperty.call(v, $96)) {
+                  $95[$96] = v[$96];
               };
           };
-          $91.inv = Data_Maybe.fromMaybe(v.inv)(Data_Array.deleteAt(i)(v.inv));
-          return $91;
+          $95.inv = Data_Maybe.fromMaybe(v.inv)(Data_Array.deleteAt(i)(v.inv));
+          return $95;
       };
   };
   var defaultStats = {
@@ -697,14 +737,14 @@ var PS = {};
   };
   var addItem = function (v) {
       return function (i) {
-          var $96 = {};
-          for (var $97 in v) {
-              if ({}.hasOwnProperty.call(v, $97)) {
-                  $96[$97] = v[$97];
+          var $100 = {};
+          for (var $101 in v) {
+              if ({}.hasOwnProperty.call(v, $101)) {
+                  $100[$101] = v[$101];
               };
           };
-          $96.inv = Data_Array.snoc(v.inv)(i);
-          return $96;
+          $100.inv = Data_Array.snoc(v.inv)(i);
+          return $100;
       };
   };
   exports["CommonA"] = CommonA;
@@ -716,7 +756,11 @@ var PS = {};
   exports["Gloves"] = Gloves;
   exports["Creature"] = Creature;
   exports["Player"] = Player;
+  exports["AlphaWolf"] = AlphaWolf;
   exports["Wolf"] = Wolf;
+  exports["Goblin"] = Goblin;
+  exports["Snowman"] = Snowman;
+  exports["Tim"] = Tim;
   exports["Ismo"] = Ismo;
   exports["GameState"] = GameState;
   exports["Weapon"] = Weapon;
