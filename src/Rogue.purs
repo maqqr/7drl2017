@@ -1,8 +1,8 @@
 module Rogue where
 
 import Prelude
-import Data.Maybe (fromMaybe)
 import Data.Array (index, insertAt, snoc, deleteAt, replicate)
+import Data.Maybe (fromMaybe)
 
 type Point = { x :: Int , y :: Int }
 
@@ -28,7 +28,7 @@ newtype GameState = GameState
 
 initialGameState :: GameState
 initialGameState = GameState
-    { level:      { tiles: replicate (75*25) Ground, width: 75, height: 25 }
+    { level:      { tiles: replicate (75*25) (Ground { frozen: false }), width: 75, height: 25 }
     , player:     Creature {creatureType: Player {name: "Frozty"}, pos: {x: 10, y: 10}, stats: defaultStats, inv: []}
     , coldStatus: 100
     , enemies:    []
@@ -62,17 +62,60 @@ newtype Stats = Stats
 defaultStats :: Stats
 defaultStats = Stats { hpMax: 20, hp: 20, str: 10, dex: 10, int: 10 }
 
-data Tile = Ground
-          | Wall
+type Frozen = { frozen :: Boolean }
+
+data Tile = Ground Frozen
+          | Wall Frozen
+          | Mountain Frozen
+          | Forest Frozen
+          | Water Frozen  -- Large body of water (river, lake, etc.), solid when unfrozen (because the player can not swim)
+          | Puddle Frozen -- Wet floor, turns into solid ice wall when frozen
+          | Door Frozen
+          | StairsUp
+          | StairsDown
+          | DungeonEnterance
           | ErrorTile
 
 isTileSolid :: Tile -> Boolean
-isTileSolid Ground = false
-isTileSolid _      = true
+isTileSolid (Ground _)       = false
+isTileSolid (Forest _)       = false
+isTileSolid (Water t)        = not t.frozen
+isTileSolid (Puddle t)       = t.frozen
+isTileSolid DungeonEnterance = false
+isTileSolid _                = true
 
 isTileTransparent :: Tile -> Boolean
-isTileTransparent Ground = true
-isTileTransparent _      = false
+isTileTransparent (Wall _)     = false
+isTileTransparent (Mountain _) = false
+isTileTransparent _            = true
+
+tileIcon :: Tile -> Char
+tileIcon (Ground _)         = '.'
+tileIcon (Wall _)           = '#'
+tileIcon (Mountain _)       = '^'
+tileIcon (Forest _)         = 'T'
+tileIcon (Water _)          = '~'
+tileIcon (Puddle t)         = if t.frozen then '#' else '.'
+tileIcon (Door _)           = '+'
+tileIcon (StairsUp)         = '<'
+tileIcon (StairsDown)       = '>'
+tileIcon (DungeonEnterance) = 'o'
+tileIcon _                  = '?'
+
+frozenColor :: Frozen -> String
+frozenColor { frozen: true } = "0.2)"
+frozenColor { frozen: false } = "0.6)"
+
+tileColor :: Tile -> String
+tileColor (Ground t) = "rgba(120, 120, 120, " <> frozenColor t
+tileColor (Wall t) = "rgba(120, 120, 120, " <> frozenColor t
+tileColor (Mountain t) = "rgba(70, 70, 70, " <> frozenColor t
+tileColor (Forest t) = "rgba(20, 240, 30, " <> frozenColor t
+tileColor (Water t) = "rgba(20, 20, 250, " <> frozenColor t
+tileColor (Puddle t) = "rgba(20, 20, 250, " <> frozenColor t
+tileColor (Door t) = "rgba(200, 180, 50, " <> frozenColor t
+tileColor _ = "rgba(120, 120, 120, 0.6)"
+
 
 type Level =
     { tiles  :: Array Tile

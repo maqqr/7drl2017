@@ -45,6 +45,7 @@ class Game {
         });
         document.body.appendChild(this.display.getContainer());
 
+        this.gameState = PS["Rogue"].initialGameState;
         this.drawMap();
 
         this.scheduler = new ROT.Scheduler.Speed<Actor>();
@@ -86,10 +87,12 @@ class Game {
     }
 
     drawMap() {
-        for (let y=0; y < this.gameState.tileMap.height; y++) {
-            for (let x=0; x < this.gameState.tileMap.width; x++) {
+        for (let y=0; y < this.gameState.level.height; y++) {
+            for (let x=0; x < this.gameState.level.width; x++) {
                 let tile = PS["Rogue"].getTile(this.gameState)({x: x, y: y});
-                this.display.draw(x, y, tile.icon, tile.color);
+                let icon = PS["Rogue"].tileIcon(tile);
+                let col = PS["Rogue"].tileColor(tile);
+                this.display.draw(x, y, icon, col);
             }
         }
 
