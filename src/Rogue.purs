@@ -52,7 +52,7 @@ data CreatureType = Player { name :: String }
 
 getName :: Creature -> String
 getName (Creature { creatureType: Player p})  = p.name
-getName (Creature { creatureType: AlphaWolf}) = "aplha wolf"
+getName (Creature { creatureType: AlphaWolf}) = "alpha wolf"
 getName (Creature { creatureType: Wolf})      = "wolf"
 getName (Creature { creatureType: Goblin})    = "goblin"
 getName (Creature { creatureType: Snowman})   = "snowman"
