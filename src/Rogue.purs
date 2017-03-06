@@ -47,9 +47,15 @@ data CreatureType = Player { name :: String }
                   | Ismo
 
 getName :: Creature -> String
-getName (Creature { creatureType : Player p}) = p.name
-getName (Creature { creatureType : Wolf})     = "wolf"
-getName _                                     = "Ismo" 
+getName (Creature { creatureType: Player p}) = p.name
+getName (Creature { creatureType: Wolf})     = "wolf"
+getName _                                    = "Ismo" 
+
+setPlayer :: GameState -> Creature -> GameState
+setPlayer (GameState gs) pl = GameState gs { player = pl }
+
+getPlayer :: GameState -> Creature
+getPlayer (GameState gs) = gs.player
 
 newtype Stats = Stats
     { hpMax :: Int
