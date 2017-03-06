@@ -2,7 +2,7 @@ module Rogue where
 
 import Prelude
 import Data.Array (index, insertAt, snoc, deleteAt, replicate)
-import Data.Maybe (fromMaybe)
+import Data.Maybe (Maybe(..), fromMaybe)
 
 type Point = { x :: Int , y :: Int }
 
@@ -24,6 +24,7 @@ newtype GameState = GameState
     , coldStatus :: Int
     , enemies    :: Array Creature
     , items      :: Array { pos :: Point, item :: Item }
+    , equipment  :: { cloak :: Maybe Item , chest :: Maybe Item , hands :: Maybe Item , weapon :: Maybe Item }
     }
 
 initialGameState :: GameState
@@ -33,6 +34,7 @@ initialGameState = GameState
     , coldStatus: 100
     , enemies:    []
     , items:      []
+    , equipment:  { cloak: Nothing, chest: Nothing, hands: Nothing, weapon: Nothing }
     }
 
 newtype Creature = Creature
@@ -127,14 +129,14 @@ frozenColor { frozen: true } = "0.2)"
 frozenColor { frozen: false } = "0.6)"
 
 tileColor :: Tile -> String
-tileColor (Ground t) = "rgba(120, 120, 120, " <> frozenColor t
-tileColor (Wall t) = "rgba(120, 120, 120, " <> frozenColor t
+tileColor (Ground t)   = "rgba(120, 120, 120, " <> frozenColor t
+tileColor (Wall t)     = "rgba(120, 120, 120, " <> frozenColor t
 tileColor (Mountain t) = "rgba(70, 70, 70, " <> frozenColor t
-tileColor (Forest t) = "rgba(20, 240, 30, " <> frozenColor t
-tileColor (Water t) = "rgba(20, 20, 250, " <> frozenColor t
-tileColor (Puddle t) = "rgba(20, 20, 250, " <> frozenColor t
-tileColor (Door t) = "rgba(200, 180, 50, " <> frozenColor t
-tileColor _ = "rgba(120, 120, 120, 0.6)"
+tileColor (Forest t)   = "rgba(20, 240, 30, " <> frozenColor t
+tileColor (Water t)    = "rgba(20, 20, 250, " <> frozenColor t
+tileColor (Puddle t)   = "rgba(20, 20, 250, " <> frozenColor t
+tileColor (Door t)     = "rgba(200, 180, 50, " <> frozenColor t
+tileColor _            = "rgba(120, 120, 120, 0.6)"
 
 
 type Level =
@@ -151,18 +153,45 @@ setTile (GameState gs) t p = GameState ( gs { level { tiles = (fromMaybe (gs.lev
 
 data Item = Weapon { weaponType :: WeaponType, prefixe :: WeaponPrefix }
           | Armour { armourType :: ArmourType, prefixe :: ArmourPrefix }
-        --| Scroll { weight :: Int, effect :: Effect }
-        --| Potion { weight :: Int, effect :: Effect }    
+        --| Scroll { effect :: Effect }
+        --| Potion { effect :: Effect }    
           | Wood
           | ErrorItem
 
-data WeaponType = Sword | Axe
+data WeaponType = Axe | Dagger | Sword
+
+weaponWeight :: WeaponType -> Int
+weaponWeight Dagger = 4
+weaponWeight Axe    = 12
+weaponWeight _      = 10
 
 data WeaponPrefix = Common | Rusty | Masterwork
 
+weaponPrefixWeight :: WeaponPrefix -> Int
+weaponPrefixWeight Rusty      = 8
+weaponPrefixWeight Masterwork = 9
+weaponPrefixWeight _          = 10
+
 data ArmourType = Cloak | Chest | Gloves
 
+armourWeight :: ArmourType -> Int
+armourWeight Chest  = 20
+armourWeight Gloves = 2
+armourWeight _      = 10
+
 data ArmourPrefix = CommonA | LightA | ThickA | MasterworkA
+
+armourPrefixWeight :: ArmourPrefix -> Int
+armourPrefixWeight LightA      = 5
+armourPrefixWeight ThickA      = 13
+armourPrefixWeight MasterworkA = 8
+armourPrefixWeight _           = 10
+
+itemWeight :: Item -> Int
+itemWeight (Weapon w) = (weaponWeight w.weaponType) + (weaponPrefixWeight w.prefixe)
+itemWeight (Armour a) = (armourWeight a.armourType) + (armourPrefixWeight a.prefixe)
+itemWeight Wood       = 10
+itemWeight _          = 2
 
 addItem :: Creature -> Item -> Creature
 addItem (Creature c) i = Creature ( c { inv = snoc (c.inv) i } )
