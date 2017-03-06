@@ -79,8 +79,11 @@ class Game {
         var newX = oldX + diff[0];
         var newY = oldY + diff[1];
 
-        this.gameState.player.pos = { x: newX, y: newY };
-        this.drawMap();
+        let tile = PS["Rogue"].getTile(this.gameState)({x: newX, y: newY});
+        if (!PS["Rogue"].isTileSolid(tile)) {
+            this.gameState.player.pos = { x: newX, y: newY };
+            this.drawMap();
+        }
 
         window.removeEventListener("keydown", this);
         this.updateLoop();
