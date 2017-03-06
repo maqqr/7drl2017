@@ -59,13 +59,19 @@ getName (Creature { creatureType: Snowman})   = "snowman"
 getName (Creature { creatureType: Tim})       = "evil sorcerer"
 getName _                                     = "Ismo"
 
+creatureBaseDmg :: Creature -> Int
+creatureBaseDmg (Creature { creatureType: AlphaWolf}) = 2
+creatureBaseDmg (Creature { creatureType: Snowman})   = 4
+creatureBaseDmg (Creature { creatureType: Tim})       = 10
+creatureBaseDmg _                                     = 1
+
 setPlayer :: GameState -> Creature -> GameState
 setPlayer (GameState gs) pl = GameState gs { player = pl }
 
 getPlayer :: GameState -> Creature
 getPlayer (GameState gs) = gs.player
 
-newtype Stats = Stats
+type Stats = 
     { hpMax :: Int
     , hp    :: Int
     , str   :: Int
@@ -74,7 +80,7 @@ newtype Stats = Stats
     }
 
 defaultStats :: Stats
-defaultStats = Stats { hpMax: 20, hp: 20, str: 10, dex: 10, int: 10 }
+defaultStats = { hpMax: 200, hp: 200, str: 10, dex: 10, int: 10 }
 
 type Frozen = { frozen :: Boolean }
 
@@ -163,3 +169,9 @@ addItem (Creature c) i = Creature ( c { inv = snoc (c.inv) i } )
 
 deleteItem :: Creature -> Int -> Creature
 deleteItem (Creature c) i =  Creature ( c { inv = fromMaybe (c.inv) $ deleteAt i (c.inv) } )
+
+dmg :: Creature -> Int
+dmg (Creature c) = c.stats.str * creatureBaseDmg (Creature c)
+
+attack :: Creature -> Creature -> Creature
+attack (Creature ac) (Creature dc) = Creature dc { stats { hp = dc.stats.hp - dmg (Creature ac) } }

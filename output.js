@@ -277,9 +277,6 @@ var PS = {};
       Masterwork.value = new Masterwork();
       return Masterwork;
   })();
-  var Stats = function (x) {
-      return x;
-  };
   var Ground = (function () {
       function Ground(value0) {
           this.value0 = value0;
@@ -532,7 +529,7 @@ var PS = {};
           if (!v.value0.frozen) {
               return ".";
           };
-          throw new Error("Failed pattern match at Rogue line 112, column 31 - line 113, column 1: " + [ v.value0.frozen.constructor.name ]);
+          throw new Error("Failed pattern match at Rogue line 118, column 31 - line 119, column 1: " + [ v.value0.frozen.constructor.name ]);
       };
       if (v instanceof Door) {
           return "+";
@@ -551,36 +548,36 @@ var PS = {};
   var setTile = function (v) {
       return function (t) {
           return function (p) {
-              var $37 = {};
-              for (var $38 in v) {
-                  if ({}.hasOwnProperty.call(v, $38)) {
-                      $37[$38] = v[$38];
+              var $42 = {};
+              for (var $43 in v) {
+                  if ({}.hasOwnProperty.call(v, $43)) {
+                      $42[$43] = v[$43];
                   };
               };
-              $37.level = (function () {
-                  var $34 = {};
-                  for (var $35 in v.level) {
-                      if ({}.hasOwnProperty.call(v.level, $35)) {
-                          $34[$35] = v["level"][$35];
+              $42.level = (function () {
+                  var $39 = {};
+                  for (var $40 in v.level) {
+                      if ({}.hasOwnProperty.call(v.level, $40)) {
+                          $39[$40] = v["level"][$40];
                       };
                   };
-                  $34.tiles = Data_Maybe.fromMaybe(v.level.tiles)(Data_Array.insertAt((p.y * v.level.width | 0) + p.x | 0)(t)(v.level.tiles));
-                  return $34;
+                  $39.tiles = Data_Maybe.fromMaybe(v.level.tiles)(Data_Array.insertAt((p.y * v.level.width | 0) + p.x | 0)(t)(v.level.tiles));
+                  return $39;
               })();
-              return $37;
+              return $42;
           };
       };
   };
   var setPlayer = function (v) {
       return function (pl) {
-          var $42 = {};
-          for (var $43 in v) {
-              if ({}.hasOwnProperty.call(v, $43)) {
-                  $42[$43] = v[$43];
+          var $47 = {};
+          for (var $48 in v) {
+              if ({}.hasOwnProperty.call(v, $48)) {
+                  $47[$48] = v[$48];
               };
           };
-          $42.player = pl;
-          return $42;
+          $47.player = pl;
+          return $47;
       };
   };
   var pointPlus = function (v) {
@@ -667,7 +664,7 @@ var PS = {};
       if (!v.frozen) {
           return "0.6)";
       };
-      throw new Error("Failed pattern match at Rogue line 120, column 1 - line 121, column 1: " + [ v.constructor.name ]);
+      throw new Error("Failed pattern match at Rogue line 126, column 1 - line 127, column 1: " + [ v.constructor.name ]);
   };
   var tileColor = function (v) {
       if (v instanceof Ground) {
@@ -695,19 +692,19 @@ var PS = {};
   };
   var deleteItem = function (v) {
       return function (i) {
-          var $95 = {};
-          for (var $96 in v) {
-              if ({}.hasOwnProperty.call(v, $96)) {
-                  $95[$96] = v[$96];
+          var $100 = {};
+          for (var $101 in v) {
+              if ({}.hasOwnProperty.call(v, $101)) {
+                  $100[$101] = v[$101];
               };
           };
-          $95.inv = Data_Maybe.fromMaybe(v.inv)(Data_Array.deleteAt(i)(v.inv));
-          return $95;
+          $100.inv = Data_Maybe.fromMaybe(v.inv)(Data_Array.deleteAt(i)(v.inv));
+          return $100;
       };
   };
   var defaultStats = {
-      hpMax: 20, 
-      hp: 20, 
+      hpMax: 200, 
+      hp: 200, 
       str: 10, 
       dex: 10, 
       "int": 10
@@ -735,16 +732,52 @@ var PS = {};
       enemies: [  ], 
       items: [  ]
   };
-  var addItem = function (v) {
-      return function (i) {
-          var $100 = {};
-          for (var $101 in v) {
-              if ({}.hasOwnProperty.call(v, $101)) {
-                  $100[$101] = v[$101];
+  var creatureBaseDmg = function (v) {
+      if (v.creatureType instanceof AlphaWolf) {
+          return 2;
+      };
+      if (v.creatureType instanceof Snowman) {
+          return 4;
+      };
+      if (v.creatureType instanceof Tim) {
+          return 10;
+      };
+      return 1;
+  };
+  var dmg = function (v) {
+      return v.stats.str * creatureBaseDmg(v) | 0;
+  };
+  var attack = function (v) {
+      return function (v1) {
+          var $113 = {};
+          for (var $114 in v1) {
+              if ({}.hasOwnProperty.call(v1, $114)) {
+                  $113[$114] = v1[$114];
               };
           };
-          $100.inv = Data_Array.snoc(v.inv)(i);
-          return $100;
+          $113.stats = (function () {
+              var $110 = {};
+              for (var $111 in v1.stats) {
+                  if ({}.hasOwnProperty.call(v1.stats, $111)) {
+                      $110[$111] = v1["stats"][$111];
+                  };
+              };
+              $110.hp = v1.stats.hp - dmg(v) | 0;
+              return $110;
+          })();
+          return $113;
+      };
+  };
+  var addItem = function (v) {
+      return function (i) {
+          var $118 = {};
+          for (var $119 in v) {
+              if ({}.hasOwnProperty.call(v, $119)) {
+                  $118[$119] = v[$119];
+              };
+          };
+          $118.inv = Data_Array.snoc(v.inv)(i);
+          return $118;
       };
   };
   exports["CommonA"] = CommonA;
@@ -767,7 +800,6 @@ var PS = {};
   exports["Armour"] = Armour;
   exports["Wood"] = Wood;
   exports["ErrorItem"] = ErrorItem;
-  exports["Stats"] = Stats;
   exports["Ground"] = Ground;
   exports["Wall"] = Wall;
   exports["Mountain"] = Mountain;
@@ -785,8 +817,11 @@ var PS = {};
   exports["Sword"] = Sword;
   exports["Axe"] = Axe;
   exports["addItem"] = addItem;
+  exports["attack"] = attack;
+  exports["creatureBaseDmg"] = creatureBaseDmg;
   exports["defaultStats"] = defaultStats;
   exports["deleteItem"] = deleteItem;
+  exports["dmg"] = dmg;
   exports["frozenColor"] = frozenColor;
   exports["getName"] = getName;
   exports["getPlayer"] = getPlayer;
