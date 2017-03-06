@@ -43,13 +43,21 @@ newtype Creature = Creature
     }
 
 data CreatureType = Player { name :: String }
+                  | AlphaWolf
                   | Wolf
+                  | Goblin
+                  | Snowman
+                  | Tim
                   | Ismo
 
 getName :: Creature -> String
-getName (Creature { creatureType: Player p}) = p.name
-getName (Creature { creatureType: Wolf})     = "wolf"
-getName _                                    = "Ismo" 
+getName (Creature { creatureType: Player p})  = p.name
+getName (Creature { creatureType: AlphaWolf}) = "aplha wolf"
+getName (Creature { creatureType: Wolf})      = "wolf"
+getName (Creature { creatureType: Goblin})    = "goblin"
+getName (Creature { creatureType: Snowman})   = "snowman"
+getName (Creature { creatureType: Tim})       = "evil sorcerer"
+getName _                                     = "Ismo"
 
 setPlayer :: GameState -> Creature -> GameState
 setPlayer (GameState gs) pl = GameState gs { player = pl }
