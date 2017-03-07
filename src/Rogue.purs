@@ -1,7 +1,7 @@
 module Rogue where
 
 import Prelude
-import Data.Array (index, updateAt, snoc, deleteAt, replicate, (:), head, tail, union)
+import Data.Array (index, updateAt, snoc, deleteAt, replicate, (:), head, tail)
 import Data.Maybe (Maybe(..), fromMaybe)
 
 
@@ -152,39 +152,37 @@ tileColor _            = "rgba(120, 120, 120, 0.6)"
 
 data Theme = Mine | GoblinCave | Cave | WizardTower
 
-instance eqTheme :: Eq Theme where
-    eq Mine        Mine        = true
-    eq GoblinCave  GoblinCave  = true
-    eq Cave        Cave        = true
-    eq WizardTower WizardTower = true
-    eq _ _                     = false
+derive instance eqTheme :: Eq Theme
 
------------------------------------------------------------------------------------------------------------------------------------------- Testing shit
-
--- yeah, needs more time and coffee
-{-
-data ThemePool = ThemeWeaponPrefixes { theme :: Theme, prefixes :: Array { prefix :: WeaponPrefix, chance :: Int } }
-               | ThemeArmourPrefixes { theme :: Theme, prefixes :: Array { prefix :: ArmourPrefix, chance :: Int } }
-               | ThemeWeapon         { theme :: Theme, weapons  :: Array { wType :: WeaponType, chance :: Int } }
-               | ThemeArmour         { theme :: Theme, armour   :: Array { aType :: ArmourType, chance :: Int } }
--}
-----------------------------------------------------------------------nope
+-----------------------------------------------------------------------------------------------------------------------------------------
 
 type ThemeWeaponPrefixes = { theme :: Theme, prefixes :: Array { prefix :: WeaponPrefix, chance :: Int } }
 
 weaponPrefixPools :: Array ThemeWeaponPrefixes
-weaponPrefixPools =  { theme: Mine, prefixes: { prefix: Common, chance: 50 } : [] } : []
+weaponPrefixPools =  { theme: Mine, prefixes: { prefix: Common, chance: 50 } : [] } : [] -- TODO: More samples.
 
 getWPPool :: Theme -> Array ThemeWeaponPrefixes -> Array { prefix :: WeaponPrefix, chance :: Int }
 getWPPool t []   = []
 getWPPool t pool = let p = fromMaybe { theme: Mine, prefixes: [] } (head pool) 
                    in if (p.theme) == t then
-                          union (p.prefixes) (getWPPool t (fromMaybe [] (tail pool)))
+                          (p.prefixes) <> (getWPPool t (fromMaybe [] (tail pool)))
                       else
                           getWPPool t (fromMaybe [] (tail pool))
-getWPPool _ _    = []
 
------------------------------------------------------------------------------------------------------------------------------------------- Testing shit end
+type ThemeArmourPrefixes = { theme :: Theme, prefixes :: Array { prefix :: ArmourPrefix, chance :: Int } }
+
+armourPrefixPools :: Array ThemeArmourPrefixes
+armourPrefixPools = { theme: Mine, prefixes: { prefix: CommonA, chance: 50 } : [] } : [] -- TODO: More samples.
+
+getAPPool :: Theme -> Array ThemeArmourPrefixes -> Array { prefix :: ArmourPrefix, chance :: Int }
+getAPPool t []   = []
+getAPPool t pool = let p = fromMaybe { theme: Mine, prefixes: [] } (head pool) 
+                   in if (p.theme) == t then
+                          (p.prefixes) <> (getAPPool t (fromMaybe [] (tail pool)))
+                      else
+                          getAPPool t (fromMaybe [] (tail pool))
+
+------------------------------------------------------------------------------------------------------------------------------------------
 
 type Level =
     { tiles   :: Array Tile
