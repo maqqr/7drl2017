@@ -49,14 +49,14 @@ data CreatureType = Player { name :: String }
                   | Tim
                   | Ismo
 
-getName :: Creature -> String
-getName (Creature { creatureType: Player p})  = p.name
-getName (Creature { creatureType: AlphaWolf}) = "alpha wolf"
-getName (Creature { creatureType: Wolf})      = "wolf"
-getName (Creature { creatureType: Goblin})    = "goblin"
-getName (Creature { creatureType: Snowman})   = "snowman"
-getName (Creature { creatureType: Tim})       = "evil sorcerer"
-getName _                                     = "Ismo"
+instance showCreature :: Show Creature where
+    show (Creature { creatureType: Player p})  = p.name
+    show (Creature { creatureType: AlphaWolf}) = "alpha wolf"
+    show (Creature { creatureType: Wolf})      = "wolf"
+    show (Creature { creatureType: Goblin})    = "goblin"
+    show (Creature { creatureType: Snowman})   = "snowman"
+    show (Creature { creatureType: Tim})       = "evil sorcerer"
+    show _                                     = "Ismo"
 
 creatureBaseDmg :: Creature -> Int
 creatureBaseDmg (Creature { creatureType: AlphaWolf}) = 2
@@ -96,17 +96,17 @@ data Tile = Ground Frozen
           | ErrorTile
 
 instance showTile :: Show Tile where
-    show (Ground _)       = "Ground"
-    show (Wall _)         = "Wall"
-    show (Mountain _)     = "Mountain"
-    show (Forest _)       = "Forest"
-    show (Water _)        = "Water"
-    show (Puddle _)       = "Puddle"
-    show (Door _)         = "Door"
-    show StairsUp         = "StairsUp"
-    show StairsDown       = "StairsDown"
+    show (Ground _)      = "Ground"
+    show (Wall _)        = "Wall"
+    show (Mountain _)    = "Mountain"
+    show (Forest _)      = "Forest"
+    show (Water _)       = "Water"
+    show (Puddle _)      = "Puddle"
+    show (Door _)        = "Door"
+    show StairsUp        = "StairsUp"
+    show StairsDown      = "StairsDown"
     show DungeonEntrance = "DungeonEntrance"
-    show ErrorTile        = "ErrorTile"
+    show ErrorTile       = "ErrorTile"
 
 isTileSolid :: Tile -> Boolean
 isTileSolid (Ground _)      = false
@@ -153,9 +153,9 @@ tileColor _            = "rgba(120, 120, 120, 0.6)"
 data Theme = Mine | GoblinCave | Cave | WizardTower
 
 instance eqTheme :: Eq Theme where
-    eq Mine Mine               = true
-    eq GoblinCave GoblinCave   = true
-    eq Cave Cave               = true
+    eq Mine        Mine        = true
+    eq GoblinCave  GoblinCave  = true
+    eq Cave        Cave        = true
     eq WizardTower WizardTower = true
     eq _ _                     = false
 
@@ -170,16 +170,11 @@ data ThemePool = ThemeWeaponPrefixes { theme :: Theme, prefixes :: Array { prefi
 -}
 ----------------------------------------------------------------------nope
 
-
-
-{-
 type ThemeWeaponPrefixes = { theme :: Theme, prefixes :: Array { prefix :: WeaponPrefix, chance :: Int } }
 
 weaponPrefixPools :: Array ThemeWeaponPrefixes
 weaponPrefixPools =  { theme: Mine, prefixes: { prefix: Common, chance: 50 } : [] } : []
 
-
---Does not work...?
 getWPPool :: Theme -> Array ThemeWeaponPrefixes -> Array { prefix :: WeaponPrefix, chance :: Int }
 getWPPool t []   = []
 getWPPool t pool = let p = fromMaybe { theme: Mine, prefixes: [] } (head pool) 
@@ -188,7 +183,6 @@ getWPPool t pool = let p = fromMaybe { theme: Mine, prefixes: [] } (head pool)
                       else
                           getWPPool t (fromMaybe [] (tail pool))
 getWPPool _ _    = []
--}
 
 ------------------------------------------------------------------------------------------------------------------------------------------ Testing shit end
 
