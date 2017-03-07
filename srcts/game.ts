@@ -31,6 +31,8 @@ class Game {
     static readonly keyMap: { [id: number] : number }
         = { 104: 0, 105: 1, 102: 2, 99: 3, 98: 4, 97: 5, 100: 6, 103: 7};
 
+    dungeonMaps: {[id: string] : Array<any>}
+        = {}; // any = Rogue.level
     display: ROT.Display;
     scheduler: ROT.Scheduler.Speed<Actor>;
     gameState: any;
@@ -83,7 +85,7 @@ class Game {
         var newY = oldY + diff[1];
 
         let tile = PS["Rogue"].getTile(this.gameState)({x: newX, y: newY});
-        if (!PS["Rogue"].isTileSolid(tile)) {
+        if (!PS["Rogue"].isTileSolid(tile) && !(newX < 0 || newX >74) && !(newY < 0 || newY > 24) ) {
             this.gameState.player.pos = { x: newX, y: newY };
             this.drawMap();
         }

@@ -60,7 +60,7 @@ var Game = (function () {
         var newX = oldX + diff[0];
         var newY = oldY + diff[1];
         var tile = PS["Rogue"].getTile(this.gameState)({ x: newX, y: newY });
-        if (!PS["Rogue"].isTileSolid(tile)) {
+        if (!PS["Rogue"].isTileSolid(tile) && !(newX < 0 || newX > 74) && !(newY < 0 || newY > 24)) {
             this.gameState.player.pos = { x: newX, y: newY };
             this.drawMap();
         }
@@ -114,7 +114,8 @@ function pushToGamestate(gameState, map) {
     var tiles = { '.': ps.Ground.create({ frozen: false }),
         '^': ps.Mountain.create({ frozen: false }),
         'T': ps.Forest.create({ frozen: false }),
-        '-': ps.Water.create({ frozen: false })
+        '-': ps.Water.create({ frozen: false }),
+        'o': new ps.DungeonEnterance()
     };
     for (var y = 0; y < height; y++) {
         for (var x = 0; x < width; x++) {
