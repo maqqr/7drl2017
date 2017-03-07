@@ -30,6 +30,9 @@ function pushToGamestate(gameState, map) {
     let height = worldmap.length;
     let tiles = { '.': ps.Ground.create({ frozen: false })
                 , '^': ps.Mountain.create({ frozen: false })
+                , '♣': ps.Forest.create({ frozen: false })
+                , '≈': ps.Water.create({ frozen: false })
+                , '∩': ps.DungeonEntrance.create({ frozen: false }) 
                 };
 
     for (let y=0; y<height; y++) {
