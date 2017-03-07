@@ -31,6 +31,8 @@ class Game {
     static readonly keyMap: { [id: number] : number }
         = { 104: 0, 105: 1, 102: 2, 99: 3, 98: 4, 97: 5, 100: 6, 103: 7};
 
+    dungeonMaps: {[id: string] : Array<any>}
+        = {}; // any = Rogue.level
     display: ROT.Display;
     scheduler: ROT.Scheduler.Speed<Actor>;
     gameState: any;
