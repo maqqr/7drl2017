@@ -601,44 +601,59 @@ var PS = {};
   var setTile = function (v) {
       return function (t) {
           return function (p) {
-              var $68 = {};
-              for (var $69 in v) {
-                  if ({}.hasOwnProperty.call(v, $69)) {
-                      $68[$69] = v[$69];
+              var $70 = {};
+              for (var $71 in v) {
+                  if ({}.hasOwnProperty.call(v, $71)) {
+                      $70[$71] = v[$71];
                   };
               };
-              $68.level = (function () {
-                  var $65 = {};
-                  for (var $66 in v.level) {
-                      if ({}.hasOwnProperty.call(v.level, $66)) {
-                          $65[$66] = v["level"][$66];
+              $70.level = (function () {
+                  var $67 = {};
+                  for (var $68 in v.level) {
+                      if ({}.hasOwnProperty.call(v.level, $68)) {
+                          $67[$68] = v["level"][$68];
                       };
                   };
-                  $65.tiles = Data_Maybe.fromMaybe(v.level.tiles)(Data_Array.insertAt((p.y * v.level.width | 0) + p.x | 0)(t)(v.level.tiles));
-                  return $65;
+                  $67.tiles = Data_Maybe.fromMaybe(v.level.tiles)(Data_Array.insertAt((p.y * v.level.width | 0) + p.x | 0)(t)(v.level.tiles));
+                  return $67;
               })();
-              return $68;
+              return $70;
           };
       };
   };
   var setPlayer = function (v) {
       return function (pl) {
-          var $73 = {};
-          for (var $74 in v) {
-              if ({}.hasOwnProperty.call(v, $74)) {
-                  $73[$74] = v[$74];
+          var $75 = {};
+          for (var $76 in v) {
+              if ({}.hasOwnProperty.call(v, $76)) {
+                  $75[$76] = v[$76];
               };
           };
-          $73.player = pl;
-          return $73;
+          $75.player = pl;
+          return $75;
       };
   };
   var randomItem = function (v) {
       return function (v1) {
-          if (v instanceof Mine) {
-              return Wood.value;
-          };
           return Wood.value;
+      };
+  };
+  var randomCreature = function (v) {
+      return function (v1) {
+          return function (p) {
+              return {
+                  creatureType: Ismo.value, 
+                  pos: p, 
+                  stats: {
+                      hpMax: 50, 
+                      hp: 50, 
+                      str: 9, 
+                      dex: 12, 
+                      "int": 6
+                  }, 
+                  inv: [  ]
+              };
+          };
       };
   };
   var pointPlus = function (v) {
@@ -745,7 +760,7 @@ var PS = {};
   };
   var tileColor = function (v) {
       if (v instanceof Ground) {
-          return "rgba(120, 120, 120, " + frozenColor(v.value0);
+          return "rgba(139, 69, 19, " + frozenColor(v.value0);
       };
       if (v instanceof Wall) {
           return "rgba(120, 120, 120, " + frozenColor(v.value0);
@@ -1129,6 +1144,7 @@ var PS = {};
   exports["pointEquals"] = pointEquals;
   exports["pointMinus"] = pointMinus;
   exports["pointPlus"] = pointPlus;
+  exports["randomCreature"] = randomCreature;
   exports["randomItem"] = randomItem;
   exports["setPlayer"] = setPlayer;
   exports["setTile"] = setTile;

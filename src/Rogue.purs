@@ -129,7 +129,7 @@ frozenColor { frozen: true } = "0.2)"
 frozenColor { frozen: false } = "0.6)"
 
 tileColor :: Tile -> String
-tileColor (Ground t)   = "rgba(120, 120, 120, " <> frozenColor t
+tileColor (Ground t)   = "rgba(139, 69, 19, " <> frozenColor t
 tileColor (Wall t)     = "rgba(120, 120, 120, " <> frozenColor t
 tileColor (Mountain t) = "rgba(70, 70, 70, " <> frozenColor t
 tileColor (Forest t)   = "rgba(20, 240, 30, " <> frozenColor t
@@ -228,6 +228,10 @@ dmg (Creature c) = c.stats.str * creatureBaseDmg (Creature c)
 attack :: Creature -> Creature -> Creature
 attack (Creature ac) (Creature dc) = Creature dc { stats { hp = dc.stats.hp - dmg (Creature ac) } }
 
+
+-- ThemeItems and ThemeCreatures ?  -TODO
 randomItem :: Theme -> Int -> Item
-randomItem Mine seed = Wood
 randomItem _ _       = Wood
+
+randomCreature :: Theme -> Int -> Point -> Creature
+randomCreature _ _ p = Creature { creatureType: Ismo, pos: p, stats: { hpMax: 50, hp: 50, str: 9, dex: 12, int: 6 }, inv: [] }
