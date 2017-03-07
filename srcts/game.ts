@@ -83,7 +83,7 @@ class Game {
         var newY = oldY + diff[1];
 
         let tile = PS["Rogue"].getTile(this.gameState)({x: newX, y: newY});
-        if (!PS["Rogue"].isTileSolid(tile)) {
+        if (!PS["Rogue"].isTileSolid(tile) && !(newX < 0 || newX >74) && !(newY < 0 || newY > 24) ) {
             this.gameState.player.pos = { x: newX, y: newY };
             this.drawMap();
         }
