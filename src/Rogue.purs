@@ -1,7 +1,7 @@
 module Rogue where
 
 import Prelude
-import Data.Array (index, insertAt, snoc, deleteAt, replicate, (:))
+import Data.Array (index, insertAt, snoc, deleteAt, replicate, (:), head, tail, union)
 import Data.Maybe (Maybe(..), fromMaybe)
 
 
@@ -150,6 +150,13 @@ tileColor _            = "rgba(120, 120, 120, 0.6)"
 
 data Theme = Mine | GoblinCave | Cave | WizardTower
 
+instance eqTheme :: Eq Theme where
+    eq Mine Mine               = true
+    eq GoblinCave GoblinCave   = true
+    eq Cave Cave               = true
+    eq WizardTower WizardTower = true
+    eq _ _                     = false
+
 ------------------------------------------------------------------------------------------------------------------------------------------ Testing shit
 
 -- yeah, needs more time and coffee
@@ -159,16 +166,27 @@ data ThemePool = ThemeWeaponPrefixes { theme :: Theme, prefixes :: Array { prefi
                | ThemeWeapon         { theme :: Theme, weapons  :: Array { wType :: WeaponType, chance :: Int } }
                | ThemeArmour         { theme :: Theme, armour   :: Array { aType :: ArmourType, chance :: Int } }
 -}
+----------------------------------------------------------------------nope
 
+
+
+{-
 type ThemeWeaponPrefixes = { theme :: Theme, prefixes :: Array { prefix :: WeaponPrefix, chance :: Int } }
 
 weaponPrefixPools :: Array ThemeWeaponPrefixes
 weaponPrefixPools =  { theme: Mine, prefixes: { prefix: Common, chance: 50 } : [] } : []
 
+
+--Does not work...?
 getWPPool :: Theme -> Array ThemeWeaponPrefixes -> Array { prefix :: WeaponPrefix, chance :: Int }
 getWPPool t []   = []
---getWPPool t pool = let p = ( fromMaybe ({ theme: Mine, prefixes: [] }) (head.pool) ) in (p.theme) : (getWPPool t (fromMaybe [] (tail pool)))
+getWPPool t pool = let p = fromMaybe { theme: Mine, prefixes: [] } (head pool) 
+                   in if (p.theme) == t then
+                          union (p.prefixes) (getWPPool t (fromMaybe [] (tail pool)))
+                      else
+                          getWPPool t (fromMaybe [] (tail pool))
 getWPPool _ _    = []
+-}
 
 ------------------------------------------------------------------------------------------------------------------------------------------ Testing shit end
 
@@ -190,10 +208,10 @@ setLevelTile :: Level -> Tile -> Point -> Level
 setLevelTile level t p = level { tiles = (fromMaybe (level.tiles) $ insertAt (p.y * level.width + p.x) t level.tiles) }
 
 getTile :: GameState -> Point -> Tile
-getTile (GameState gs) p = fromMaybe ErrorTile $ index (gs.level.tiles) (p.y * gs.level.width + p.x)
+getTile (GameState gs) p = getLevelTile (gs.level) p
 
 setTile :: GameState -> Tile -> Point -> GameState
-setTile (GameState gs) t p = GameState ( gs { level { tiles = (fromMaybe (gs.level.tiles) $ insertAt (p.y * gs.level.width + p.x) t gs.level.tiles) } } )
+setTile (GameState gs) t p = GameState ( gs { level = setLevelTile (gs.level) t p } )
 
 data Item = Weapon { weaponType :: WeaponType, prefixe :: WeaponPrefix }
           | Armour { armourType :: ArmourType, prefixe :: ArmourPrefix }
