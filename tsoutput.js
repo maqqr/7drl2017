@@ -31,6 +31,8 @@ var Game = (function () {
             tileSet: tileSet.tileSet, tileMap: tileSet.tileMap
         });
         document.body.appendChild(this.display.getContainer());
+        this.gameState = PS["Rogue"].initialGameState;
+        this.gameState = pushToGamestate(this.gameState, worldmap);
         this.drawMap();
         this.scheduler = new ROT.Scheduler.Speed();
         this.scheduler.add(new Actor(50, true), true);
@@ -57,16 +59,21 @@ var Game = (function () {
         var diff = ROT.DIRS[8][Game.keyMap[code]];
         var newX = oldX + diff[0];
         var newY = oldY + diff[1];
-        this.gameState.player.pos = { x: newX, y: newY };
-        this.drawMap();
+        var tile = PS["Rogue"].getTile(this.gameState)({ x: newX, y: newY });
+        if (!PS["Rogue"].isTileSolid(tile)) {
+            this.gameState.player.pos = { x: newX, y: newY };
+            this.drawMap();
+        }
         window.removeEventListener("keydown", this);
         this.updateLoop();
     };
     Game.prototype.drawMap = function () {
-        for (var y = 0; y < this.gameState.tileMap.height; y++) {
-            for (var x = 0; x < this.gameState.tileMap.width; x++) {
+        for (var y = 0; y < this.gameState.level.height; y++) {
+            for (var x = 0; x < this.gameState.level.width; x++) {
                 var tile = PS["Rogue"].getTile(this.gameState)({ x: x, y: y });
-                this.display.draw(x, y, tile.icon, tile.color);
+                var icon = PS["Rogue"].tileIcon(tile);
+                var col = PS["Rogue"].tileColor(tile);
+                this.display.draw(x, y, icon, col);
             }
         }
         var player = this.gameState.player;
@@ -75,4 +82,48 @@ var Game = (function () {
     return Game;
 }());
 Game.keyMap = { 104: 0, 105: 1, 102: 2, 99: 3, 98: 4, 97: 5, 100: 6, 103: 7 };
+var worldmap = [];
+worldmap[0] = "≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈";
+worldmap[1] = "≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈";
+worldmap[2] = "≈≈≈≈≈^^^≈≈^^^^≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈";
+worldmap[3] = "≈≈≈≈≈≈^^^≈≈≈^^^^≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈";
+worldmap[4] = "≈≈≈≈≈≈≈^^^≈≈≈^^^^^≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈................≈≈≈≈≈≈≈≈≈≈≈.......";
+worldmap[5] = "≈≈≈≈≈≈≈≈≈^^^≈≈^^^^^^..^^^^^^^^^^^^^^^.....♣♣......♣♣......≈≈≈≈≈≈≈≈≈........";
+worldmap[6] = "≈≈≈≈≈≈≈≈≈≈≈^^^≈≈≈^^^^...^^^^^^^^^^^^^...♣♣♣♣♣♣..♣♣♣♣♣♣ .........≈≈≈........";
+worldmap[7] = "...♣♣♣♣.♣♣^^^...^^^∩^^.................♣♣♣♣♣♣♣♣♣♣♣♣♣♣♣♣....................";
+worldmap[8] = "....♣♣..^^^..^^^^^^..^^^^^^...^^^^^^^..♣♣♣♣♣♣∩♣♣♣♣♣♣♣♣♣....................";
+worldmap[9] = "..♣♣..^^^..^^^^^....≈≈≈^^^^^^...^^∩^^...♣♣♣♣♣♣♣♣♣♣♣♣♣♣.....................";
+worldmap[10] = "...♣.^^∩..^^^^^..♣≈≈≈≈≈≈≈^^^^^^...........♣♣♣♣♣♣♣♣♣♣.......................";
+worldmap[11] = "...^^^..^^^^^...♣♣≈≈≈≈≈≈≈≈≈^^^^^^...........♣♣♣♣♣♣........♣♣...............";
+worldmap[12] = "..^^^..^^^^^....≈≈≈≈≈≈≈≈≈♣♣♣♣^∩^^^^...........♣♣........♣♣.................";
+worldmap[13] = ".........................♣♣♣...................♣♣....♣♣....................";
+worldmap[14] = ".............................................♣♣.....♣♣.....................";
+worldmap[15] = "............................................♣♣.......♣♣....................";
+worldmap[16] = "............................................♣♣......♣♣.....................";
+worldmap[17] = "..............................................♣♣...♣♣......................";
+worldmap[18] = ".......................................^^^..............^^^^^^.............";
+worldmap[19] = "........................................^^^....^^^^...^^.....^.............";
+worldmap[20] = ".........................................^^^^......^^...^^^^^^.............";
+worldmap[21] = "............................................^^^^......^^^^.................";
+worldmap[22] = ".........................................^^^^^^...^^^^^....................";
+worldmap[23] = "...........................................^^^^^^^.......^^................";
+function pushToGamestate(gameState, map) {
+    var ps = PS["Rogue"];
+    var width = worldmap[0].length;
+    var height = worldmap.length;
+    var tiles = { '.': ps.Ground.create({ frozen: false }),
+        '^': ps.Mountain.create({ frozen: false })
+    };
+    for (var y = 0; y < height; y++) {
+        for (var x = 0; x < width; x++) {
+            var char = worldmap[y][x];
+            var tile = tiles[char];
+            if (tile !== undefined) {
+                console.log(tile);
+                gameState = ps.setTile(gameState)(tile)({ x: x, y: y });
+            }
+        }
+    }
+    return gameState;
+}
 //# sourceMappingURL=tsoutput.js.map
