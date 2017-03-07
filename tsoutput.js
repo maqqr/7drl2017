@@ -114,7 +114,8 @@ function pushToGamestate(gameState, map) {
     var tiles = { '.': ps.Ground.create({ frozen: false }),
         '^': ps.Mountain.create({ frozen: false }),
         'T': ps.Forest.create({ frozen: false }),
-        '-': ps.Water.create({ frozen: false })
+        '-': ps.Water.create({ frozen: false }),
+        'o': new ps.DungeonEnterance()
     };
     for (var y = 0; y < height; y++) {
         for (var x = 0; x < width; x++) {
