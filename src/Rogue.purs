@@ -1,7 +1,7 @@
 module Rogue where
 
 import Prelude
-import Data.Array (index, insertAt, snoc, deleteAt, replicate, (:), head, tail, union)
+import Data.Array (index, updateAt, snoc, deleteAt, replicate, (:), head, tail, union)
 import Data.Maybe (Maybe(..), fromMaybe)
 
 
@@ -213,11 +213,7 @@ getTile :: GameState -> Point -> Tile
 getTile (GameState gs) p = getLevelTile (gs.level) p
 
 setTile :: GameState -> Tile -> Point -> GameState
-<<<<<<< HEAD
 setTile (GameState gs) t p = GameState ( gs { level = setLevelTile (gs.level) t p } )
-=======
-setTile (GameState gs) t p = GameState ( gs { level { tiles = (fromMaybe (gs.level.tiles) $ updateAt (p.y * gs.level.width + p.x) t gs.level.tiles) } } )
->>>>>>> 579428baf5debc2adaff60694763831e8ac307da
 
 data Item = Weapon { weaponType :: WeaponType, prefixe :: WeaponPrefix }
           | Armour { armourType :: ArmourType, prefixe :: ArmourPrefix }
