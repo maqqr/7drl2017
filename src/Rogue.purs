@@ -138,6 +138,7 @@ tileColor (Puddle t)   = "rgba(20, 20, 250, " <> frozenColor t
 tileColor (Door t)     = "rgba(200, 180, 50, " <> frozenColor t
 tileColor _            = "rgba(120, 120, 120, 0.6)"
 
+data Theme = Mine | GoblinCave | Cave | WizardTower
 
 type Level =
     { tiles  :: Array Tile
@@ -211,7 +212,7 @@ equip :: GameState -> Item -> Int -> GameState
 equip (GameState gs) (Armour a) 1 = GameState (gs { equipment { cloak = isCorrectArmour (Armour a) a.armourType 1 } })
 equip (GameState gs) (Armour a) 2 = GameState (gs { equipment { chest = isCorrectArmour (Armour a) a.armourType 2 } })
 equip (GameState gs) (Armour a) 3 = GameState (gs { equipment { hands = isCorrectArmour (Armour a) a.armourType 3 } })
-equip (GameState gs) w 4 = GameState(gs { equipment { weapon = Just w } })
+equip (GameState gs) w          4 = GameState(gs { equipment { weapon = Just w } })
 equip gs _ _ = gs
 
 unEquip :: GameState -> Int -> GameState
@@ -226,3 +227,7 @@ dmg (Creature c) = c.stats.str * creatureBaseDmg (Creature c)
 
 attack :: Creature -> Creature -> Creature
 attack (Creature ac) (Creature dc) = Creature dc { stats { hp = dc.stats.hp - dmg (Creature ac) } }
+
+randomItem :: Theme -> Int -> Item
+randomItem Mine seed = Wood
+randomItem _ _       = Wood
