@@ -46,6 +46,9 @@ class Game {
         document.body.appendChild(this.display.getContainer());
 
         this.gameState = PS["Rogue"].initialGameState;
+
+        this.gameState = pushToGamestate(this.gameState, worldmap);
+
         this.drawMap();
 
         this.scheduler = new ROT.Scheduler.Speed<Actor>();
