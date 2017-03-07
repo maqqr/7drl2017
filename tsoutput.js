@@ -109,11 +109,11 @@ worldmap[22] = ".........................................^^^^^^...^^^^^.........
 worldmap[23] = "...........................................^^^^^^^.......^^................";
 function pushToGamestate(gameState, map) {
     var ps = PS["Rogue"];
+    var width = worldmap[0].length;
+    var height = worldmap.length;
     var tiles = { '.': ps.Ground.create({ frozen: false }),
         '^': ps.Mountain.create({ frozen: false })
     };
-    var height = worldmap.length;
-    var width = worldmap[0].length;
     for (var y = 0; y < height; y++) {
         for (var x = 0; x < width; x++) {
             var char = worldmap[y][x];
