@@ -23,6 +23,7 @@ var Actor = (function () {
 }());
 var Game = (function () {
     function Game() {
+        this.dungeonMaps = {}; // any = Rogue.level
         var tileSet = new TileSet('tileset');
         this.display = new ROT.Display({
             width: 75, height: 25, fontSize: 16, spacing: 1.0,
@@ -51,6 +52,14 @@ var Game = (function () {
     Game.prototype.handleEvent = function (e) {
         var code = e.keyCode;
         console.log(code);
+        if (code == 111) {
+            var potentialDoor = PS["Rogue"].getTile(this.gameState)({ x: this.gameState.player.pos.x, y: this.gameState.player.pos.y });
+            if (PS["Rogue"].showTile(potentialDoor) == "DungeonEnterance") {
+                //Tsekkaa myös, että onko näissä koordinaateissa olevalle luolalle ensimmäistä kerrosta
+                //Jos ei, niin sitten luodaan kerros
+                console.log("Here be dungeonz");
+            }
+        }
         if (!(code in Game.keyMap)) {
             return;
         }
