@@ -75,8 +75,17 @@ class Game {
         var code = e.keyCode;
         console.log(code);
 
+        if (code == 111) {
+            let potentialDoor = PS["Rogue"].getTile(this.gameState)({x: this.gameState.player.pos.x, y: this.gameState.player.pos.y});
+            if(PS["Rogue"].showTile(potentialDoor) == "DungeonEnterance") { 
+                //Tsekkaa myös, että onko näissä koordinaateissa olevalle luolalle ensimmäistä kerrosta
+                //Jos ei, niin sitten luodaan kerros
+                console.log("Here be dungeonz");
+            }
+            
+        }
+
         if (!(code in Game.keyMap)) { return; }
-    
         var oldX = this.gameState.player.pos.x;
         var oldY = this.gameState.player.pos.y;
 
