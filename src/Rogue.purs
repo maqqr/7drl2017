@@ -193,11 +193,33 @@ itemWeight (Armour a) = (armourWeight a.armourType) + (armourPrefixWeight a.pref
 itemWeight Wood       = 10
 itemWeight _          = 2
 
-addItem :: Creature -> Item -> Creature
-addItem (Creature c) i = Creature ( c { inv = snoc (c.inv) i } )
+addItem :: Creature -> Maybe Item -> Creature
+addItem (Creature c) (Just i) = Creature ( c { inv = snoc (c.inv) i } )
+addItem c _                   = c
 
 deleteItem :: Creature -> Int -> Creature
 deleteItem (Creature c) i =  Creature ( c { inv = fromMaybe (c.inv) $ deleteAt i (c.inv) } )
+
+isCorrectArmour :: Item -> ArmourType -> Int -> Maybe Item
+isCorrectArmour a Cloak  1 = Just a
+isCorrectArmour a Chest  2 = Just a
+isCorrectArmour a Gloves 3 = Just a
+isCorrectArmour _ _ _      = Nothing
+
+-- Just equips a new item, if the item corresponds with correct 'slot'
+equip :: GameState -> Item -> Int -> GameState
+equip (GameState gs) (Armour a) 1 = GameState (gs { equipment { cloak = isCorrectArmour (Armour a) a.armourType 1 } })
+equip (GameState gs) (Armour a) 2 = GameState (gs { equipment { chest = isCorrectArmour (Armour a) a.armourType 2 } })
+equip (GameState gs) (Armour a) 3 = GameState (gs { equipment { hands = isCorrectArmour (Armour a) a.armourType 3 } })
+equip (GameState gs) w 4 = GameState(gs { equipment { weapon = Just w } })
+equip gs _ _ = gs
+
+unEquip :: GameState -> Int -> GameState
+unEquip (GameState gs) 1 = GameState (gs { equipment { cloak  = Nothing }, player = addItem gs.player gs.equipment.cloak })
+unEquip (GameState gs) 2 = GameState (gs { equipment { chest  = Nothing }, player = addItem gs.player gs.equipment.chest })
+unEquip (GameState gs) 3 = GameState (gs { equipment { hands  = Nothing }, player = addItem gs.player gs.equipment.hands })
+unEquip (GameState gs) 4 = GameState (gs { equipment { weapon = Nothing }, player = addItem gs.player gs.equipment.weapon })
+unEquip gs _             = gs
 
 dmg :: Creature -> Int
 dmg (Creature c) = c.stats.str * creatureBaseDmg (Creature c)
