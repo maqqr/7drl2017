@@ -11,5 +11,7 @@ declare module Rogue {
         width: number;
         height: number;
         tiles: Array<Tile>;
+        up: Point;
+        down: Point;
     }
 }

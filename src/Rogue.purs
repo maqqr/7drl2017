@@ -180,10 +180,14 @@ type Level =
     , height  :: Int
     , enemies :: Array Creature
     , items   :: Array { pos :: Point, item :: Item }
+    , up      :: Point
+    , down    :: Point
     }
 
 createLevel :: Int -> Int -> Tile -> Level
-createLevel x y t = { tiles: replicate (x*y) t, width: x, height: y, enemies: [], items: [] }
+createLevel x y t =
+    let zero = { x: 0, y: 0 }
+    in { tiles: replicate (x*y) t, width: x, height: y, enemies: [], items: [], up: zero, down: zero }
 
 getLevelTile :: Level -> Point -> Tile
 getLevelTile level p = fromMaybe ErrorTile $ index (level.tiles) (p.y * level.width + p.x)

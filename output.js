@@ -1017,12 +1017,18 @@ var PS = {};
   var createLevel = function (x) {
       return function (y) {
           return function (t) {
+              var zero = {
+                  x: 0, 
+                  y: 0
+              };
               return {
                   tiles: Data_Array.replicate(x * y | 0)(t), 
                   width: x, 
                   height: y, 
                   enemies: [  ], 
-                  items: [  ]
+                  items: [  ], 
+                  up: zero, 
+                  down: zero
               };
           };
       };
