@@ -114,6 +114,8 @@ isTileSolid (Forest _)      = false
 isTileSolid (Water t)       = not t.frozen
 isTileSolid (Puddle t)      = t.frozen
 isTileSolid DungeonEntrance = false
+isTileSolid StairsUp        = false
+isTileSolid StairsDown      = false
 isTileSolid _               = true
 
 isTileTransparent :: Tile -> Boolean
@@ -205,13 +207,17 @@ getLevelTile :: Level -> Point -> Tile
 getLevelTile level p = fromMaybe ErrorTile $ index (level.tiles) (p.y * level.width + p.x)
 
 setLevelTile :: Level -> Tile -> Point -> Level
-setLevelTile level t p = level { tiles = (fromMaybe (level.tiles) $ insertAt (p.y * level.width + p.x) t level.tiles) }
+setLevelTile level t p = level { tiles = (fromMaybe (level.tiles) $ updateAt (p.y * level.width + p.x) t level.tiles) }
 
 getTile :: GameState -> Point -> Tile
 getTile (GameState gs) p = getLevelTile (gs.level) p
 
 setTile :: GameState -> Tile -> Point -> GameState
+<<<<<<< HEAD
 setTile (GameState gs) t p = GameState ( gs { level = setLevelTile (gs.level) t p } )
+=======
+setTile (GameState gs) t p = GameState ( gs { level { tiles = (fromMaybe (gs.level.tiles) $ updateAt (p.y * gs.level.width + p.x) t gs.level.tiles) } } )
+>>>>>>> 579428baf5debc2adaff60694763831e8ac307da
 
 data Item = Weapon { weaponType :: WeaponType, prefixe :: WeaponPrefix }
           | Armour { armourType :: ArmourType, prefixe :: ArmourPrefix }
