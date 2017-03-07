@@ -1,7 +1,7 @@
 module Rogue where
 
 import Prelude
-import Data.Array (index, insertAt, snoc, deleteAt, replicate, (:))
+import Data.Array (index, updateAt, snoc, deleteAt, replicate, (:))
 import Data.Maybe (Maybe(..), fromMaybe)
 
 
@@ -114,6 +114,8 @@ isTileSolid (Forest _)      = false
 isTileSolid (Water t)       = not t.frozen
 isTileSolid (Puddle t)      = t.frozen
 isTileSolid DungeonEntrance = false
+isTileSolid StairsUp        = false
+isTileSolid StairsDown      = false
 isTileSolid _               = true
 
 isTileTransparent :: Tile -> Boolean
@@ -187,13 +189,13 @@ getLevelTile :: Level -> Point -> Tile
 getLevelTile level p = fromMaybe ErrorTile $ index (level.tiles) (p.y * level.width + p.x)
 
 setLevelTile :: Level -> Tile -> Point -> Level
-setLevelTile level t p = level { tiles = (fromMaybe (level.tiles) $ insertAt (p.y * level.width + p.x) t level.tiles) }
+setLevelTile level t p = level { tiles = (fromMaybe (level.tiles) $ updateAt (p.y * level.width + p.x) t level.tiles) }
 
 getTile :: GameState -> Point -> Tile
 getTile (GameState gs) p = fromMaybe ErrorTile $ index (gs.level.tiles) (p.y * gs.level.width + p.x)
 
 setTile :: GameState -> Tile -> Point -> GameState
-setTile (GameState gs) t p = GameState ( gs { level { tiles = (fromMaybe (gs.level.tiles) $ insertAt (p.y * gs.level.width + p.x) t gs.level.tiles) } } )
+setTile (GameState gs) t p = GameState ( gs { level { tiles = (fromMaybe (gs.level.tiles) $ updateAt (p.y * gs.level.width + p.x) t gs.level.tiles) } } )
 
 data Item = Weapon { weaponType :: WeaponType, prefixe :: WeaponPrefix }
           | Armour { armourType :: ArmourType, prefixe :: ArmourPrefix }

@@ -145,6 +145,7 @@ declare module ROT.Map {
 
     export class Digger extends Dungeon implements IMap {
         constructor(width: number, height: number, options: any);
+        constructor(width: number, height: number);
     }
 
     export class DividedMaze extends Dungeon implements IMap {

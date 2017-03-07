@@ -1,4 +1,9 @@
 declare module Rogue {
+    class Point {
+        x: number;
+        y: number;
+    }
+
     class Tile {
     }
 
