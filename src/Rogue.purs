@@ -98,6 +98,19 @@ data Tile = Ground Frozen
           | DungeonEnterance
           | ErrorTile
 
+instance showTile :: Show Tile where
+    show (Ground _)       = "Ground"
+    show (Wall _)         = "Wall"
+    show (Mountain _)     = "Mountain"
+    show (Forest _)       = "Forest"
+    show (Water _)        = "Water"
+    show (Puddle _)       = "Puddle"
+    show (Door _)         = "Door"
+    show StairsUp         = "StairsUp"
+    show StairsDown       = "StairsDown"
+    show DungeonEnterance = "DungeonEnterance"
+    show ErrorTile        = "ErrorTile"
+
 isTileSolid :: Tile -> Boolean
 isTileSolid (Ground _)       = false
 isTileSolid (Forest _)       = false
@@ -139,6 +152,22 @@ tileColor (Door t)     = "rgba(200, 180, 50, " <> frozenColor t
 tileColor _            = "rgba(120, 120, 120, 0.6)"
 
 data Theme = Mine | GoblinCave | Cave | WizardTower
+
+------------------------------------------------------------------------------------------------------------------------------------------ Testing shit
+
+data ThemePool = ThemeWeaponPrefixes { theme :: Theme, prefixes :: Array WeaponPrefix }
+               | ThemeArmourPrefixes { theme :: Theme, prefixes :: Array ArmourPrefix }
+               | ThemeWeapon         { theme :: Theme, weapons  :: Array WeaponType }
+               | ThemeArmour         { theme :: Theme, armour   :: Array ArmourType }
+
+--weaponPrefixPools :: Array ThemePool
+-- -- -- -- -- -- -- Array witch contais all weapon prefixes in corresponding themes 
+
+--getWPPool :: Theme -> Array ThemePool -> Array WeaponPrefix
+--getWPPool t (ThemeWeaponPrefixes wp) = 
+--getWPPool _ _ = []
+
+------------------------------------------------------------------------------------------------------------------------------------------ Testing shit end
 
 type Level =
     { tiles  :: Array Tile
