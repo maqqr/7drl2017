@@ -1,8 +1,10 @@
 module Rogue where
 
 import Prelude
-import Data.Array (index, insertAt, snoc, deleteAt, replicate)
+import Data.Array (index, insertAt, snoc, deleteAt, replicate, (:))
 import Data.Maybe (Maybe(..), fromMaybe)
+
+
 type Point = { x :: Int , y :: Int }
 
 pointPlus :: Point -> Point -> Point
@@ -21,18 +23,14 @@ newtype GameState = GameState
     { level      :: Level
     , player     :: Creature
     , coldStatus :: Int
-    , enemies    :: Array Creature
-    , items      :: Array { pos :: Point, item :: Item }
     , equipment  :: { cloak :: Maybe Item , chest :: Maybe Item , hands :: Maybe Item , weapon :: Maybe Item }
     }
 
 initialGameState :: GameState
 initialGameState = GameState
-    { level:      { tiles: replicate (75*25) (Ground { frozen: false }), width: 75, height: 25 }
+    { level:      createLevel 75 25 (Ground { frozen: false })
     , player:     Creature {creatureType: Player {name: "Frozty"}, pos: {x: 10, y: 10}, stats: defaultStats, inv: []}
     , coldStatus: 100
-    , enemies:    []
-    , items:      []
     , equipment:  { cloak: Nothing, chest: Nothing, hands: Nothing, weapon: Nothing }
     }
 
@@ -94,24 +92,9 @@ data Tile = Ground Frozen
           | Door Frozen
           | StairsUp
           | StairsDown
-          | DungeonEnterance
+          | DungeonEntrance
           | ErrorTile
 
--- ÄLÄ VITTU KYSY
-showTile :: Tile -> String
-showTile (Ground _)       = "Ground"
-showTile (Wall _)         = "Wall"
-showTile (Mountain _)     = "Mountain"
-showTile (Forest _)       = "Forest"
-showTile (Water _)        = "Water"
-showTile (Puddle _)       = "Puddle"
-showTile (Door _)         = "Door"
-showTile StairsUp         = "StairsUp"
-showTile StairsDown       = "StairsDown"
-showTile DungeonEnterance = "DungeonEnterance"
-showTile ErrorTile        = "ErrorTile"
-
-{- q9+0fhjq3=(GFHpaiwefghoiPEHFGb0awhrf9fhb23f80BQ0(Fbf))   Ei muka vittu toimi tai jotain.
 instance showTile :: Show Tile where
     show (Ground _)       = "Ground"
     show (Wall _)         = "Wall"
@@ -122,17 +105,16 @@ instance showTile :: Show Tile where
     show (Door _)         = "Door"
     show StairsUp         = "StairsUp"
     show StairsDown       = "StairsDown"
-    show DungeonEnterance = "DungeonEnterance"
+    show DungeonEntrance = "DungeonEntrance"
     show ErrorTile        = "ErrorTile"
-    -}
 
 isTileSolid :: Tile -> Boolean
-isTileSolid (Ground _)       = false
-isTileSolid (Forest _)       = false
-isTileSolid (Water t)        = not t.frozen
-isTileSolid (Puddle t)       = t.frozen
-isTileSolid DungeonEnterance = false
-isTileSolid _                = true
+isTileSolid (Ground _)      = false
+isTileSolid (Forest _)      = false
+isTileSolid (Water t)       = not t.frozen
+isTileSolid (Puddle t)      = t.frozen
+isTileSolid DungeonEntrance = false
+isTileSolid _               = true
 
 isTileTransparent :: Tile -> Boolean
 isTileTransparent (Wall _)     = false
@@ -140,17 +122,17 @@ isTileTransparent (Mountain _) = false
 isTileTransparent _            = true
 
 tileIcon :: Tile -> Char
-tileIcon (Ground _)         = '.'
-tileIcon (Wall _)           = '#'
-tileIcon (Mountain _)       = '^'
-tileIcon (Forest _)         = 'T'
-tileIcon (Water _)          = '~'
-tileIcon (Puddle t)         = if t.frozen then '#' else '.'
-tileIcon (Door _)           = '+'
-tileIcon (StairsUp)         = '<'
-tileIcon (StairsDown)       = '>'
-tileIcon (DungeonEnterance) = 'o'
-tileIcon _                  = '?'
+tileIcon (Ground _)        = '.'
+tileIcon (Wall _)          = '#'
+tileIcon (Mountain _)      = '^'
+tileIcon (Forest _)        = 'T'
+tileIcon (Water _)         = '~'
+tileIcon (Puddle t)        = if t.frozen then '#' else '.'
+tileIcon (Door _)          = '+'
+tileIcon (StairsUp)        = '<'
+tileIcon (StairsDown)      = '>'
+tileIcon (DungeonEntrance) = 'o'
+tileIcon _                 = '?'
 
 frozenColor :: Frozen -> String
 frozenColor { frozen: true } = "0.2)"
@@ -171,26 +153,41 @@ data Theme = Mine | GoblinCave | Cave | WizardTower
 ------------------------------------------------------------------------------------------------------------------------------------------ Testing shit
 
 -- yeah, needs more time and coffee
-
+{-
 data ThemePool = ThemeWeaponPrefixes { theme :: Theme, prefixes :: Array { prefix :: WeaponPrefix, chance :: Int } }
                | ThemeArmourPrefixes { theme :: Theme, prefixes :: Array { prefix :: ArmourPrefix, chance :: Int } }
                | ThemeWeapon         { theme :: Theme, weapons  :: Array { wType :: WeaponType, chance :: Int } }
                | ThemeArmour         { theme :: Theme, armour   :: Array { aType :: ArmourType, chance :: Int } }
+-}
 
---weaponPrefixPools :: Array ThemePool
---weaponPrefixPools = [] ´snoc´ ThemeWeaponPrefixes { theme: Mine, prefixes: [] ´snoc´ { prefix: }}
+type ThemeWeaponPrefixes = { theme :: Theme, prefixes :: Array { prefix :: WeaponPrefix, chance :: Int } }
 
---getWPPool :: Theme -> Array ThemePool -> Array { WeaponPrefix, Int }
---getWPPool t (ThemeWeaponPrefixes wp) = 
---getWPPool _ _ = []
+weaponPrefixPools :: Array ThemeWeaponPrefixes
+weaponPrefixPools =  { theme: Mine, prefixes: { prefix: Common, chance: 50 } : [] } : []
+
+getWPPool :: Theme -> Array ThemeWeaponPrefixes -> Array { prefix :: WeaponPrefix, chance :: Int }
+getWPPool t []   = []
+--getWPPool t pool = let p = ( fromMaybe ({ theme: Mine, prefixes: [] }) (head.pool) ) in (p.theme) : (getWPPool t (fromMaybe [] (tail pool)))
+getWPPool _ _    = []
 
 ------------------------------------------------------------------------------------------------------------------------------------------ Testing shit end
 
 type Level =
-    { tiles  :: Array Tile
-    , width  :: Int
-    , height :: Int
+    { tiles   :: Array Tile
+    , width   :: Int
+    , height  :: Int
+    , enemies :: Array Creature
+    , items   :: Array { pos :: Point, item :: Item }
     }
+
+createLevel :: Int -> Int -> Tile -> Level
+createLevel x y t = { tiles: replicate (x*y) t, width: x, height: y, enemies: [], items: [] }
+
+getLevelTile :: Level -> Point -> Tile
+getLevelTile level p = fromMaybe ErrorTile $ index (level.tiles) (p.y * level.width + p.x)
+
+setLevelTile :: Level -> Tile -> Point -> Level
+setLevelTile level t p = level { tiles = (fromMaybe (level.tiles) $ insertAt (p.y * level.width + p.x) t level.tiles) }
 
 getTile :: GameState -> Point -> Tile
 getTile (GameState gs) p = fromMaybe ErrorTile $ index (gs.level.tiles) (p.y * gs.level.width + p.x)
