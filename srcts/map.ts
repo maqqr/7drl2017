@@ -37,7 +37,6 @@ function pushToGamestate(gameState, map) {
             let char = worldmap[y][x];
             let tile = tiles[char];
             if (tile !== undefined) {
-                console.log(tile);
                 gameState = ps.setTile(gameState)(tile)({x: x, y: y});
             }
         }
