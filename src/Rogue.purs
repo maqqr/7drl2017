@@ -3,7 +3,6 @@ module Rogue where
 import Prelude
 import Data.Array (index, insertAt, snoc, deleteAt, replicate)
 import Data.Maybe (Maybe(..), fromMaybe)
-
 type Point = { x :: Int , y :: Int }
 
 pointPlus :: Point -> Point -> Point
@@ -98,6 +97,21 @@ data Tile = Ground Frozen
           | DungeonEnterance
           | ErrorTile
 
+-- ÄLÄ VITTU KYSY
+showTile :: Tile -> String
+showTile (Ground _)       = "Ground"
+showTile (Wall _)         = "Wall"
+showTile (Mountain _)     = "Mountain"
+showTile (Forest _)       = "Forest"
+showTile (Water _)        = "Water"
+showTile (Puddle _)       = "Puddle"
+showTile (Door _)         = "Door"
+showTile StairsUp         = "StairsUp"
+showTile StairsDown       = "StairsDown"
+showTile DungeonEnterance = "DungeonEnterance"
+showTile ErrorTile        = "ErrorTile"
+
+{- q9+0fhjq3=(GFHpaiwefghoiPEHFGb0awhrf9fhb23f80BQ0(Fbf))   Ei muka vittu toimi tai jotain.
 instance showTile :: Show Tile where
     show (Ground _)       = "Ground"
     show (Wall _)         = "Wall"
@@ -110,6 +124,7 @@ instance showTile :: Show Tile where
     show StairsDown       = "StairsDown"
     show DungeonEnterance = "DungeonEnterance"
     show ErrorTile        = "ErrorTile"
+    -}
 
 isTileSolid :: Tile -> Boolean
 isTileSolid (Ground _)       = false
@@ -155,15 +170,17 @@ data Theme = Mine | GoblinCave | Cave | WizardTower
 
 ------------------------------------------------------------------------------------------------------------------------------------------ Testing shit
 
-data ThemePool = ThemeWeaponPrefixes { theme :: Theme, prefixes :: Array WeaponPrefix }
-               | ThemeArmourPrefixes { theme :: Theme, prefixes :: Array ArmourPrefix }
-               | ThemeWeapon         { theme :: Theme, weapons  :: Array WeaponType }
-               | ThemeArmour         { theme :: Theme, armour   :: Array ArmourType }
+-- yeah, needs more time and coffee
+
+data ThemePool = ThemeWeaponPrefixes { theme :: Theme, prefixes :: Array { prefix :: WeaponPrefix, chance :: Int } }
+               | ThemeArmourPrefixes { theme :: Theme, prefixes :: Array { prefix :: ArmourPrefix, chance :: Int } }
+               | ThemeWeapon         { theme :: Theme, weapons  :: Array { wType :: WeaponType, chance :: Int } }
+               | ThemeArmour         { theme :: Theme, armour   :: Array { aType :: ArmourType, chance :: Int } }
 
 --weaponPrefixPools :: Array ThemePool
--- -- -- -- -- -- -- Array witch contais all weapon prefixes in corresponding themes 
+--weaponPrefixPools = [] ´snoc´ ThemeWeaponPrefixes { theme: Mine, prefixes: [] ´snoc´ { prefix: }}
 
---getWPPool :: Theme -> Array ThemePool -> Array WeaponPrefix
+--getWPPool :: Theme -> Array ThemePool -> Array { WeaponPrefix, Int }
 --getWPPool t (ThemeWeaponPrefixes wp) = 
 --getWPPool _ _ = []
 
