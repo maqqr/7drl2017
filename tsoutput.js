@@ -23,7 +23,7 @@ var Actor = (function () {
 }());
 var Game = (function () {
     function Game() {
-        this.dungeonMaps = {}; // any = Rogue.level
+        this.dungeonMaps = {};
         var tileSet = new TileSet('tileset');
         this.display = new ROT.Display({
             width: 75, height: 25, fontSize: 16, spacing: 1.0,
@@ -53,11 +53,22 @@ var Game = (function () {
         var code = e.keyCode;
         console.log(code);
         if (code == 111) {
-            var potentialDoor = PS["Rogue"].getTile(this.gameState)({ x: this.gameState.player.pos.x, y: this.gameState.player.pos.y });
-            if (PS["Rogue"].showTile(potentialDoor) == "DungeonEnterance") {
-                //Tsekkaa myös, että onko näissä koordinaateissa olevalle luolalle ensimmäistä kerrosta
-                //Jos ei, niin sitten luodaan kerros
-                console.log("Here be dungeonz");
+            var playerPos = { x: this.gameState.player.pos.x, y: this.gameState.player.pos.y };
+            var potentialDoor = PS["Rogue"].getTile(this.gameState)(playerPos);
+            var tileName = PS["Data.Show"].show(PS["Rogue"].showTile)(potentialDoor);
+            if (tileName == "DungeonEntrance") {
+                var key = "" + playerPos.x + "," + playerPos.y;
+                if (key in this.dungeonMaps) {
+                    // TODO: Get first level from this.dungeonMaps
+                    console.log("Here be dungeonz");
+                }
+                else {
+                    var newLevel = this.generateLevel();
+                    this.dungeonMaps[key] = [newLevel];
+                    this.gameState.level = newLevel;
+                    console.log("Added new dungeon level");
+                    this.drawMap();
+                }
             }
         }
         if (!(code in Game.keyMap)) {
@@ -77,6 +88,7 @@ var Game = (function () {
         this.updateLoop();
     };
     Game.prototype.drawMap = function () {
+        this.display.clear();
         for (var y = 0; y < this.gameState.level.height; y++) {
             for (var x = 0; x < this.gameState.level.width; x++) {
                 var tile = PS["Rogue"].getTile(this.gameState)({ x: x, y: y });
@@ -87,6 +99,40 @@ var Game = (function () {
         }
         var player = this.gameState.player;
         this.display.draw(player.pos.x, player.pos.y, '@', "rgba(0, 200, 0, 0.6)");
+    };
+    Game.prototype.generateLevel = function () {
+        var width = 75;
+        var height = 23;
+        var fillTile = PS["Rogue"].Wall.create({ frozen: false });
+        var level = PS["Rogue"].createLevel(width)(height)(fillTile);
+        var digger = new ROT.Map.Digger(width, height);
+        var digCallback = function (x, y, value) {
+            if (value === 1) {
+                return;
+            }
+            var position = { x: x, y: y };
+            var floor = PS["Rogue"].Ground.create({ frozen: false });
+            level = PS["Rogue"].setLevelTile(level)(floor)(position);
+        };
+        digger.create(digCallback.bind(this));
+        var freePositions = [];
+        for (var y = 0; y < height; y++) {
+            for (var x = 0; x < width; x++) {
+                var pos = { x: x, y: y };
+                var tile = PS["Rogue"].getLevelTile(level)(pos);
+                if (!PS["Rogue"].isTileSolid(tile)) {
+                    freePositions.push(pos);
+                }
+            }
+        }
+        function randomFreePosition() {
+            var index = Math.floor(ROT.RNG.getUniform() * freePositions.length);
+            return freePositions.splice(index, 1)[0];
+        }
+        var startPos = randomFreePosition();
+        this.gameState.player.pos = startPos; // TODO: remove
+        level = PS["Rogue"].setLevelTile(level)(new PS["Rogue"].StairsUp())(startPos);
+        return level;
     };
     return Game;
 }());
@@ -124,7 +170,7 @@ function pushToGamestate(gameState, map) {
         '^': ps.Mountain.create({ frozen: false }),
         'T': ps.Forest.create({ frozen: false }),
         '-': ps.Water.create({ frozen: false }),
-        'o': new ps.DungeonEnterance()
+        'o': new ps.DungeonEntrance()
     };
     for (var y = 0; y < height; y++) {
         for (var x = 0; x < width; x++) {
