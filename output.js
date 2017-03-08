@@ -814,6 +814,21 @@ var PS = {};
           };
       };
   };
+  var setExits = function (l) {
+      return function (u) {
+          return function (d) {
+              return {
+                  tiles: l.tiles, 
+                  width: l.width, 
+                  height: l.height, 
+                  enemies: l.enemies, 
+                  items: l.items, 
+                  up: u, 
+                  down: d
+              };
+          };
+      };
+  };
   var randomItem = function (v) {
       return function (v1) {
           return Wood.value;
@@ -1069,7 +1084,7 @@ var PS = {};
           if (!$177) {
               return getAPPool(t)(Data_Maybe.fromMaybe([  ])(Data_Array.tail(v)));
           };
-          throw new Error("Failed pattern match at Rogue line 180, column 23 - line 183, column 65: " + [ $177.constructor.name ]);
+          throw new Error("Failed pattern match at Rogue line 181, column 23 - line 184, column 65: " + [ $177.constructor.name ]);
       };
   };
   var getWPPool = function (t) {
@@ -1396,6 +1411,7 @@ var PS = {};
   exports["pointPlus"] = pointPlus;
   exports["randomCreature"] = randomCreature;
   exports["randomItem"] = randomItem;
+  exports["setExits"] = setExits;
   exports["setLevelTile"] = setLevelTile;
   exports["setPlayer"] = setPlayer;
   exports["setTile"] = setTile;

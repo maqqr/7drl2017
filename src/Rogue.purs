@@ -169,6 +169,7 @@ getWPPool t pool = let p = fromMaybe { theme: Mine, prefixes: [] } (head pool)
                       else
                           getWPPool t (fromMaybe [] (tail pool))
 
+
 type ThemeArmourPrefixes = { theme :: Theme, prefixes :: Array { prefix :: ArmourPrefix, chance :: Int } }
 
 armourPrefixPools :: Array ThemeArmourPrefixes
@@ -210,6 +211,9 @@ getTile (GameState gs) p = getLevelTile (gs.level) p
 
 setTile :: GameState -> Tile -> Point -> GameState
 setTile (GameState gs) t p = GameState ( gs { level = setLevelTile (gs.level) t p } )
+
+setExits :: Level -> Point -> Point -> Level
+setExits l u d = { tiles: l.tiles, width: l.width, height: l.height, enemies: l.enemies, items: l.items, up: u, down: d }
 
 data Item = Weapon { weaponType :: WeaponType, prefixe :: WeaponPrefix }
           | Armour { armourType :: ArmourType, prefixe :: ArmourPrefix }
