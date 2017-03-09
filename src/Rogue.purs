@@ -293,8 +293,8 @@ attack (Creature ac) (Creature dc) = Creature dc { stats { hp = dc.stats.hp - dm
 
 
 -- ThemeItems and ThemeCreatures ?  -TODO
-randomItem :: Theme -> Int -> Item
-randomItem _ _       = Wood
+-- randomItem :: Theme -> Int -> Item
+-- randomItem _ _       = Wood
 
-randomCreature :: Theme -> Int -> Point -> Creature
-randomCreature _ _ p = Creature { creatureType: Ismo, pos: p, stats: { hpMax: 50, hp: 50, str: 9, dex: 12, int: 6 }, inv: [] }
+-- randomCreature :: Theme -> Int -> Point -> Creature
+-- randomCreature _ _ p = Creature { creatureType: Ismo, pos: p, stats: { hpMax: 50, hp: 50, str: 9, dex: 12, int: 6 }, inv: [] }
