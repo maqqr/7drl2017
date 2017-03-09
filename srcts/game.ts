@@ -263,9 +263,12 @@ class Game {
         // Draw items
         for (let i=0; i < this.gameState.level.items.length; i++) {
             let item = this.gameState.level.items[i];
-            let icon = PS["Rogue"].itemIcon(item.item);
-            console.log(item);
-            this.display.draw(item.pos.x, item.pos.y, icon, "rgba(0, 250, 0, 0.6)");
+            let itemVisible = visible[item.pos.x + "," + item.pos.y] === true;
+            if (itemVisible) {
+                let icon = PS["Rogue"].itemIcon(item.item);
+                let color = PS["Rogue"].itemColor(item.item);            
+                this.display.draw(item.pos.x, item.pos.y, icon, color);
+            }
         }
 
         // Draw player
@@ -306,10 +309,11 @@ class Game {
             return freePositions.splice(index, 1)[0];
         }
 
+        let itemSeed = new Date().getTime();
         function randomItem() {
             let theme = undefined;
-            var time = new Date().getTime();
-            let result = PS["Random"].runRandom(PS["ContentGenerator"].randomItem(theme)(this.dungeonDepth))(time);
+            let result = PS["Random"].runRandom(PS["ContentGenerator"].randomItem(theme)(this.dungeonDepth))(itemSeed);
+            itemSeed = result.seed;
             return result.value;
         }
         randomItem.bind(this)();

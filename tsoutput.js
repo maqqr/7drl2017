@@ -218,9 +218,12 @@ var Game = (function () {
         // Draw items
         for (var i = 0; i < this.gameState.level.items.length; i++) {
             var item = this.gameState.level.items[i];
-            var icon = PS["Rogue"].itemIcon(item.item);
-            console.log(item);
-            this.display.draw(item.pos.x, item.pos.y, icon, "rgba(0, 250, 0, 0.6)");
+            var itemVisible = visible[item.pos.x + "," + item.pos.y] === true;
+            if (itemVisible) {
+                var icon = PS["Rogue"].itemIcon(item.item);
+                var color = PS["Rogue"].itemColor(item.item);
+                this.display.draw(item.pos.x, item.pos.y, icon, color);
+            }
         }
         // Draw player
         this.display.draw(player.pos.x, player.pos.y, '@', "rgba(0, 200, 0, 0.6)");
@@ -254,10 +257,11 @@ var Game = (function () {
             var index = Math.floor(ROT.RNG.getUniform() * freePositions.length);
             return freePositions.splice(index, 1)[0];
         }
+        var itemSeed = new Date().getTime();
         function randomItem() {
             var theme = undefined;
-            var time = new Date().getTime();
-            var result = PS["Random"].runRandom(PS["ContentGenerator"].randomItem(theme)(this.dungeonDepth))(time);
+            var result = PS["Random"].runRandom(PS["ContentGenerator"].randomItem(theme)(this.dungeonDepth))(itemSeed);
+            itemSeed = result.seed;
             return result.value;
         }
         randomItem.bind(this)();
