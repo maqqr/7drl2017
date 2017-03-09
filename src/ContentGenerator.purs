@@ -44,4 +44,4 @@ randomItem theme depth = do
         randomWeapon :: Random Item
         randomWeapon = do
             wType <- randomWeighted weaponTypeWeights
-            pure $ Weapon { weaponType: wType, prefixe: Common }
+            pure $ Weapon { weaponType: wType, prefix: Common }

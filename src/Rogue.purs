@@ -260,21 +260,21 @@ armourPrefixStats _           = { ap: 0, cr: 0, weight: 0 }
 
 data PotionEffect = Healing | Warming
 
-{-
+
 potionEffect :: GameState -> Item -> GameState
 potionEffect (GameState gs) (Potion { effect: Healing }) = GameState (gs { player = pl (gs.player) })
     where
         pl :: Creature -> Creature
-        pl (Creature c) = Creature (c { stats { hp = heal } }) 
+        pl p@(Creature c) = Creature (c { stats { hp = heal p } })
 
-        heal :: Int
-        heal = if (gs.player.stats.hp + 5) > (gs.player.stats.hpMax) then (gs.player.stats.hpMax) else (gs.player.stats.hp + 5)
+        heal :: Creature -> Int
+        heal (Creature c) = if (c.stats.hp + 5) > (c.stats.hpMax) then (c.stats.hpMax) else (c.stats.hp + 5)
 potionEffect (GameState gs) (Potion { effect: Warming }) = GameState (gs { coldStatus = warm })
     where
         warm :: Int
         warm = if (gs.coldStatus + 10) > 100 then 100 else (gs.coldStatus + 10)
 potionEffect gs _ = gs
--}
+
 
 
 itemWeight :: Item -> Int
