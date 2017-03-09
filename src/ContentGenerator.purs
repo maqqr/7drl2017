@@ -30,7 +30,7 @@ randomWeighted initialItems =
 
 
 filterNegativeWeights :: forall a. Array (Weighted a) -> Array (Weighted a)
-filterNegativeWeights = filter (\x -> x.weight >= 0)
+filterNegativeWeights = filter (\x -> x.weight > 0)
 
 
 randomItem :: Theme -> Int -> Random Item
