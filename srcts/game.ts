@@ -32,7 +32,9 @@ class Game {
         = { 104: 0, 105: 1, 102: 2, 99: 3, 98: 4, 97: 5, 100: 6, 103: 7};
 
     dungeonMaps: {[id: string] : Array<Rogue.Level>} = {};
+    rememberTile: {[id: string] : {[id: string] : boolean}} = {};
     currentDungeon: string;
+    dungeonDepth: number; // -1 = world map, 0 = first level, 1 = second level
     display: ROT.Display;
     scheduler: ROT.Scheduler.Speed<Actor>;
     fov: ROT.FOV.PreciseShadowcasting;
@@ -49,6 +51,9 @@ class Game {
         });
         document.body.appendChild(this.display.getContainer());
 
+        this.currentDungeon = "worldmap";
+        this.dungeonDepth = -1;
+        this.rememberTile = {};
         this.gameState = PS["Rogue"].initialGameState;
         this.gameState = pushToGamestate(this.gameState, worldmap);
 
@@ -68,6 +73,24 @@ class Game {
         this.worldMap = this.gameState.level;
 
         this.updateLoop();
+    }
+
+    setRememberTile(pos: { x: number, y: number }) {
+        let key = this.currentDungeon + "," + this.dungeonDepth;
+        if (!(key in this.rememberTile)) {
+            this.rememberTile[key] = {};
+        }
+        this.rememberTile[key][pos.x + "," + pos.y] = true;
+    }
+
+    remembersTile(pos: { x: number, y: number }) {
+        let key = this.currentDungeon + "," + this.dungeonDepth;
+        var dungeon = this.rememberTile[key];
+        if (dungeon !== undefined) {
+            var tile = dungeon[pos.x + "," + pos.y];
+            return tile !== undefined;
+        }
+        return false;
     }
 
     updateLoop() {
@@ -90,15 +113,16 @@ class Game {
             let playerPos = {x: this.gameState.player.pos.x, y: this.gameState.player.pos.y};
             let potentialDoor = PS["Rogue"].getTile(this.gameState)(playerPos);
             let tileName = PS["Data.Show"].show(PS["Rogue"].showTile)(potentialDoor);
-            if (tileName == "DungeonEntrance") { 
+            if (tileName == "DungeonEntrance") {
                 var key = "" + playerPos.x + "," + playerPos.y;
                 this.currentDungeon = key;
+                this.dungeonDepth = 0;
                 if (key in this.dungeonMaps)
                 {
                     let floors = this.dungeonMaps[this.currentDungeon];
                     this.gameState.level = floors[0];
                     this.gameState.player.pos = floors[0].up;
-                    this.drawMap();
+                    this.refreshDisplay();
                 }
                 else
                 {
@@ -107,47 +131,46 @@ class Game {
                     this.gameState.level = newLevel;
                     console.log("Added new dungeon level");
                     this.gameState.player.pos = newLevel.up;
-                    this.drawMap();
+                    this.refreshDisplay();
                 }
             }
             // Stairs up & down are only found in dungeons
             else if (tileName == "StairsDown") {
+                this.dungeonDepth++;
                 let floors = this.dungeonMaps[this.currentDungeon];
-                let currentFloorIndex = floors.indexOf(this.gameState.level);
                 // If current floor is the last explored floor of the dungeon
-                if (currentFloorIndex == floors.length-1) {
+                if (this.dungeonDepth == floors.length) {
                     let newLevel = this.generateLevel();
                     floors.push(newLevel);
                     this.gameState.level = newLevel;
                     this.gameState.player.pos = newLevel.up;
-                    this.drawMap();
-
+                    this.refreshDisplay();
                 }
                 else {
-                    let newOldLevel = floors[currentFloorIndex +1]
+                    let newOldLevel = floors[this.dungeonDepth]
                     this.gameState.level = newOldLevel;
                     this.gameState.player.pos = newOldLevel.up;
-                    this.drawMap();
+                    this.refreshDisplay();
                 }
             }
             else if (tileName == "StairsUp") {
                 let floors = this.dungeonMaps[this.currentDungeon];
-                let currentFloorIndex = floors.indexOf(this.gameState.level);
                 // If we are on the first floor of the dungeon, the worldmap awaits at the top of the stairs
-                if (currentFloorIndex == 0) {
+                this.dungeonDepth--;
+                if (this.dungeonDepth == -1) {
                     // Get the dungeons position on the world map based on the dungeonmaps key
                     let mapPos = this.currentDungeon.split(",");
                     this.currentDungeon = "worldmap";
                     this.gameState.level = this.worldMap;
                     // Position point needs int values and .split() gives string
                     this.gameState.player.pos = { x: parseInt(mapPos[0]), y: parseInt(mapPos[1]) };
-                    this.drawMap();
+                    this.refreshDisplay();
                 }
                 else {
-                    let newOldLevel = floors[currentFloorIndex -1]
+                    let newOldLevel = floors[this.dungeonDepth];
                     this.gameState.level = newOldLevel;
                     this.gameState.player.pos = newOldLevel.down;
-                    this.drawMap();
+                    this.refreshDisplay();
                 }
             }
         }
@@ -176,11 +199,29 @@ class Game {
         this.updateLoop();
     }
 
-    drawTile(pos: { x: number, y: number }, visible: boolean) {
+    drawTile(pos: { x: number, y: number }, visible: boolean, remember: boolean) {
+        if (!visible && !remember)
+            return;
         let tile = PS["Rogue"].getTile(this.gameState)(pos);
         let icon = PS["Rogue"].tileIcon(tile);
         let col = visible ? PS["Rogue"].tileColor(tile) : "rgba(30, 30, 30, 0.8)";
         this.display.draw(pos.x, pos.y, icon, col);
+    }
+
+    refreshDisplay() {
+        this.display.clear();
+        this.drawAllTiles();
+        this.drawMap();
+    }
+
+    drawAllTiles() {
+        for (let y=0; y < this.gameState.level.height; y++) {
+            for (let x=0; x < this.gameState.level.width; x++) {
+                let pos = { x: x, y: y };
+                let rem = this.remembersTile(pos);
+                this.drawTile(pos, false, rem);
+            }
+        }
     }
 
     drawMap() {
@@ -192,18 +233,19 @@ class Game {
         let visible = {};
         let fovCallback = function(x, y, r, v) {
             visible["" + x + "," + y] = true;
-            console.log(visible[x + "," + y]);
+            this.setRememberTile({ x: x, y: y });
         }
-        this.fov.compute(player.pos.x, player.pos.y, 6, fovCallback.bind(this));
+        this.fov.compute(player.pos.x, player.pos.y, radius, fovCallback.bind(this));
 
-        for (let dy = -radius-2; dy <= radius+2; dy++) {
-            for (let dx = -radius-2; dx < radius+2; dx++) {
+        for (let dy = -radius-1; dy <= radius+1; dy++) {
+            for (let dx = -radius-1; dx <= radius+1; dx++) {
                 let pos = { x: player.pos.x + dx, y: player.pos.y + dy };
                 if (pos.x < 0 || pos.y < 0 || pos.x >= levelWidth || pos.y >= levelHeight)
                     continue;
 
-                console.log(visible[pos.x + "," + pos.y]);
-                this.drawTile(pos, visible[pos.x + "," + pos.y] === true);
+                let vis = visible[pos.x + "," + pos.y] === true;
+                let rem = this.remembersTile(pos);
+                this.drawTile(pos, vis, rem);
             }
         }
 

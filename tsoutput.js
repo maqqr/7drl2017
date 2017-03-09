@@ -24,6 +24,7 @@ var Actor = (function () {
 var Game = (function () {
     function Game() {
         this.dungeonMaps = {};
+        this.rememberTile = {};
         var tileSet = new TileSet('tileset');
         this.display = new ROT.Display({
             width: 75, height: 25, fontSize: 16, spacing: 1.0,
@@ -32,6 +33,9 @@ var Game = (function () {
             tileSet: tileSet.tileSet, tileMap: tileSet.tileMap
         });
         document.body.appendChild(this.display.getContainer());
+        this.currentDungeon = "worldmap";
+        this.dungeonDepth = -1;
+        this.rememberTile = {};
         this.gameState = PS["Rogue"].initialGameState;
         this.gameState = pushToGamestate(this.gameState, worldmap);
         var isTransparent = function (x, y) {
@@ -46,6 +50,22 @@ var Game = (function () {
         this.worldMap = this.gameState.level;
         this.updateLoop();
     }
+    Game.prototype.setRememberTile = function (pos) {
+        var key = this.currentDungeon + "," + this.dungeonDepth;
+        if (!(key in this.rememberTile)) {
+            this.rememberTile[key] = {};
+        }
+        this.rememberTile[key][pos.x + "," + pos.y] = true;
+    };
+    Game.prototype.remembersTile = function (pos) {
+        var key = this.currentDungeon + "," + this.dungeonDepth;
+        var dungeon = this.rememberTile[key];
+        if (dungeon !== undefined) {
+            var tile = dungeon[pos.x + "," + pos.y];
+            return tile !== undefined;
+        }
+        return false;
+    };
     Game.prototype.updateLoop = function () {
         for (;;) {
             var current = this.scheduler.next();
@@ -66,11 +86,12 @@ var Game = (function () {
             if (tileName == "DungeonEntrance") {
                 var key = "" + playerPos.x + "," + playerPos.y;
                 this.currentDungeon = key;
+                this.dungeonDepth = 0;
                 if (key in this.dungeonMaps) {
                     var floors = this.dungeonMaps[this.currentDungeon];
                     this.gameState.level = floors[0];
                     this.gameState.player.pos = floors[0].up;
-                    this.drawMap();
+                    this.refreshDisplay();
                 }
                 else {
                     var newLevel = this.generateLevel();
@@ -78,45 +99,45 @@ var Game = (function () {
                     this.gameState.level = newLevel;
                     console.log("Added new dungeon level");
                     this.gameState.player.pos = newLevel.up;
-                    this.drawMap();
+                    this.refreshDisplay();
                 }
             }
             else if (tileName == "StairsDown") {
+                this.dungeonDepth++;
                 var floors = this.dungeonMaps[this.currentDungeon];
-                var currentFloorIndex = floors.indexOf(this.gameState.level);
                 // If current floor is the last explored floor of the dungeon
-                if (currentFloorIndex == floors.length - 1) {
+                if (this.dungeonDepth == floors.length) {
                     var newLevel = this.generateLevel();
                     floors.push(newLevel);
                     this.gameState.level = newLevel;
                     this.gameState.player.pos = newLevel.up;
-                    this.drawMap();
+                    this.refreshDisplay();
                 }
                 else {
-                    var newOldLevel = floors[currentFloorIndex + 1];
+                    var newOldLevel = floors[this.dungeonDepth];
                     this.gameState.level = newOldLevel;
                     this.gameState.player.pos = newOldLevel.up;
-                    this.drawMap();
+                    this.refreshDisplay();
                 }
             }
             else if (tileName == "StairsUp") {
                 var floors = this.dungeonMaps[this.currentDungeon];
-                var currentFloorIndex = floors.indexOf(this.gameState.level);
                 // If we are on the first floor of the dungeon, the worldmap awaits at the top of the stairs
-                if (currentFloorIndex == 0) {
+                this.dungeonDepth--;
+                if (this.dungeonDepth == -1) {
                     // Get the dungeons position on the world map based on the dungeonmaps key
                     var mapPos = this.currentDungeon.split(",");
                     this.currentDungeon = "worldmap";
                     this.gameState.level = this.worldMap;
                     // Position point needs int values and .split() gives string
                     this.gameState.player.pos = { x: parseInt(mapPos[0]), y: parseInt(mapPos[1]) };
-                    this.drawMap();
+                    this.refreshDisplay();
                 }
                 else {
-                    var newOldLevel = floors[currentFloorIndex - 1];
+                    var newOldLevel = floors[this.dungeonDepth];
                     this.gameState.level = newOldLevel;
                     this.gameState.player.pos = newOldLevel.down;
-                    this.drawMap();
+                    this.refreshDisplay();
                 }
             }
         }
@@ -141,11 +162,27 @@ var Game = (function () {
         window.removeEventListener("keydown", this);
         this.updateLoop();
     };
-    Game.prototype.drawTile = function (pos, visible) {
+    Game.prototype.drawTile = function (pos, visible, remember) {
+        if (!visible && !remember)
+            return;
         var tile = PS["Rogue"].getTile(this.gameState)(pos);
         var icon = PS["Rogue"].tileIcon(tile);
         var col = visible ? PS["Rogue"].tileColor(tile) : "rgba(30, 30, 30, 0.8)";
         this.display.draw(pos.x, pos.y, icon, col);
+    };
+    Game.prototype.refreshDisplay = function () {
+        this.display.clear();
+        this.drawAllTiles();
+        this.drawMap();
+    };
+    Game.prototype.drawAllTiles = function () {
+        for (var y = 0; y < this.gameState.level.height; y++) {
+            for (var x = 0; x < this.gameState.level.width; x++) {
+                var pos = { x: x, y: y };
+                var rem = this.remembersTile(pos);
+                this.drawTile(pos, false, rem);
+            }
+        }
     };
     Game.prototype.drawMap = function () {
         var radius = 4;
@@ -155,16 +192,17 @@ var Game = (function () {
         var visible = {};
         var fovCallback = function (x, y, r, v) {
             visible["" + x + "," + y] = true;
-            console.log(visible[x + "," + y]);
+            this.setRememberTile({ x: x, y: y });
         };
-        this.fov.compute(player.pos.x, player.pos.y, 6, fovCallback.bind(this));
-        for (var dy = -radius - 2; dy <= radius + 2; dy++) {
-            for (var dx = -radius - 2; dx < radius + 2; dx++) {
+        this.fov.compute(player.pos.x, player.pos.y, radius, fovCallback.bind(this));
+        for (var dy = -radius - 1; dy <= radius + 1; dy++) {
+            for (var dx = -radius - 1; dx <= radius + 1; dx++) {
                 var pos = { x: player.pos.x + dx, y: player.pos.y + dy };
                 if (pos.x < 0 || pos.y < 0 || pos.x >= levelWidth || pos.y >= levelHeight)
                     continue;
-                console.log(visible[pos.x + "," + pos.y]);
-                this.drawTile(pos, visible[pos.x + "," + pos.y] === true);
+                var vis = visible[pos.x + "," + pos.y] === true;
+                var rem = this.remembersTile(pos);
+                this.drawTile(pos, vis, rem);
             }
         }
         this.display.draw(player.pos.x, player.pos.y, '@', "rgba(0, 200, 0, 0.6)");
