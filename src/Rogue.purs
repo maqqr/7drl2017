@@ -62,6 +62,27 @@ instance showCreature :: Show Creature where
     show (Creature { creatureType: Tim })       = "evil sorcerer"
     show _                                      = "Ismo"
 
+creatureIcon :: Creature -> Char
+creatureIcon (Creature { creatureType: Player p })  = '@'
+creatureIcon (Creature { creatureType: AlphaWolf }) = 'W'
+creatureIcon (Creature { creatureType: Wolf })      = 'w'
+creatureIcon (Creature { creatureType: Bear })      = 'B'
+creatureIcon (Creature { creatureType: Goblin })    = 'G'
+creatureIcon (Creature { creatureType: Snowman })   = 'S'
+creatureIcon (Creature { creatureType: IceCorpse }) = 'Z'
+creatureIcon (Creature { creatureType: Tim })       = '\001'
+creatureIcon _                                      = 'S'
+
+creatureTypeStats :: CreatureType -> Stats
+creatureTypeStats AlphaWolf  = { hpMax: 16, hp: 16, str: 15, dex: 17, int:  9 }
+creatureTypeStats Wolf       = { hpMax: 10, hp: 10, str: 10, dex: 12, int:  9 }
+creatureTypeStats Bear       = { hpMax: 20, hp: 20, str: 20, dex: 10, int:  9 }
+creatureTypeStats Goblin     = { hpMax: 10, hp: 10, str:  8, dex: 10, int:  8 }
+creatureTypeStats Snowman    = { hpMax: 15, hp: 15, str: 18, dex: 16, int:  9 }
+creatureTypeStats IceCorpse  = { hpMax: 25, hp: 25, str: 12, dex:  8, int:  9 }
+creatureTypeStats Tim        = { hpMax: 99, hp: 99, str: 10, dex: 15, int: 50 }
+creatureTypeStats _          = { hpMax: 10, hp: 10, str: 10, dex: 10, int: 10 }
+
 creatureBaseDmg :: Creature -> Int
 creatureBaseDmg (Creature { creatureType: AlphaWolf }) = 2
 creatureBaseDmg (Creature { creatureType: Bear })      = 3
@@ -86,6 +107,9 @@ type Stats =
 defaultStats :: Stats
 defaultStats = { hpMax: 200, hp: 200, str: 10, dex: 10, int: 10 }
 
+addStats :: Stats -> Stats -> Stats
+addStats a b = { hpMax: a.hpMax + b.hpMax, hp: a.hp + b.hp, str: a.str + b.str, dex: a.dex + b.dex, int: a.int + b.int }
+
 type Frozen = { frozen :: Boolean }
 
 data Tile = Ground Frozen
@@ -95,6 +119,7 @@ data Tile = Ground Frozen
           | Water Frozen  -- Large body of water (river, lake, etc.), solid when unfrozen (because the player can not swim)
           | Puddle Frozen -- Wet floor, turns into solid ice wall when frozen
           | Door Frozen
+          | River
           | StairsUp
           | StairsDown
           | DungeonEntrance
@@ -108,6 +133,7 @@ instance showTile :: Show Tile where
     show (Water _)       = "Water"
     show (Puddle _)      = "Puddle"
     show (Door _)        = "Door"
+    show River           = "River"
     show StairsUp        = "StairsUp"
     show StairsDown      = "StairsDown"
     show DungeonEntrance = "DungeonEntrance"
@@ -126,6 +152,7 @@ isTileSolid _               = true
 isTileTransparent :: Tile -> Boolean
 isTileTransparent (Wall _)     = false
 isTileTransparent (Mountain _) = false
+isTileTransparent (Forest _)   = false
 isTileTransparent _            = true
 
 tileIcon :: Tile -> Char
@@ -133,9 +160,10 @@ tileIcon (Ground _)        = '.'
 tileIcon (Wall _)          = '#'
 tileIcon (Mountain _)      = '^'
 tileIcon (Forest _)        = 'T'
-tileIcon (Water _)         = '~'
+tileIcon (Water _)         = '\247'
 tileIcon (Puddle t)        = if t.frozen then '#' else '.'
 tileIcon (Door _)          = '+'
+tileIcon (River)           = '~'
 tileIcon (StairsUp)        = '<'
 tileIcon (StairsDown)      = '>'
 tileIcon (DungeonEntrance) = 'o'
