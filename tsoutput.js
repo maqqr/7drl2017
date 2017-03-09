@@ -34,6 +34,11 @@ var Game = (function () {
         document.body.appendChild(this.display.getContainer());
         this.gameState = PS["Rogue"].initialGameState;
         this.gameState = pushToGamestate(this.gameState, worldmap);
+        var isTransparent = function (x, y) {
+            var tile = PS["Rogue"].getTile(this.gameState)({ x: x, y: y });
+            return PS["Rogue"].isTileTransparent(tile);
+        };
+        this.fov = new ROT.FOV.PreciseShadowcasting(isTransparent.bind(this));
         this.drawMap();
         this.scheduler = new ROT.Scheduler.Speed();
         this.scheduler.add(new Actor(50, true), true);
@@ -62,11 +67,9 @@ var Game = (function () {
                 var key = "" + playerPos.x + "," + playerPos.y;
                 this.currentDungeon = key;
                 if (key in this.dungeonMaps) {
-                    // TODO: Get first level from this.dungeonMaps
-                    console.log("Here be dungeonz");
                     var floors = this.dungeonMaps[this.currentDungeon];
                     this.gameState.level = floors[0];
-                    this.gameState.player.pos = floors[0].up; // TODO: remove
+                    this.gameState.player.pos = floors[0].up;
                     this.drawMap();
                 }
                 else {
@@ -74,45 +77,45 @@ var Game = (function () {
                     this.dungeonMaps[key] = [newLevel];
                     this.gameState.level = newLevel;
                     console.log("Added new dungeon level");
-                    this.gameState.player.pos = newLevel.up; // TODO: remove
+                    this.gameState.player.pos = newLevel.up;
                     this.drawMap();
                 }
             }
             else if (tileName == "StairsDown") {
                 var floors = this.dungeonMaps[this.currentDungeon];
                 var currentFloorIndex = floors.indexOf(this.gameState.level);
-                //If current floor is the last explored floor of the dungeon
+                // If current floor is the last explored floor of the dungeon
                 if (currentFloorIndex == floors.length - 1) {
                     var newLevel = this.generateLevel();
                     floors.push(newLevel);
                     this.gameState.level = newLevel;
-                    this.gameState.player.pos = newLevel.up; // TODO: remove
+                    this.gameState.player.pos = newLevel.up;
                     this.drawMap();
                 }
                 else {
                     var newOldLevel = floors[currentFloorIndex + 1];
                     this.gameState.level = newOldLevel;
-                    this.gameState.player.pos = newOldLevel.up; // TODO: remove
+                    this.gameState.player.pos = newOldLevel.up;
                     this.drawMap();
                 }
             }
             else if (tileName == "StairsUp") {
                 var floors = this.dungeonMaps[this.currentDungeon];
                 var currentFloorIndex = floors.indexOf(this.gameState.level);
-                //If we are on the first floor of the dungeon, the worldmap awaits at the top of the stairs
+                // If we are on the first floor of the dungeon, the worldmap awaits at the top of the stairs
                 if (currentFloorIndex == 0) {
-                    //Get the dungeons position on the world map based on the dungeonmaps key
+                    // Get the dungeons position on the world map based on the dungeonmaps key
                     var mapPos = this.currentDungeon.split(",");
                     this.currentDungeon = "worldmap";
                     this.gameState.level = this.worldMap;
-                    //Position point needs int values and .split() gives string
+                    // Position point needs int values and .split() gives string
                     this.gameState.player.pos = { x: parseInt(mapPos[0]), y: parseInt(mapPos[1]) };
                     this.drawMap();
                 }
                 else {
                     var newOldLevel = floors[currentFloorIndex - 1];
                     this.gameState.level = newOldLevel;
-                    this.gameState.player.pos = newOldLevel.down; // TODO: remove
+                    this.gameState.player.pos = newOldLevel.down;
                     this.drawMap();
                 }
             }
@@ -138,17 +141,32 @@ var Game = (function () {
         window.removeEventListener("keydown", this);
         this.updateLoop();
     };
+    Game.prototype.drawTile = function (pos, visible) {
+        var tile = PS["Rogue"].getTile(this.gameState)(pos);
+        var icon = PS["Rogue"].tileIcon(tile);
+        var col = visible ? PS["Rogue"].tileColor(tile) : "rgba(30, 30, 30, 0.8)";
+        this.display.draw(pos.x, pos.y, icon, col);
+    };
     Game.prototype.drawMap = function () {
-        this.display.clear();
-        for (var y = 0; y < this.gameState.level.height; y++) {
-            for (var x = 0; x < this.gameState.level.width; x++) {
-                var tile = PS["Rogue"].getTile(this.gameState)({ x: x, y: y });
-                var icon = PS["Rogue"].tileIcon(tile);
-                var col = PS["Rogue"].tileColor(tile);
-                this.display.draw(x, y, icon, col);
+        var radius = 4;
+        var player = this.gameState.player;
+        var levelWidth = this.gameState.level.width;
+        var levelHeight = this.gameState.level.height;
+        var visible = {};
+        var fovCallback = function (x, y, r, v) {
+            visible["" + x + "," + y] = true;
+            console.log(visible[x + "," + y]);
+        };
+        this.fov.compute(player.pos.x, player.pos.y, 6, fovCallback.bind(this));
+        for (var dy = -radius - 2; dy <= radius + 2; dy++) {
+            for (var dx = -radius - 2; dx < radius + 2; dx++) {
+                var pos = { x: player.pos.x + dx, y: player.pos.y + dy };
+                if (pos.x < 0 || pos.y < 0 || pos.x >= levelWidth || pos.y >= levelHeight)
+                    continue;
+                console.log(visible[pos.x + "," + pos.y]);
+                this.drawTile(pos, visible[pos.x + "," + pos.y] === true);
             }
         }
-        var player = this.gameState.player;
         this.display.draw(player.pos.x, player.pos.y, '@', "rgba(0, 200, 0, 0.6)");
     };
     Game.prototype.generateLevel = function () {
@@ -191,30 +209,30 @@ var Game = (function () {
 }());
 Game.keyMap = { 104: 0, 105: 1, 102: 2, 99: 3, 98: 4, 97: 5, 100: 6, 103: 7 };
 var worldmap = [];
-worldmap[0] = "---------------------------------------------------------------------------";
-worldmap[1] = "---------------------------------------------------------------------------";
-worldmap[2] = "-----^^^--^^^^-------------------------------------------------------------";
-worldmap[3] = "------^^^---^^^^-----------------------------------------------------------";
-worldmap[4] = "-------^^^---^^^^^-----------------------................-----------.......";
-worldmap[5] = "---------^^^--^^^^^^..^^^^^^^^^^^^^^^.....TT......TT......---------........";
-worldmap[6] = "-----------^^^---^^^^...^^^^^^^^^^^^^...TTTTTT..TTTTTT .........---........";
-worldmap[7] = "...TTTT.TT^^^...^^^o^^.................TTTTTTTTTTTTTTTT....................";
-worldmap[8] = "....TT..^^^..^^^^^^..^^^^^^...^^^^^^^..TTTTTToTTTTTTTTT....................";
-worldmap[9] = "..TT..^^^..^^^^^....---^^^^^^...^^o^^...TTTTTTTTTTTTTT.....................";
-worldmap[10] = "...T.^^o..^^^^^..T-------^^^^^^...........TTTTTTTTTT.......................";
-worldmap[11] = "...^^^..^^^^^...TT---------^^^^^^...........TTTTTT........TT...............";
-worldmap[12] = "..^^^..^^^^^....---------TTTT^o^^^^...........TT........TT.................";
-worldmap[13] = ".........................TTT...................TT....TT....................";
-worldmap[14] = ".............................................TT.....TT.....................";
-worldmap[15] = "............................................TT.......TT....................";
-worldmap[16] = "............................................TT......TT.....................";
-worldmap[17] = "..............................................TT...TT......................";
-worldmap[18] = ".......................................^^^..............^^^^^^.............";
-worldmap[19] = "........................................^^^....^^^^...^^.....^.............";
-worldmap[20] = ".........................................^^^^......^^...^^^^^^.............";
-worldmap[21] = "............................................^^^^......^^^^.................";
-worldmap[22] = ".........................................^^^^^^...^^^^^....................";
-worldmap[23] = "...........................................^^^^^^^.......^^................";
+worldmap[0] = "^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^";
+worldmap[1] = "^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^-^^^^o^^^^^^^^^^^^^^^^^^^^^^";
+worldmap[2] = "^^^^o.^..^......^^T^TT^^^TT.T......^^^^^^^^^^^^-^^^^^.TT^......^^T.^.^^^^^^";
+worldmap[3] = "^^^..^..^T..T...TT^TTT.T^T.T.TT..T...^^^^^^^^^.-.^^^^^^...........^...T^^^^";
+worldmap[4] = "^^^^...TTTT.T....^.TTT^T.T^TT..T.......^^.TT..-T-T.^^^^T.T..............^^^";
+worldmap[5] = "^^^^.T..T.T.T.T^^^^^T^^^^^^TT.T.T...........T.-T-^T.^TT^..T.....o.......^^^";
+worldmap[6] = "^^^.T..T.T..T.^^^^^^^o^^^^^^T...T.TT.........T-T-^T^.^.^^..............^^^^";
+worldmap[7] = "^^^T.TT....T.^^^^^--^^^^^^^^^.^^^^..T........-..-^T.T.T^^..T..........^.^^^";
+worldmap[8] = "^^^....T..T.^^^^^-------o^^^^..^^^^T..T......-..--.^.T^.^^........T.^.^^^^^";
+worldmap[9] = "^^^..T....T...^^^^---^--^^^^^.T.T^^^^.......--...-.T.^^.^.........^.^^^^^^^";
+worldmap[10] = "^^..TT..T.....^^^^^^^-^^^^^^^^T...T.TT......-....-....T^^..^...^^.^^^^^^^^^";
+worldmap[11] = "....T.T.T...T.^^^^^^^-^^^^^^^^^.T.TTT......-.....--..T^^^.^.^^^.^^.^.T^^^^^";
+worldmap[12] = "^^.....T...T.T...^^^o--^^^^^....T-T........-......-....T^^^.^^..^^....^^^^^";
+worldmap[13] = "^^^..T..T.TT.......^.--.T.^....T.-.........-......--......T^^..^..^.^^oT^^^";
+worldmap[14] = "^^^.T.TT............-T-T.T.....---.......---....^^.-.............^^^^^^^^^^";
+worldmap[15] = "^^^..T...T.......---TT-TT....------..---------..o^.--.............T.T^^T^^^";
+worldmap[16] = "^^^TT.T.......T---TTTTT----------------------------.-....T.T.....TTT^.T.^^^";
+worldmap[17] = "^^^..T........--TTTTTT----------------TTTT-----------......T.T.....TTT.T^^^";
+worldmap[18] = "^^^TTTT.......-TTT------------------TTTTTTTT----------------TT...o..TT^^^^^";
+worldmap[19] = "^^^TT.........-T------------------TTTTTTTTTTTT--------------TTT.....TTT^^^^";
+worldmap[20] = "^^..T........o----------------------TTTTTTTTTT----------------TTTTTTTTTT.^^";
+worldmap[21] = "^^-----....-----------------------------TTTT-------------------.TTTTTT.---^";
+worldmap[22] = "-------------------------------------------------------------------..-----^";
+worldmap[23] = "---------------------------------------------------------------------------";
 function pushToGamestate(gameState, map) {
     var ps = PS["Rogue"];
     var width = worldmap[0].length;

@@ -35,6 +35,7 @@ class Game {
     currentDungeon: string;
     display: ROT.Display;
     scheduler: ROT.Scheduler.Speed<Actor>;
+    fov: ROT.FOV.PreciseShadowcasting;
     gameState: any;
     worldMap: Rogue.Level;
  
@@ -49,8 +50,14 @@ class Game {
         document.body.appendChild(this.display.getContainer());
 
         this.gameState = PS["Rogue"].initialGameState;
-
         this.gameState = pushToGamestate(this.gameState, worldmap);
+
+        let isTransparent = function(x: number, y: number): boolean
+        {
+            let tile = PS["Rogue"].getTile(this.gameState)({x: x, y: y});
+            return PS["Rogue"].isTileTransparent(tile);
+        };
+        this.fov = new ROT.FOV.PreciseShadowcasting(isTransparent.bind(this));
 
         this.drawMap();
 
@@ -169,19 +176,37 @@ class Game {
         this.updateLoop();
     }
 
-    drawMap() {
-        this.display.clear();
+    drawTile(pos: { x: number, y: number }, visible: boolean) {
+        let tile = PS["Rogue"].getTile(this.gameState)(pos);
+        let icon = PS["Rogue"].tileIcon(tile);
+        let col = visible ? PS["Rogue"].tileColor(tile) : "rgba(30, 30, 30, 0.8)";
+        this.display.draw(pos.x, pos.y, icon, col);
+    }
 
-        for (let y=0; y < this.gameState.level.height; y++) {
-            for (let x=0; x < this.gameState.level.width; x++) {
-                let tile = PS["Rogue"].getTile(this.gameState)({x: x, y: y});
-                let icon = PS["Rogue"].tileIcon(tile);
-                let col = PS["Rogue"].tileColor(tile);
-                this.display.draw(x, y, icon, col);
+    drawMap() {
+        let radius = 4;
+        let player = this.gameState.player;
+        let levelWidth = this.gameState.level.width;
+        let levelHeight = this.gameState.level.height;
+
+        let visible = {};
+        let fovCallback = function(x, y, r, v) {
+            visible["" + x + "," + y] = true;
+            console.log(visible[x + "," + y]);
+        }
+        this.fov.compute(player.pos.x, player.pos.y, 6, fovCallback.bind(this));
+
+        for (let dy = -radius-2; dy <= radius+2; dy++) {
+            for (let dx = -radius-2; dx < radius+2; dx++) {
+                let pos = { x: player.pos.x + dx, y: player.pos.y + dy };
+                if (pos.x < 0 || pos.y < 0 || pos.x >= levelWidth || pos.y >= levelHeight)
+                    continue;
+
+                console.log(visible[pos.x + "," + pos.y]);
+                this.drawTile(pos, visible[pos.x + "," + pos.y] === true);
             }
         }
 
-        let player = this.gameState.player;
         this.display.draw(player.pos.x, player.pos.y, '@', "rgba(0, 200, 0, 0.6)");
     }
 
