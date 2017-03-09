@@ -215,45 +215,71 @@ setTile (GameState gs) t p = GameState ( gs { level = setLevelTile (gs.level) t 
 setExits :: Level -> Point -> Point -> Level
 setExits l u d = { tiles: l.tiles, width: l.width, height: l.height, enemies: l.enemies, items: l.items, up: u, down: d }
 
-data Item = Weapon { weaponType :: WeaponType, prefixe :: WeaponPrefix }
-          | Armour { armourType :: ArmourType, prefixe :: ArmourPrefix }
+data Item = Weapon { weaponType :: WeaponType, prefix :: WeaponPrefix }
+          | Armour { armourType :: ArmourType, prefix :: ArmourPrefix }
         --| Scroll { effect :: Effect }
-        --| Potion { effect :: Effect }    
+          | Potion { effect :: PotionEffect }    
           | Wood
-          | ErrorItem
+
+
+type WeaponStats = { dmg :: Int, hit :: Int, weight :: Int }
 
 data WeaponType = Axe | Dagger | Sword
 
-weaponWeight :: WeaponType -> Int
-weaponWeight Dagger = 4
-weaponWeight Axe    = 12
-weaponWeight _      = 10
+weaponTypeStats :: WeaponType -> WeaponStats
+weaponTypeStats Axe    = { dmg: 5, hit: -3, weight: 12 }
+weaponTypeStats Dagger = { dmg: -5, hit: 5, weight: 4 }
+weaponTypeStats _      = { dmg: 2, hit: 0, weight: 10}
 
-data WeaponPrefix = Common | Rusty | Masterwork
+data WeaponPrefix = Common | Rusty | Masterwork | Sharp
 
-weaponPrefixWeight :: WeaponPrefix -> Int
-weaponPrefixWeight Rusty      = 8
-weaponPrefixWeight Masterwork = 9
-weaponPrefixWeight _          = 10
+weaponPrefixStats :: WeaponPrefix -> WeaponStats
+weaponPrefixStats Rusty      = { dmg: -2, hit: 0, weight: -1 }
+weaponPrefixStats Masterwork = { dmg: 5, hit: 2, weight: 0 }
+weaponPrefixStats Sharp      = { dmg: 2, hit: 0, weight: 0 }
+weaponPrefixStats _          = { dmg: 0, hit: 0, weight: 0 }
+
+
+type ArmourStats = { ap :: Int, cr :: Int, weight :: Int }
 
 data ArmourType = Cloak | Chest | Gloves
 
-armourWeight :: ArmourType -> Int
-armourWeight Chest  = 20
-armourWeight Gloves = 2
-armourWeight _      = 10
+armourTypeStats :: ArmourType -> ArmourStats
+armourTypeStats Cloak  = { ap: 1, cr: 5, weight: 8 }
+armourTypeStats Gloves = { ap: 0, cr: 5, weight: 3 }
+armourTypeStats _      = { ap: 5, cr: 1, weight: 20 }
 
 data ArmourPrefix = CommonA | LightA | ThickA | MasterworkA
 
-armourPrefixWeight :: ArmourPrefix -> Int
-armourPrefixWeight LightA      = 5
-armourPrefixWeight ThickA      = 13
-armourPrefixWeight MasterworkA = 8
-armourPrefixWeight _           = 10
+armourPrefixStats :: ArmourPrefix -> ArmourStats
+armourPrefixStats LightA      = { ap: 0, cr: 0, weight: -3 }
+armourPrefixStats ThickA      = { ap: 1, cr: 3, weight: 5 }
+armourPrefixStats MasterworkA = { ap: 4, cr: 1, weight: 0 }
+armourPrefixStats _           = { ap: 0, cr: 0, weight: 0 }
+
+
+data PotionEffect = Healing | Warming
+
+{-
+potionEffect :: GameState -> Item -> GameState
+potionEffect (GameState gs) (Potion { effect: Healing }) = GameState (gs { player = pl (gs.player) })
+    where
+        pl :: Creature -> Creature
+        pl (Creature c) = Creature (c { stats { hp = heal } }) 
+
+        heal :: Int
+        heal = if (gs.player.stats.hp + 5) > (gs.player.stats.hpMax) then (gs.player.stats.hpMax) else (gs.player.stats.hp + 5)
+potionEffect (GameState gs) (Potion { effect: Warming }) = GameState (gs { coldStatus = warm })
+    where
+        warm :: Int
+        warm = if (gs.coldStatus + 10) > 100 then 100 else (gs.coldStatus + 10)
+potionEffect gs _ = gs
+-}
+
 
 itemWeight :: Item -> Int
-itemWeight (Weapon w) = (weaponWeight w.weaponType) + (weaponPrefixWeight w.prefixe)
-itemWeight (Armour a) = (armourWeight a.armourType) + (armourPrefixWeight a.prefixe)
+itemWeight (Weapon w) = ((weaponTypeStats w.weaponType).weight) + ((weaponPrefixStats w.prefix).weight)
+itemWeight (Armour a) = ((armourTypeStats a.armourType).weight) + ((armourPrefixStats a.prefix).weight)
 itemWeight Wood       = 10
 itemWeight _          = 2
 

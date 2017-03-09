@@ -349,9 +349,9 @@ var PS = {};
   var Data_Maybe = PS["Data.Maybe"];
   var Data_Show = PS["Data.Show"];
   var Data_Eq = PS["Data.Eq"];
+  var Data_Ring = PS["Data.Ring"];
   var Data_Function = PS["Data.Function"];
   var Data_Semiring = PS["Data.Semiring"];
-  var Data_Ring = PS["Data.Ring"];
   var Data_HeytingAlgebra = PS["Data.HeytingAlgebra"];
   var Data_Semigroup = PS["Data.Semigroup"];        
   var Axe = (function () {
@@ -396,6 +396,13 @@ var PS = {};
       Masterwork.value = new Masterwork();
       return Masterwork;
   })();
+  var Sharp = (function () {
+      function Sharp() {
+
+      };
+      Sharp.value = new Sharp();
+      return Sharp;
+  })();
   var Mine = (function () {
       function Mine() {
 
@@ -423,6 +430,20 @@ var PS = {};
       };
       WizardTower.value = new WizardTower();
       return WizardTower;
+  })();
+  var Healing = (function () {
+      function Healing() {
+
+      };
+      Healing.value = new Healing();
+      return Healing;
+  })();
+  var Warming = (function () {
+      function Warming() {
+
+      };
+      Warming.value = new Warming();
+      return Warming;
   })();
   var Ground = (function () {
       function Ground(value0) {
@@ -633,6 +654,15 @@ var PS = {};
       };
       return Armour;
   })();
+  var Potion = (function () {
+      function Potion(value0) {
+          this.value0 = value0;
+      };
+      Potion.create = function (value0) {
+          return new Potion(value0);
+      };
+      return Potion;
+  })();
   var Wood = (function () {
       function Wood() {
 
@@ -640,36 +670,60 @@ var PS = {};
       Wood.value = new Wood();
       return Wood;
   })();
-  var ErrorItem = (function () {
-      function ErrorItem() {
-
-      };
-      ErrorItem.value = new ErrorItem();
-      return ErrorItem;
-  })();
   var Creature = function (x) {
       return x;
   };
   var GameState = function (x) {
       return x;
   };
-  var weaponWeight = function (v) {
-      if (v instanceof Dagger) {
-          return 4;
-      };
+  var weaponTypeStats = function (v) {
       if (v instanceof Axe) {
-          return 12;
+          return {
+              dmg: 5, 
+              hit: -3 | 0, 
+              weight: 12
+          };
       };
-      return 10;
+      if (v instanceof Dagger) {
+          return {
+              dmg: -5 | 0, 
+              hit: 5, 
+              weight: 4
+          };
+      };
+      return {
+          dmg: 2, 
+          hit: 0, 
+          weight: 10
+      };
   };
-  var weaponPrefixWeight = function (v) {
+  var weaponPrefixStats = function (v) {
       if (v instanceof Rusty) {
-          return 8;
+          return {
+              dmg: -2 | 0, 
+              hit: 0, 
+              weight: -1 | 0
+          };
       };
       if (v instanceof Masterwork) {
-          return 9;
+          return {
+              dmg: 5, 
+              hit: 2, 
+              weight: 0
+          };
       };
-      return 10;
+      if (v instanceof Sharp) {
+          return {
+              dmg: 2, 
+              hit: 0, 
+              weight: 0
+          };
+      };
+      return {
+          dmg: 0, 
+          hit: 0, 
+          weight: 0
+      };
   };
   var weaponPrefixPools = Data_Array.cons({
       theme: Mine.value, 
@@ -1203,33 +1257,61 @@ var PS = {};
           return $196;
       };
   };
-  var armourWeight = function (v) {
-      if (v instanceof Chest) {
-          return 20;
+  var armourTypeStats = function (v) {
+      if (v instanceof Cloak) {
+          return {
+              ap: 1, 
+              cr: 5, 
+              weight: 8
+          };
       };
       if (v instanceof Gloves) {
-          return 2;
+          return {
+              ap: 0, 
+              cr: 5, 
+              weight: 3
+          };
       };
-      return 10;
+      return {
+          ap: 5, 
+          cr: 1, 
+          weight: 20
+      };
   };
-  var armourPrefixWeight = function (v) {
+  var armourPrefixStats = function (v) {
       if (v instanceof LightA) {
-          return 5;
+          return {
+              ap: 0, 
+              cr: 0, 
+              weight: -3 | 0
+          };
       };
       if (v instanceof ThickA) {
-          return 13;
+          return {
+              ap: 1, 
+              cr: 3, 
+              weight: 5
+          };
       };
       if (v instanceof MasterworkA) {
-          return 8;
+          return {
+              ap: 4, 
+              cr: 1, 
+              weight: 0
+          };
       };
-      return 10;
+      return {
+          ap: 0, 
+          cr: 0, 
+          weight: 0
+      };
   };
   var itemWeight = function (v) {
       if (v instanceof Weapon) {
-          return weaponWeight(v.value0.weaponType) + weaponPrefixWeight(v.value0.prefixe) | 0;
+          return (weaponTypeStats(v.value0.weaponType)).weight + (weaponPrefixStats(v.value0.prefix)).weight | 0;
       };
       if (v instanceof Armour) {
-          return armourWeight(v.value0.armourType) + armourPrefixWeight(v.value0.prefixe) | 0;
+          return (armourTypeStats(v.value0.armourType)).weight + (armourPrefixStats(v.value0.prefix)).weight | 0;
       };
       if (v instanceof Wood) {
           return 10;
@@ -1361,8 +1443,10 @@ var PS = {};
   exports["GameState"] = GameState;
   exports["Weapon"] = Weapon;
   exports["Armour"] = Armour;
+  exports["Potion"] = Potion;
   exports["Wood"] = Wood;
-  exports["ErrorItem"] = ErrorItem;
+  exports["Healing"] = Healing;
+  exports["Warming"] = Warming;
   exports["Mine"] = Mine;
   exports["GoblinCave"] = GoblinCave;
   exports["Cave"] = Cave;
@@ -1381,13 +1465,14 @@ var PS = {};
   exports["Common"] = Common;
   exports["Rusty"] = Rusty;
   exports["Masterwork"] = Masterwork;
+  exports["Sharp"] = Sharp;
   exports["Axe"] = Axe;
   exports["Dagger"] = Dagger;
   exports["Sword"] = Sword;
   exports["addItem"] = addItem;
   exports["armourPrefixPools"] = armourPrefixPools;
-  exports["armourPrefixWeight"] = armourPrefixWeight;
-  exports["armourWeight"] = armourWeight;
+  exports["armourPrefixStats"] = armourPrefixStats;
+  exports["armourTypeStats"] = armourTypeStats;
   exports["attack"] = attack;
   exports["createLevel"] = createLevel;
   exports["creatureBaseDmg"] = creatureBaseDmg;
@@ -1419,8 +1504,8 @@ var PS = {};
   exports["tileIcon"] = tileIcon;
   exports["unEquip"] = unEquip;
   exports["weaponPrefixPools"] = weaponPrefixPools;
-  exports["weaponPrefixWeight"] = weaponPrefixWeight;
-  exports["weaponWeight"] = weaponWeight;
+  exports["weaponPrefixStats"] = weaponPrefixStats;
+  exports["weaponTypeStats"] = weaponTypeStats;
   exports["showCreature"] = showCreature;
   exports["showTile"] = showTile;
   exports["eqTheme"] = eqTheme;
