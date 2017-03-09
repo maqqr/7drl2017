@@ -54,7 +54,7 @@ generate = Random $ \seed ->
 generateInt :: Int -> Int -> Random Int
 generateInt min max = (\n -> min + (n `mod` (max - min))) <$> generate
 
-selectOne :: forall a. Partial => Array a -> Random (Maybe a)
+selectOne :: forall a. Array a -> Random (Maybe a)
 selectOne arr = index arr <$> generateInt 0 (length arr)
 
 unsafeSelectOne :: forall a. Partial => Array a -> Random a
