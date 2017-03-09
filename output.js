@@ -825,7 +825,7 @@ var PS = {};
                   if (!$115) {
                       return v2.stats.hp + 5 | 0;
                   };
-                  throw new Error("Failed pattern match at Rogue line 291, column 29 - line 291, column 109: " + [ $115.constructor.name ]);
+                  throw new Error("Failed pattern match at Rogue line 261, column 29 - line 261, column 109: " + [ $115.constructor.name ]);
               };
               var pl = function (v2) {
                   var $120 = {};
@@ -864,7 +864,7 @@ var PS = {};
                   if (!$128) {
                       return v.coldStatus + 10 | 0;
                   };
-                  throw new Error("Failed pattern match at Rogue line 295, column 16 - line 295, column 80: " + [ $128.constructor.name ]);
+                  throw new Error("Failed pattern match at Rogue line 265, column 16 - line 265, column 80: " + [ $128.constructor.name ]);
               })();
               var $129 = {};
               for (var $130 in v) {
@@ -1393,7 +1393,7 @@ var PS = {};
                       if (!$274) {
                           return dmg(v1)(Data_Maybe.Nothing.value) - playerArmour(v) | 0;
                       };
-                      throw new Error("Failed pattern match at Rogue line 342, column 23 - line 342, column 108: " + [ $274.constructor.name ]);
+                      throw new Error("Failed pattern match at Rogue line 312, column 23 - line 312, column 108: " + [ $274.constructor.name ]);
                   })();
                   var $278 = {};
                   for (var $279 in v2) {
