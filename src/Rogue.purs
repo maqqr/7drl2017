@@ -159,7 +159,7 @@ tileIcon :: Tile -> Char
 tileIcon (Ground _)        = '.'
 tileIcon (Wall _)          = '#'
 tileIcon (Mountain _)      = '^'
-tileIcon (Forest _)        = 'T'
+tileIcon (Forest _)        = '\005'
 tileIcon (Water _)         = '\247'
 tileIcon (Puddle t)        = if t.frozen then '#' else '.'
 tileIcon (Door _)          = '+'
@@ -224,6 +224,19 @@ data Item = Weapon { weaponType :: WeaponType, prefix :: WeaponPrefix }
         --| Scroll { effect :: Effect }
           | Potion { effect :: PotionEffect }    
           | Wood
+
+itemIcon :: Item -> Char
+itemIcon (Weapon w) = '/' 
+itemIcon (Armour a) = '['
+itemIcon (Potion p) = '\173'
+itemIcon _          = '='
+
+itemColor :: Item -> String
+itemColor (Weapon w)                   = "rgba(102, 102, 153, 0.6)"
+itemColor (Armour a)                   = "rgba(102, 102, 143, 0.6)"
+itemColor (Potion { effect: Healing }) = "rgba(255, 0, 0, 0.6)"
+itemColor (Potion { effect: Warming }) = "rgba(0, 102, 0, 0.6)"
+itemColor _                            = "rgba(102, 51, 0, 0.6)"
 
 
 type WeaponStats = { dmg :: Int, hit :: Int, weight :: Int }
