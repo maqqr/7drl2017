@@ -5,7 +5,7 @@ import Rogue
 import Data.Array (filter, head, tail)
 import Data.Maybe (Maybe(..), fromMaybe)
 import Data.Traversable (foldl)
-import Partial.Unsafe (unsafeCrashWith, unsafePartial)
+import Partial.Unsafe (unsafeCrashWith)
 import Random (Random, generateInt, selectOne)
 
 type Weighted a = { item :: a, weight :: Int }
