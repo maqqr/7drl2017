@@ -1,7 +1,7 @@
 module ContentGenerator where
 
 import Prelude
-import Rogue
+import Rogue (ArmourPrefix(..), ArmourType(..), Item(..), PotionEffect(..), Theme, WeaponPrefix(..), WeaponType(..))
 import Data.Array (filter, head, tail)
 import Data.Maybe (Maybe(..), fromMaybe)
 import Data.Traversable (foldl)
@@ -44,15 +44,15 @@ randomItem theme depth = do
         ------------ Weapon generation ------------
 
         weaponTypeWeights :: Array (Weighted WeaponType)
-        weaponTypeWeights = [{ item: Axe, weight: 10 }
-                            ,{ item: Dagger, weight: 10 }
+        weaponTypeWeights = [{ item: Axe, weight: 15 }
+                            ,{ item: Dagger, weight: 40 }
                             ,{ item: Sword, weight: 10 }
                             ]
 
         weaponPrefixWeights :: Array (Weighted WeaponPrefix)
         weaponPrefixWeights = [{ item: Common, weight: 30 }
-                              ,{ item: Rusty, weight: 20 }
-                              ,{ item: Masterwork, weight: 5}
+                              ,{ item: Rusty, weight: 30 }
+                              ,{ item: Masterwork, weight: 0}
                               ,{ item: Sharp, weight: 10 }
                               ]
 

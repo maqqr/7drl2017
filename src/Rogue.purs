@@ -159,36 +159,6 @@ data Theme = Mine | GoblinCave | Cave | WizardTower
 
 derive instance eqTheme :: Eq Theme
 
-{---------------------------------------- Delete this? ----------------------------------------------------------------------------------
-
-type ThemeWeaponPrefixes = { theme :: Theme, prefixes :: Array { prefix :: WeaponPrefix, chance :: Int } }
-
-weaponPrefixPools :: Array ThemeWeaponPrefixes
-weaponPrefixPools =  { theme: Mine, prefixes: { prefix: Common, chance: 50 } : [] } : [] -- TODO: More samples.
-
-getWPPool :: Theme -> Array ThemeWeaponPrefixes -> Array { prefix :: WeaponPrefix, chance :: Int }
-getWPPool t []   = []
-getWPPool t pool = let p = fromMaybe { theme: Mine, prefixes: [] } (head pool) 
-                   in if (p.theme) == t then
-                          (p.prefixes) <> (getWPPool t (fromMaybe [] (tail pool)))
-                      else
-                          getWPPool t (fromMaybe [] (tail pool))
-
-
-type ThemeArmourPrefixes = { theme :: Theme, prefixes :: Array { prefix :: ArmourPrefix, chance :: Int } }
-
-armourPrefixPools :: Array ThemeArmourPrefixes
-armourPrefixPools = { theme: Mine, prefixes: { prefix: CommonA, chance: 50 } : [] } : [] -- TODO: More samples.
-
-getAPPool :: Theme -> Array ThemeArmourPrefixes -> Array { prefix :: ArmourPrefix, chance :: Int }
-getAPPool t []   = []
-getAPPool t pool = let p = fromMaybe { theme: Mine, prefixes: [] } (head pool) 
-                   in if (p.theme) == t then
-                          (p.prefixes) <> (getAPPool t (fromMaybe [] (tail pool)))
-                      else
-                          getAPPool t (fromMaybe [] (tail pool))
-
-------------------------------------------------------------------------------------------------------------------------------------------}
 
 type Level =
     { tiles   :: Array Tile
