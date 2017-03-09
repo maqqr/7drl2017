@@ -44,16 +44,16 @@ randomItem theme depth = do
         ------------ Weapon generation ------------
 
         weaponTypeWeights :: Array (Weighted WeaponType)
-        weaponTypeWeights = [{ item: Axe, weight: 15 }
+        weaponTypeWeights = [{ item: Axe,    weight: 15 }
                             ,{ item: Dagger, weight: 40 }
-                            ,{ item: Sword, weight: 10 }
+                            ,{ item: Sword,  weight: 10 }
                             ]
 
         weaponPrefixWeights :: Array (Weighted WeaponPrefix)
-        weaponPrefixWeights = [{ item: Common, weight: 30 }
-                              ,{ item: Rusty, weight: 30 }
+        weaponPrefixWeights = [{ item: Common,     weight: 30 }
+                              ,{ item: Rusty,      weight: 30 }
                               ,{ item: Masterwork, weight: 0}
-                              ,{ item: Sharp, weight: 10 }
+                              ,{ item: Sharp,      weight: 10 }
                               ]
 
         randomWeapon :: Random Item
@@ -65,15 +65,15 @@ randomItem theme depth = do
         ------------ Armour generation ------------
 
         armourTypeWeights :: Array (Weighted ArmourType)
-        armourTypeWeights = [{ item: Cloak, weight: 10 }
-                            ,{ item: Chest, weight: 10 }
+        armourTypeWeights = [{ item: Cloak,  weight: 10 }
+                            ,{ item: Chest,  weight: 10 }
                             ,{ item: Gloves, weight: 10 }
                             ]
 
         armourPrefixWeights :: Array (Weighted ArmourPrefix)
-        armourPrefixWeights = [{ item: CommonA, weight: 30 }
-                              ,{ item: LightA, weight: 20 }
-                              ,{ item: ThickA, weight: 10}
+        armourPrefixWeights = [{ item: CommonA,     weight: 30 }
+                              ,{ item: LightA,      weight: 20 }
+                              ,{ item: ThickA,      weight: 10}
                               ,{ item: MasterworkA, weight: 5 }
                               ]
         
