@@ -1,8 +1,8 @@
 module ContentGenerator where
 
-import Prelude
-import Random
-import Rogue
+import Prelude (bind, pure, ($), (-), (<$>), (>), (>=))
+import Random (Random, generateInt)
+import Rogue (Item(..), Theme, WeaponPrefix(..), WeaponType(..))
 import Partial
 import Data.Array (filter, head, tail)
 import Data.Maybe (Maybe(..), fromMaybe)

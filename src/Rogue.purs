@@ -1,7 +1,7 @@
 module Rogue where
 
 import Prelude
-import Data.Array (index, updateAt, snoc, deleteAt, replicate, (:), head, tail)
+import Data.Array (index, updateAt, snoc, deleteAt, replicate)
 import Data.Maybe (Maybe(..), fromMaybe)
 
 
@@ -44,25 +44,30 @@ newtype Creature = Creature
 data CreatureType = Player { name :: String }
                   | AlphaWolf
                   | Wolf
+                  | Bear
                   | Goblin
                   | Snowman
+                  | IceCorpse
                   | Tim
                   | Ismo
 
 instance showCreature :: Show Creature where
-    show (Creature { creatureType: Player p})  = p.name
-    show (Creature { creatureType: AlphaWolf}) = "alpha wolf"
-    show (Creature { creatureType: Wolf})      = "wolf"
-    show (Creature { creatureType: Goblin})    = "goblin"
-    show (Creature { creatureType: Snowman})   = "snowman"
-    show (Creature { creatureType: Tim})       = "evil sorcerer"
-    show _                                     = "Ismo"
+    show (Creature { creatureType: Player p })  = p.name
+    show (Creature { creatureType: AlphaWolf }) = "alpha wolf"
+    show (Creature { creatureType: Wolf })      = "wolf"
+    show (Creature { creatureType: Bear })      = "bear"
+    show (Creature { creatureType: Goblin })    = "goblin"
+    show (Creature { creatureType: Snowman })   = "snowman"
+    show (Creature { creatureType: IceCorpse }) = "frozen zombie"
+    show (Creature { creatureType: Tim })       = "evil sorcerer"
+    show _                                      = "Ismo"
 
 creatureBaseDmg :: Creature -> Int
-creatureBaseDmg (Creature { creatureType: AlphaWolf}) = 2
-creatureBaseDmg (Creature { creatureType: Snowman})   = 4
-creatureBaseDmg (Creature { creatureType: Tim})       = 10
-creatureBaseDmg _                                     = 1
+creatureBaseDmg (Creature { creatureType: AlphaWolf }) = 2
+creatureBaseDmg (Creature { creatureType: Bear })      = 3
+creatureBaseDmg (Creature { creatureType: Snowman })   = 4
+creatureBaseDmg (Creature { creatureType: Tim })       = 10
+creatureBaseDmg _                                      = 1
 
 setPlayer :: GameState -> Creature -> GameState
 setPlayer (GameState gs) pl = GameState gs { player = pl }
@@ -154,7 +159,7 @@ data Theme = Mine | GoblinCave | Cave | WizardTower
 
 derive instance eqTheme :: Eq Theme
 
------------------------------------------------------------------------------------------------------------------------------------------
+{---------------------------------------- Delete this? ----------------------------------------------------------------------------------
 
 type ThemeWeaponPrefixes = { theme :: Theme, prefixes :: Array { prefix :: WeaponPrefix, chance :: Int } }
 
@@ -183,7 +188,7 @@ getAPPool t pool = let p = fromMaybe { theme: Mine, prefixes: [] } (head pool)
                       else
                           getAPPool t (fromMaybe [] (tail pool))
 
-------------------------------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------------------------}
 
 type Level =
     { tiles   :: Array Tile
@@ -311,16 +316,10 @@ unEquip (GameState gs) 3 = GameState (gs { equipment { hands  = Nothing }, playe
 unEquip (GameState gs) 4 = GameState (gs { equipment { weapon = Nothing }, player = addItem gs.player gs.equipment.weapon })
 unEquip gs _             = gs
 
-dmg :: Creature -> Int
-dmg (Creature c) = c.stats.str * creatureBaseDmg (Creature c)
+dmg :: Creature -> Maybe Item -> Int
+dmg (Creature c) (Just (Weapon w)) = c.stats.str + (weaponPrefixStats (w.prefix)).dmg + (weaponTypeStats (w.weaponType)).dmg
+dmg (Creature c) _                 = c.stats.str * creatureBaseDmg (Creature c)
 
-attack :: Creature -> Creature -> Creature
-attack (Creature ac) (Creature dc) = Creature dc { stats { hp = dc.stats.hp - dmg (Creature ac) } }
-
-
--- ThemeItems and ThemeCreatures ?  -TODO
--- randomItem :: Theme -> Int -> Item
--- randomItem _ _       = Wood
-
--- randomCreature :: Theme -> Int -> Point -> Creature
--- randomCreature _ _ p = Creature { creatureType: Ismo, pos: p, stats: { hpMax: 50, hp: 50, str: 9, dex: 12, int: 6 }, inv: [] }
+attack :: GameState -> Creature -> Creature -> Creature
+attack (GameState gs) ap@(Creature { creatureType: Player _ }) (Creature dc) = Creature dc { stats { hp = dc.stats.hp - dmg ap (gs.equipment.weapon) } }
+attack _ (Creature ac) (Creature dc) = Creature dc { stats { hp = dc.stats.hp - dmg (Creature ac) Nothing } }
