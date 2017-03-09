@@ -1,7 +1,7 @@
 module ContentGenerator where
 
 import Prelude
-import Rogue (ArmourPrefix(MasterworkA, ThickA, LightA, CommonA), ArmourType(Gloves, Chest, Cloak), Creature(Creature), CreatureType(IceCorpse, Snowman, Goblin, Bear, Wolf, AlphaWolf), Item(Potion, Armour, Weapon), PotionEffect(Warming, Healing), Stats, Theme, WeaponPrefix(Sharp, Masterwork, Rusty, Common), WeaponType(Sword, Dagger, Axe), addStats, creatureTypeStats)
+import Rogue
 import Data.Array (filter, head, tail)
 import Data.Maybe (Maybe(..), fromMaybe)
 import Data.Traversable (foldl)
@@ -38,10 +38,12 @@ randomItem theme depth = do
     weapon <- randomWeapon
     armour <- randomArmour
     potion <- randomPotion
-    maybeItem <- selectOne [weapon, armour, potion]
-    case maybeItem of
-        Just item -> pure item
-        Nothing   -> unsafeCrashWith "empty array"
+    wood   <- pure Wood
+    randomWeighted [{ item: weapon, weight: 20 }
+                   ,{ item: armour, weight: 20 }
+                   ,{ item: potion, weight: 10 }
+                   ,{ item: wood,   weight: 5 }
+                   ]
     where
         ------------ Weapon generation ------------
 
