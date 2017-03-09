@@ -761,41 +761,41 @@ var PS = {};
   });
   var setPlayer = function (v) {
       return function (pl) {
-          var $94 = {};
-          for (var $95 in v) {
-              if ({}.hasOwnProperty.call(v, $95)) {
-                  $94[$95] = v[$95];
+          var $97 = {};
+          for (var $98 in v) {
+              if ({}.hasOwnProperty.call(v, $98)) {
+                  $97[$98] = v[$98];
               };
           };
-          $94.player = pl;
-          return $94;
+          $97.player = pl;
+          return $97;
       };
   };
   var setLevelTile = function (level) {
       return function (t) {
           return function (p) {
-              var $97 = {};
-              for (var $98 in level) {
-                  if ({}.hasOwnProperty.call(level, $98)) {
-                      $97[$98] = level[$98];
+              var $100 = {};
+              for (var $101 in level) {
+                  if ({}.hasOwnProperty.call(level, $101)) {
+                      $100[$101] = level[$101];
                   };
               };
-              $97.tiles = Data_Maybe.fromMaybe(level.tiles)(Data_Array.updateAt((p.y * level.width | 0) + p.x | 0)(t)(level.tiles));
-              return $97;
+              $100.tiles = Data_Maybe.fromMaybe(level.tiles)(Data_Array.updateAt((p.y * level.width | 0) + p.x | 0)(t)(level.tiles));
+              return $100;
           };
       };
   };
   var setTile = function (v) {
       return function (t) {
           return function (p) {
-              var $103 = {};
-              for (var $104 in v) {
-                  if ({}.hasOwnProperty.call(v, $104)) {
-                      $103[$104] = v[$104];
+              var $106 = {};
+              for (var $107 in v) {
+                  if ({}.hasOwnProperty.call(v, $107)) {
+                      $106[$107] = v[$107];
                   };
               };
-              $103.level = setLevelTile(v.level)(t)(p);
-              return $103;
+              $106.level = setLevelTile(v.level)(t)(p);
+              return $106;
           };
       };
   };
@@ -818,62 +818,62 @@ var PS = {};
       return function (v1) {
           if (v1 instanceof Potion && v1.value0.effect instanceof Healing) {
               var heal = function (v2) {
-                  var $109 = (v2.stats.hp + 5 | 0) > v2.stats.hpMax;
-                  if ($109) {
+                  var $112 = (v2.stats.hp + 5 | 0) > v2.stats.hpMax;
+                  if ($112) {
                       return v2.stats.hpMax;
                   };
-                  if (!$109) {
+                  if (!$112) {
                       return v2.stats.hp + 5 | 0;
                   };
-                  throw new Error("Failed pattern match at Rogue line 276, column 29 - line 276, column 109: " + [ $109.constructor.name ]);
+                  throw new Error("Failed pattern match at Rogue line 288, column 29 - line 288, column 109: " + [ $112.constructor.name ]);
               };
               var pl = function (v2) {
-                  var $114 = {};
-                  for (var $115 in v2) {
-                      if ({}.hasOwnProperty.call(v2, $115)) {
-                          $114[$115] = v2[$115];
+                  var $117 = {};
+                  for (var $118 in v2) {
+                      if ({}.hasOwnProperty.call(v2, $118)) {
+                          $117[$118] = v2[$118];
                       };
                   };
-                  $114.stats = (function () {
-                      var $111 = {};
-                      for (var $112 in v2.stats) {
-                          if ({}.hasOwnProperty.call(v2.stats, $112)) {
-                              $111[$112] = v2["stats"][$112];
+                  $117.stats = (function () {
+                      var $114 = {};
+                      for (var $115 in v2.stats) {
+                          if ({}.hasOwnProperty.call(v2.stats, $115)) {
+                              $114[$115] = v2["stats"][$115];
                           };
                       };
-                      $111.hp = heal(v2);
-                      return $111;
+                      $114.hp = heal(v2);
+                      return $114;
                   })();
-                  return $114;
+                  return $117;
               };
-              var $117 = {};
-              for (var $118 in v) {
-                  if ({}.hasOwnProperty.call(v, $118)) {
-                      $117[$118] = v[$118];
+              var $120 = {};
+              for (var $121 in v) {
+                  if ({}.hasOwnProperty.call(v, $121)) {
+                      $120[$121] = v[$121];
                   };
               };
-              $117.player = pl(v.player);
-              return $117;
+              $120.player = pl(v.player);
+              return $120;
           };
           if (v1 instanceof Potion && v1.value0.effect instanceof Warming) {
               var warm = (function () {
-                  var $122 = (v.coldStatus + 10 | 0) > 100;
-                  if ($122) {
+                  var $125 = (v.coldStatus + 10 | 0) > 100;
+                  if ($125) {
                       return 100;
                   };
-                  if (!$122) {
+                  if (!$125) {
                       return v.coldStatus + 10 | 0;
                   };
-                  throw new Error("Failed pattern match at Rogue line 280, column 16 - line 280, column 80: " + [ $122.constructor.name ]);
+                  throw new Error("Failed pattern match at Rogue line 292, column 16 - line 292, column 80: " + [ $125.constructor.name ]);
               })();
-              var $123 = {};
-              for (var $124 in v) {
-                  if ({}.hasOwnProperty.call(v, $124)) {
-                      $123[$124] = v[$124];
+              var $126 = {};
+              for (var $127 in v) {
+                  if ({}.hasOwnProperty.call(v, $127)) {
+                      $126[$127] = v[$127];
                   };
               };
-              $123.coldStatus = warm;
-              return $123;
+              $126.coldStatus = warm;
+              return $126;
           };
           return v;
       };
@@ -998,80 +998,80 @@ var PS = {};
       return function (v1) {
           return function (v2) {
               if (v1 instanceof Armour && v2 === 1) {
-                  var $177 = {};
-                  for (var $178 in v) {
-                      if ({}.hasOwnProperty.call(v, $178)) {
-                          $177[$178] = v[$178];
+                  var $180 = {};
+                  for (var $181 in v) {
+                      if ({}.hasOwnProperty.call(v, $181)) {
+                          $180[$181] = v[$181];
                       };
                   };
-                  $177.equipment = (function () {
-                      var $174 = {};
-                      for (var $175 in v.equipment) {
-                          if ({}.hasOwnProperty.call(v.equipment, $175)) {
-                              $174[$175] = v["equipment"][$175];
+                  $180.equipment = (function () {
+                      var $177 = {};
+                      for (var $178 in v.equipment) {
+                          if ({}.hasOwnProperty.call(v.equipment, $178)) {
+                              $177[$178] = v["equipment"][$178];
                           };
                       };
-                      $174.cloak = isCorrectArmour(new Armour(v1.value0))(v1.value0.armourType)(1);
-                      return $174;
+                      $177.cloak = isCorrectArmour(new Armour(v1.value0))(v1.value0.armourType)(1);
+                      return $177;
                   })();
-                  return $177;
+                  return $180;
               };
               if (v1 instanceof Armour && v2 === 2) {
-                  var $184 = {};
-                  for (var $185 in v) {
-                      if ({}.hasOwnProperty.call(v, $185)) {
-                          $184[$185] = v[$185];
+                  var $187 = {};
+                  for (var $188 in v) {
+                      if ({}.hasOwnProperty.call(v, $188)) {
+                          $187[$188] = v[$188];
                       };
                   };
-                  $184.equipment = (function () {
-                      var $181 = {};
-                      for (var $182 in v.equipment) {
-                          if ({}.hasOwnProperty.call(v.equipment, $182)) {
-                              $181[$182] = v["equipment"][$182];
+                  $187.equipment = (function () {
+                      var $184 = {};
+                      for (var $185 in v.equipment) {
+                          if ({}.hasOwnProperty.call(v.equipment, $185)) {
+                              $184[$185] = v["equipment"][$185];
                           };
                       };
-                      $181.chest = isCorrectArmour(new Armour(v1.value0))(v1.value0.armourType)(2);
-                      return $181;
+                      $184.chest = isCorrectArmour(new Armour(v1.value0))(v1.value0.armourType)(2);
+                      return $184;
                   })();
-                  return $184;
+                  return $187;
               };
               if (v1 instanceof Armour && v2 === 3) {
-                  var $191 = {};
-                  for (var $192 in v) {
-                      if ({}.hasOwnProperty.call(v, $192)) {
-                          $191[$192] = v[$192];
+                  var $194 = {};
+                  for (var $195 in v) {
+                      if ({}.hasOwnProperty.call(v, $195)) {
+                          $194[$195] = v[$195];
                       };
                   };
-                  $191.equipment = (function () {
-                      var $188 = {};
-                      for (var $189 in v.equipment) {
-                          if ({}.hasOwnProperty.call(v.equipment, $189)) {
-                              $188[$189] = v["equipment"][$189];
+                  $194.equipment = (function () {
+                      var $191 = {};
+                      for (var $192 in v.equipment) {
+                          if ({}.hasOwnProperty.call(v.equipment, $192)) {
+                              $191[$192] = v["equipment"][$192];
                           };
                       };
-                      $188.hands = isCorrectArmour(new Armour(v1.value0))(v1.value0.armourType)(3);
-                      return $188;
+                      $191.hands = isCorrectArmour(new Armour(v1.value0))(v1.value0.armourType)(3);
+                      return $191;
                   })();
-                  return $191;
+                  return $194;
               };
               if (v2 === 4) {
-                  var $198 = {};
-                  for (var $199 in v) {
-                      if ({}.hasOwnProperty.call(v, $199)) {
-                          $198[$199] = v[$199];
+                  var $201 = {};
+                  for (var $202 in v) {
+                      if ({}.hasOwnProperty.call(v, $202)) {
+                          $201[$202] = v[$202];
                       };
                   };
-                  $198.equipment = (function () {
-                      var $195 = {};
-                      for (var $196 in v.equipment) {
-                          if ({}.hasOwnProperty.call(v.equipment, $196)) {
-                              $195[$196] = v["equipment"][$196];
+                  $201.equipment = (function () {
+                      var $198 = {};
+                      for (var $199 in v.equipment) {
+                          if ({}.hasOwnProperty.call(v.equipment, $199)) {
+                              $198[$199] = v["equipment"][$199];
                           };
                       };
-                      $195.weapon = new Data_Maybe.Just(v1);
-                      return $195;
+                      $198.weapon = new Data_Maybe.Just(v1);
+                      return $198;
                   })();
-                  return $198;
+                  return $201;
               };
               return v;
           };
@@ -1096,14 +1096,14 @@ var PS = {};
   });
   var deleteItem = function (v) {
       return function (i) {
-          var $205 = {};
-          for (var $206 in v) {
-              if ({}.hasOwnProperty.call(v, $206)) {
-                  $205[$206] = v[$206];
+          var $208 = {};
+          for (var $209 in v) {
+              if ({}.hasOwnProperty.call(v, $209)) {
+                  $208[$209] = v[$209];
               };
           };
-          $205.inv = Data_Maybe.fromMaybe(v.inv)(Data_Array.deleteAt(i)(v.inv));
-          return $205;
+          $208.inv = Data_Maybe.fromMaybe(v.inv)(Data_Array.deleteAt(i)(v.inv));
+          return $208;
       };
   };
   var defaultStats = {
@@ -1112,6 +1112,11 @@ var PS = {};
       str: 10, 
       dex: 10, 
       "int": 10
+  };
+  var defaultArmourStats = {
+      ap: 0, 
+      cr: 0, 
+      weight: 0
   };
   var creatureBaseDmg = function (v) {
       if (v.creatureType instanceof AlphaWolf) {
@@ -1178,48 +1183,6 @@ var PS = {};
           weapon: Data_Maybe.Nothing.value
       }
   };
-  var attack = function (v) {
-      return function (v1) {
-          return function (v2) {
-              if (v1.creatureType instanceof Player) {
-                  var $223 = {};
-                  for (var $224 in v2) {
-                      if ({}.hasOwnProperty.call(v2, $224)) {
-                          $223[$224] = v2[$224];
-                      };
-                  };
-                  $223.stats = (function () {
-                      var $220 = {};
-                      for (var $221 in v2.stats) {
-                          if ({}.hasOwnProperty.call(v2.stats, $221)) {
-                              $220[$221] = v2["stats"][$221];
-                          };
-                      };
-                      $220.hp = v2.stats.hp - dmg(v1)(v.equipment.weapon) | 0;
-                      return $220;
-                  })();
-                  return $223;
-              };
-              var $231 = {};
-              for (var $232 in v2) {
-                  if ({}.hasOwnProperty.call(v2, $232)) {
-                      $231[$232] = v2[$232];
-                  };
-              };
-              $231.stats = (function () {
-                  var $228 = {};
-                  for (var $229 in v2.stats) {
-                      if ({}.hasOwnProperty.call(v2.stats, $229)) {
-                          $228[$229] = v2["stats"][$229];
-                      };
-                  };
-                  $228.hp = v2.stats.hp - dmg(v1)(Data_Maybe.Nothing.value) | 0;
-                  return $228;
-              })();
-              return $231;
-          };
-      };
-  };
   var armourTypeStats = function (v) {
       if (v instanceof Cloak) {
           return {
@@ -1284,14 +1247,14 @@ var PS = {};
   var addItem = function (v) {
       return function (v1) {
           if (v1 instanceof Data_Maybe.Just) {
-              var $241 = {};
-              for (var $242 in v) {
-                  if ({}.hasOwnProperty.call(v, $242)) {
-                      $241[$242] = v[$242];
+              var $227 = {};
+              for (var $228 in v) {
+                  if ({}.hasOwnProperty.call(v, $228)) {
+                      $227[$228] = v[$228];
                   };
               };
-              $241.inv = Data_Array.snoc(v.inv)(v1.value0);
-              return $241;
+              $227.inv = Data_Array.snoc(v.inv)(v1.value0);
+              return $227;
           };
           return v;
       };
@@ -1299,86 +1262,175 @@ var PS = {};
   var unEquip = function (v) {
       return function (v1) {
           if (v1 === 1) {
-              var $250 = {};
-              for (var $251 in v) {
-                  if ({}.hasOwnProperty.call(v, $251)) {
-                      $250[$251] = v[$251];
+              var $236 = {};
+              for (var $237 in v) {
+                  if ({}.hasOwnProperty.call(v, $237)) {
+                      $236[$237] = v[$237];
                   };
               };
-              $250.equipment = (function () {
-                  var $247 = {};
-                  for (var $248 in v.equipment) {
-                      if ({}.hasOwnProperty.call(v.equipment, $248)) {
-                          $247[$248] = v["equipment"][$248];
+              $236.equipment = (function () {
+                  var $233 = {};
+                  for (var $234 in v.equipment) {
+                      if ({}.hasOwnProperty.call(v.equipment, $234)) {
+                          $233[$234] = v["equipment"][$234];
                       };
                   };
-                  $247.cloak = Data_Maybe.Nothing.value;
-                  return $247;
+                  $233.cloak = Data_Maybe.Nothing.value;
+                  return $233;
               })();
-              $250.player = addItem(v.player)(v.equipment.cloak);
-              return $250;
+              $236.player = addItem(v.player)(v.equipment.cloak);
+              return $236;
           };
           if (v1 === 2) {
-              var $256 = {};
-              for (var $257 in v) {
-                  if ({}.hasOwnProperty.call(v, $257)) {
-                      $256[$257] = v[$257];
+              var $242 = {};
+              for (var $243 in v) {
+                  if ({}.hasOwnProperty.call(v, $243)) {
+                      $242[$243] = v[$243];
                   };
               };
-              $256.equipment = (function () {
-                  var $253 = {};
-                  for (var $254 in v.equipment) {
-                      if ({}.hasOwnProperty.call(v.equipment, $254)) {
-                          $253[$254] = v["equipment"][$254];
+              $242.equipment = (function () {
+                  var $239 = {};
+                  for (var $240 in v.equipment) {
+                      if ({}.hasOwnProperty.call(v.equipment, $240)) {
+                          $239[$240] = v["equipment"][$240];
                       };
                   };
-                  $253.chest = Data_Maybe.Nothing.value;
-                  return $253;
+                  $239.chest = Data_Maybe.Nothing.value;
+                  return $239;
               })();
-              $256.player = addItem(v.player)(v.equipment.chest);
-              return $256;
+              $242.player = addItem(v.player)(v.equipment.chest);
+              return $242;
           };
           if (v1 === 3) {
-              var $262 = {};
-              for (var $263 in v) {
-                  if ({}.hasOwnProperty.call(v, $263)) {
-                      $262[$263] = v[$263];
+              var $248 = {};
+              for (var $249 in v) {
+                  if ({}.hasOwnProperty.call(v, $249)) {
+                      $248[$249] = v[$249];
                   };
               };
-              $262.equipment = (function () {
-                  var $259 = {};
-                  for (var $260 in v.equipment) {
-                      if ({}.hasOwnProperty.call(v.equipment, $260)) {
-                          $259[$260] = v["equipment"][$260];
+              $248.equipment = (function () {
+                  var $245 = {};
+                  for (var $246 in v.equipment) {
+                      if ({}.hasOwnProperty.call(v.equipment, $246)) {
+                          $245[$246] = v["equipment"][$246];
                       };
                   };
-                  $259.hands = Data_Maybe.Nothing.value;
-                  return $259;
+                  $245.hands = Data_Maybe.Nothing.value;
+                  return $245;
               })();
-              $262.player = addItem(v.player)(v.equipment.hands);
-              return $262;
+              $248.player = addItem(v.player)(v.equipment.hands);
+              return $248;
           };
           if (v1 === 4) {
-              var $268 = {};
-              for (var $269 in v) {
-                  if ({}.hasOwnProperty.call(v, $269)) {
-                      $268[$269] = v[$269];
+              var $254 = {};
+              for (var $255 in v) {
+                  if ({}.hasOwnProperty.call(v, $255)) {
+                      $254[$255] = v[$255];
                   };
               };
-              $268.equipment = (function () {
-                  var $265 = {};
-                  for (var $266 in v.equipment) {
-                      if ({}.hasOwnProperty.call(v.equipment, $266)) {
-                          $265[$266] = v["equipment"][$266];
+              $254.equipment = (function () {
+                  var $251 = {};
+                  for (var $252 in v.equipment) {
+                      if ({}.hasOwnProperty.call(v.equipment, $252)) {
+                          $251[$252] = v["equipment"][$252];
                       };
                   };
-                  $265.weapon = Data_Maybe.Nothing.value;
-                  return $265;
+                  $251.weapon = Data_Maybe.Nothing.value;
+                  return $251;
               })();
-              $268.player = addItem(v.player)(v.equipment.weapon);
-              return $268;
+              $254.player = addItem(v.player)(v.equipment.weapon);
+              return $254;
           };
           return v;
+      };
+  };
+  var addArmourStats = function (a) {
+      return function (b) {
+          return {
+              ap: a.ap + b.ap | 0, 
+              cr: a.cr + b.cr | 0, 
+              weight: a.weight + b.weight | 0
+          };
+      };
+  };
+  var armourStats = function (v) {
+      if (v instanceof Armour) {
+          return addArmourStats(armourTypeStats(v.value0.armourType))(armourPrefixStats(v.value0.prefix));
+      };
+      return defaultArmourStats;
+  };
+  var playerArmour = function (v) {
+      return ((armourStats(Data_Maybe.fromMaybe(Wood.value)(v.equipment.cloak))).ap + (armourStats(Data_Maybe.fromMaybe(Wood.value)(v.equipment.chest))).ap | 0) + (armourStats(Data_Maybe.fromMaybe(Wood.value)(v.equipment.hands))).ap | 0;
+  };
+  var attack = function (v) {
+      return function (v1) {
+          return function (v2) {
+              if (v1.creatureType instanceof Player) {
+                  var $266 = {};
+                  for (var $267 in v2) {
+                      if ({}.hasOwnProperty.call(v2, $267)) {
+                          $266[$267] = v2[$267];
+                      };
+                  };
+                  $266.stats = (function () {
+                      var $263 = {};
+                      for (var $264 in v2.stats) {
+                          if ({}.hasOwnProperty.call(v2.stats, $264)) {
+                              $263[$264] = v2["stats"][$264];
+                          };
+                      };
+                      $263.hp = v2.stats.hp - dmg(v1)(v.equipment.weapon) | 0;
+                      return $263;
+                  })();
+                  return $266;
+              };
+              if (v2.creatureType instanceof Player) {
+                  var dmgToPlayer = (function () {
+                      var $271 = playerArmour(v) >= dmg(v1)(Data_Maybe.Nothing.value);
+                      if ($271) {
+                          return 1;
+                      };
+                      if (!$271) {
+                          return dmg(v1)(Data_Maybe.Nothing.value) - playerArmour(v) | 0;
+                      };
+                      throw new Error("Failed pattern match at Rogue line 339, column 23 - line 339, column 108: " + [ $271.constructor.name ]);
+                  })();
+                  var $275 = {};
+                  for (var $276 in v2) {
+                      if ({}.hasOwnProperty.call(v2, $276)) {
+                          $275[$276] = v2[$276];
+                      };
+                  };
+                  $275.stats = (function () {
+                      var $272 = {};
+                      for (var $273 in v2.stats) {
+                          if ({}.hasOwnProperty.call(v2.stats, $273)) {
+                              $272[$273] = v2["stats"][$273];
+                          };
+                      };
+                      $272.hp = dmgToPlayer;
+                      return $272;
+                  })();
+                  return $275;
+              };
+              var $283 = {};
+              for (var $284 in v2) {
+                  if ({}.hasOwnProperty.call(v2, $284)) {
+                      $283[$284] = v2[$284];
+                  };
+              };
+              $283.stats = (function () {
+                  var $280 = {};
+                  for (var $281 in v2.stats) {
+                      if ({}.hasOwnProperty.call(v2.stats, $281)) {
+                          $280[$281] = v2["stats"][$281];
+                      };
+                  };
+                  $280.hp = v2.stats.hp - dmg(v1)(Data_Maybe.Nothing.value) | 0;
+                  return $280;
+              })();
+              return $283;
+          };
       };
   };
   exports["CommonA"] = CommonA;
@@ -1427,12 +1479,15 @@ var PS = {};
   exports["Axe"] = Axe;
   exports["Dagger"] = Dagger;
   exports["Sword"] = Sword;
+  exports["addArmourStats"] = addArmourStats;
   exports["addItem"] = addItem;
   exports["armourPrefixStats"] = armourPrefixStats;
+  exports["armourStats"] = armourStats;
   exports["armourTypeStats"] = armourTypeStats;
   exports["attack"] = attack;
   exports["createLevel"] = createLevel;
   exports["creatureBaseDmg"] = creatureBaseDmg;
+  exports["defaultArmourStats"] = defaultArmourStats;
   exports["defaultStats"] = defaultStats;
   exports["deleteItem"] = deleteItem;
   exports["dmg"] = dmg;
@@ -1446,6 +1501,7 @@ var PS = {};
   exports["isTileSolid"] = isTileSolid;
   exports["isTileTransparent"] = isTileTransparent;
   exports["itemWeight"] = itemWeight;
+  exports["playerArmour"] = playerArmour;
   exports["pointEquals"] = pointEquals;
   exports["pointMinus"] = pointMinus;
   exports["pointPlus"] = pointPlus;

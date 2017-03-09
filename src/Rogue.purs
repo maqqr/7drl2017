@@ -247,6 +247,12 @@ weaponPrefixStats _          = { dmg: 0, hit: 0, weight: 0 }
 
 type ArmourStats = { ap :: Int, cr :: Int, weight :: Int }
 
+addArmourStats :: ArmourStats -> ArmourStats -> ArmourStats
+addArmourStats a b = { ap: a.ap + b.ap, cr: a.cr + b.cr, weight: a.weight + b.weight }
+
+defaultArmourStats :: ArmourStats
+defaultArmourStats = { ap: 0, cr: 0, weight: 0 }
+
 data ArmourType = Cloak | Chest | Gloves
 
 armourTypeStats :: ArmourType -> ArmourStats
@@ -262,6 +268,12 @@ armourPrefixStats ThickA      = { ap: 1, cr: 3, weight: 5 }
 armourPrefixStats MasterworkA = { ap: 4, cr: 1, weight: 0 }
 armourPrefixStats _           = { ap: 0, cr: 0, weight: 0 }
 
+armourStats :: Item -> ArmourStats
+armourStats (Armour a) = addArmourStats (armourTypeStats (a.armourType)) (armourPrefixStats (a.prefix))
+armourStats _          = defaultArmourStats
+
+playerArmour :: GameState -> Int
+playerArmour (GameState gs) = (armourStats $ fromMaybe Wood (gs.equipment.cloak)).ap + (armourStats $ fromMaybe Wood (gs.equipment.chest)).ap + (armourStats $ fromMaybe Wood (gs.equipment.hands)).ap
 
 data PotionEffect = Healing | Warming
 
@@ -279,7 +291,6 @@ potionEffect (GameState gs) (Potion { effect: Warming }) = GameState (gs { coldS
         warm :: Int
         warm = if (gs.coldStatus + 10) > 100 then 100 else (gs.coldStatus + 10)
 potionEffect gs _ = gs
-
 
 
 itemWeight :: Item -> Int
@@ -322,4 +333,8 @@ dmg (Creature c) _                 = c.stats.str * creatureBaseDmg (Creature c)
 
 attack :: GameState -> Creature -> Creature -> Creature
 attack (GameState gs) ap@(Creature { creatureType: Player _ }) (Creature dc) = Creature dc { stats { hp = dc.stats.hp - dmg ap (gs.equipment.weapon) } }
-attack _ (Creature ac) (Creature dc) = Creature dc { stats { hp = dc.stats.hp - dmg (Creature ac) Nothing } }
+attack gs ac (Creature dp@{ creatureType: Player _ }) = Creature dp { stats { hp = dmgToPlayer } }
+    where
+        dmgToPlayer :: Int
+        dmgToPlayer = if playerArmour gs >= (dmg ac Nothing) then 1 else (dmg ac Nothing) - playerArmour gs
+attack _ ac (Creature dc) = Creature dc { stats { hp = dc.stats.hp - dmg ac Nothing } }
