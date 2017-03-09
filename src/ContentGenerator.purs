@@ -13,7 +13,8 @@ type Weighted a = { item :: a, weight :: Int }
 type DungeonDepth = Int
 
 randomWeighted :: forall a. Array (Weighted a) -> Random a
-randomWeighted initialItems = go initialItems <$> generateInt 0 weightSum
+randomWeighted initialItems =
+    go (filterNegativeWeights initialItems) <$> generateInt 0 weightSum
     where
         go items weight =
             case head items of
@@ -29,7 +30,7 @@ randomWeighted initialItems = go initialItems <$> generateInt 0 weightSum
 
 
 filterNegativeWeights :: forall a. Array (Weighted a) -> Array (Weighted a)
-filterNegativeWeights = filter (\x -> x.weight >= 0)
+filterNegativeWeights = filter (\x -> x.weight > 0)
 
 
 randomItem :: Theme -> Int -> Random Item
