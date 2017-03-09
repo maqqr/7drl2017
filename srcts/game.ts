@@ -88,14 +88,10 @@ class Game {
                 this.currentDungeon = key;
                 if (key in this.dungeonMaps)
                 {
-                    // TODO: Get first level from this.dungeonMaps
-                    console.log("Here be dungeonz");
                     let floors = this.dungeonMaps[this.currentDungeon];
                     this.gameState.level = floors[0];
-                    this.gameState.player.pos = floors[0].up; // TODO: remove
+                    this.gameState.player.pos = floors[0].up;
                     this.drawMap();
-
-
                 }
                 else
                 {
@@ -103,54 +99,53 @@ class Game {
                     this.dungeonMaps[key] = [newLevel];
                     this.gameState.level = newLevel;
                     console.log("Added new dungeon level");
-                    this.gameState.player.pos = newLevel.up; // TODO: remove
+                    this.gameState.player.pos = newLevel.up;
                     this.drawMap();
                 }
             }
-            //Stairs up&down are only found in dungeons
+            // Stairs up & down are only found in dungeons
             else if (tileName == "StairsDown") {
                 let floors = this.dungeonMaps[this.currentDungeon];
                 let currentFloorIndex = floors.indexOf(this.gameState.level);
-                //If current floor is the last explored floor of the dungeon
+                // If current floor is the last explored floor of the dungeon
                 if (currentFloorIndex == floors.length-1) {
                     let newLevel = this.generateLevel();
                     floors.push(newLevel);
                     this.gameState.level = newLevel;
-                    this.gameState.player.pos = newLevel.up; // TODO: remove
+                    this.gameState.player.pos = newLevel.up;
                     this.drawMap();
 
                 }
                 else {
                     let newOldLevel = floors[currentFloorIndex +1]
                     this.gameState.level = newOldLevel;
-                    this.gameState.player.pos = newOldLevel.up; // TODO: remove
+                    this.gameState.player.pos = newOldLevel.up;
                     this.drawMap();
                 }
             }
             else if (tileName == "StairsUp") {
                 let floors = this.dungeonMaps[this.currentDungeon];
                 let currentFloorIndex = floors.indexOf(this.gameState.level);
-                //If we are on the first floor of the dungeon, the worldmap awaits at the top of the stairs
-                if(currentFloorIndex == 0) {
-                    //Get the dungeons position on the world map based on the dungeonmaps key
+                // If we are on the first floor of the dungeon, the worldmap awaits at the top of the stairs
+                if (currentFloorIndex == 0) {
+                    // Get the dungeons position on the world map based on the dungeonmaps key
                     let mapPos = this.currentDungeon.split(",");
                     this.currentDungeon = "worldmap";
                     this.gameState.level = this.worldMap;
-                    //Position point needs int values and .split() gives string
+                    // Position point needs int values and .split() gives string
                     this.gameState.player.pos = { x: parseInt(mapPos[0]), y: parseInt(mapPos[1]) };
                     this.drawMap();
-
                 }
                 else {
                     let newOldLevel = floors[currentFloorIndex -1]
                     this.gameState.level = newOldLevel;
-                    this.gameState.player.pos = newOldLevel.down; // TODO: remove
+                    this.gameState.player.pos = newOldLevel.down;
                     this.drawMap();
                 }
             }
         }
 
-        if(code == 106) {
+        if (code == 106) {
             console.log("Portaat ovat: "+this.gameState.level);
         }
 
