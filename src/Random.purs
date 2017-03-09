@@ -1,9 +1,8 @@
 module Random where
 
 import Prelude
-import Data.Maybe (Maybe)
 import Data.Array (index, length, unsafeIndex)
-import Data.Int (pow)
+import Data.Maybe (Maybe)
 
 type Seed = Int
 
@@ -44,12 +43,16 @@ instance randomMonad :: Monad Random
 
 generate :: Random Int
 generate = Random $ \seed ->
-    let new = (a * seed + c) `mod` m
+    let new = abs ((a * seed + c) `mod` m)
     in { value: new, seed: new }
     where
         a = 0x343FD
         c = 0x269EC
-        m = 2 `pow` 30
+        m = 0x800000
+
+        abs x | x < 0     = -x
+              | otherwise =  x
+
 
 generateInt :: Int -> Int -> Random Int
 generateInt min max = (\n -> min + (n `mod` (max - min))) <$> generate

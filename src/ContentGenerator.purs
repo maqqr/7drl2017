@@ -39,7 +39,9 @@ randomItem theme depth = do
     armour <- randomArmour
     potion <- randomPotion
     maybeItem <- selectOne [weapon, armour, potion]
-    pure $ fromMaybe (unsafeCrashWith "empty array") maybeItem
+    case maybeItem of
+        Just item -> pure item
+        Nothing   -> unsafeCrashWith "empty array"
     where
         ------------ Weapon generation ------------
 
