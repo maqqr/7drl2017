@@ -32,6 +32,7 @@ function pushToGamestate(gameState, map) {
                 , '^': ps.Mountain.create({ frozen: false })
                 , 'T': ps.Forest.create({ frozen: false })
                 , '-': ps.Water.create({ frozen: false })
+                , '~': new ps.River()
                 , 'o': new ps.DungeonEntrance()
                 };
 

@@ -230,6 +230,7 @@ class Game {
         let levelWidth = this.gameState.level.width;
         let levelHeight = this.gameState.level.height;
 
+        // Calculate player's field of view
         let visible = {};
         let fovCallback = function(x, y, r, v) {
             visible["" + x + "," + y] = true;
@@ -237,6 +238,16 @@ class Game {
         }
         this.fov.compute(player.pos.x, player.pos.y, radius, fovCallback.bind(this));
 
+        // Add adjacent tiles to field of view
+        for (let dy = -1; dy <= 1; dy++) {
+            for (let dx = -1; dx <= 1; dx++) {
+                let pos = { x: player.pos.x + dx, y: player.pos.y + dy };
+                visible["" + pos.x + "," + pos.y] = true;
+                this.setRememberTile(pos);
+            }
+        }
+
+        // Draw tiles
         for (let dy = -radius-1; dy <= radius+1; dy++) {
             for (let dx = -radius-1; dx <= radius+1; dx++) {
                 let pos = { x: player.pos.x + dx, y: player.pos.y + dy };

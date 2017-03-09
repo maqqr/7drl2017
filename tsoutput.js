@@ -189,12 +189,22 @@ var Game = (function () {
         var player = this.gameState.player;
         var levelWidth = this.gameState.level.width;
         var levelHeight = this.gameState.level.height;
+        // Calculate player's field of view
         var visible = {};
         var fovCallback = function (x, y, r, v) {
             visible["" + x + "," + y] = true;
             this.setRememberTile({ x: x, y: y });
         };
         this.fov.compute(player.pos.x, player.pos.y, radius, fovCallback.bind(this));
+        // Add adjacent tiles to field of view
+        for (var dy = -1; dy <= 1; dy++) {
+            for (var dx = -1; dx <= 1; dx++) {
+                var pos = { x: player.pos.x + dx, y: player.pos.y + dy };
+                visible["" + pos.x + "," + pos.y] = true;
+                this.setRememberTile(pos);
+            }
+        }
+        // Draw tiles
         for (var dy = -radius - 1; dy <= radius + 1; dy++) {
             for (var dx = -radius - 1; dx <= radius + 1; dx++) {
                 var pos = { x: player.pos.x + dx, y: player.pos.y + dy };
@@ -248,26 +258,26 @@ var Game = (function () {
 Game.keyMap = { 104: 0, 105: 1, 102: 2, 99: 3, 98: 4, 97: 5, 100: 6, 103: 7 };
 var worldmap = [];
 worldmap[0] = "^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^";
-worldmap[1] = "^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^-^^^^o^^^^^^^^^^^^^^^^^^^^^^";
-worldmap[2] = "^^^^o.^..^......^^T^TT^^^TT.T......^^^^^^^^^^^^-^^^^^.TT^......^^T.^.^^^^^^";
-worldmap[3] = "^^^..^..^T..T...TT^TTT.T^T.T.TT..T...^^^^^^^^^.-.^^^^^^...........^...T^^^^";
-worldmap[4] = "^^^^...TTTT.T....^.TTT^T.T^TT..T.......^^.TT..-T-T.^^^^T.T..............^^^";
-worldmap[5] = "^^^^.T..T.T.T.T^^^^^T^^^^^^TT.T.T...........T.-T-^T.^TT^..T.....o.......^^^";
-worldmap[6] = "^^^.T..T.T..T.^^^^^^^o^^^^^^T...T.TT.........T-T-^T^.^.^^..............^^^^";
-worldmap[7] = "^^^T.TT....T.^^^^^--^^^^^^^^^.^^^^..T........-..-^T.T.T^^..T..........^.^^^";
-worldmap[8] = "^^^....T..T.^^^^^-------o^^^^..^^^^T..T......-..--.^.T^.^^........T.^.^^^^^";
-worldmap[9] = "^^^..T....T...^^^^---^--^^^^^.T.T^^^^.......--...-.T.^^.^.........^.^^^^^^^";
-worldmap[10] = "^^..TT..T.....^^^^^^^-^^^^^^^^T...T.TT......-....-....T^^..^...^^.^^^^^^^^^";
-worldmap[11] = "....T.T.T...T.^^^^^^^-^^^^^^^^^.T.TTT......-.....--..T^^^.^.^^^.^^.^.T^^^^^";
-worldmap[12] = "^^.....T...T.T...^^^o--^^^^^....T-T........-......-....T^^^.^^..^^....^^^^^";
-worldmap[13] = "^^^..T..T.TT.......^.--.T.^....T.-.........-......--......T^^..^..^.^^oT^^^";
-worldmap[14] = "^^^.T.TT............-T-T.T.....---.......---....^^.-.............^^^^^^^^^^";
-worldmap[15] = "^^^..T...T.......---TT-TT....------..---------..o^.--.............T.T^^T^^^";
-worldmap[16] = "^^^TT.T.......T---TTTTT----------------------------.-....T.T.....TTT^.T.^^^";
-worldmap[17] = "^^^..T........--TTTTTT----------------TTTT-----------......T.T.....TTT.T^^^";
-worldmap[18] = "^^^TTTT.......-TTT------------------TTTTTTTT----------------TT...o..TT^^^^^";
-worldmap[19] = "^^^TT.........-T------------------TTTTTTTTTTTT--------------TTT.....TTT^^^^";
-worldmap[20] = "^^..T........o----------------------TTTTTTTTTT----------------TTTTTTTTTT.^^";
+worldmap[1] = "^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^~^^^^o^^^^^^^^^^^^^^^^^^^^^^";
+worldmap[2] = "^^^^o.^..^......^^T^TT^^^TT.T......^^^^^^^^^^^^~^^^^^.TT^......^^T.^.^^^^^^";
+worldmap[3] = "^^^..^..^T..T...TT^TTT.T^T.T.TT..T...^^^^^^^^^.~.^^^^^^...........^...T^^^^";
+worldmap[4] = "^^^^...TTTT.T....^.TTT^T.T^TT..T.......^^.TT..~T~T.^^^^T.T..............^^^";
+worldmap[5] = "^^^^.T..T.T.T.T^^^^^T^^^^^^TT.T.T...........T.~T~^T.^TT^..T.....o.......^^^";
+worldmap[6] = "^^^.T..T.T..T.^^^^^^^o^^^^^^T...T.TT.........T~T~^T^.^.^^..............^^^^";
+worldmap[7] = "^^^T.TT....T.^^^^^--^^^^^^^^^.^^^^..T........~..~^T.T.T^^..T..........^.^^^";
+worldmap[8] = "^^^....T..T.^^^^^-------o^^^^..^^^^T..T......~..~~.^.T^.^^........T.^.^^^^^";
+worldmap[9] = "^^^..T....T...^^^^--~^~-^^^^^.T.T^^^^.......~~...~.T.^^.^.........^.^^^^^^^";
+worldmap[10] = "^^..TT..T.....^^^^^^^~^^^^^^^^T...T.TT......~....~....T^^..^...^^.^^^^^^^^^";
+worldmap[11] = "....T.T.T...T.^^^^^^^~^^^^^^^^^.T.TTT......~.....~~..T^^^.^.^^^.^^.^.T^^^^^";
+worldmap[12] = "^^.....T...T.T...^^^o~~^^^^^....T-T........~......~....T^^^.^^..^^....^^^^^";
+worldmap[13] = "^^^..T..T.TT.......^.~~.T.^....T.-.........~......~~......T^^..^..^.^^oT^^^";
+worldmap[14] = "^^^.T.TT............~T~T.T.....---.......---....^^.~.............^^^^^^^^^^";
+worldmap[15] = "^^^..T...T.......~~~TT~TT....------..---------..o^.~~.............T.T^^T^^^";
+worldmap[16] = "^^^TT.T.......T~~~TTTTT~.--------------------------.~....T.T.....TTT^.T.^^^";
+worldmap[17] = "^^^..T........~~TTTTTT.~.-------------TTTT-----------......T.T.....TTT.T^^^";
+worldmap[18] = "^^^TTTT.......~TTT--TT--------------TTTTTTTT----------------TT...o..TT^^^^^";
+worldmap[19] = "^^^TT.........~T.-----------------TTTTTTTTTTTT--------------TTT.....TTT^^^^";
+worldmap[20] = "^^..T........o~T--------------------TTTTTTTTTT----------------TTTTTTTTTT.^^";
 worldmap[21] = "^^-----....-----------------------------TTTT-------------------.TTTTTT.---^";
 worldmap[22] = "-------------------------------------------------------------------..-----^";
 worldmap[23] = "---------------------------------------------------------------------------";
@@ -279,6 +289,7 @@ function pushToGamestate(gameState, map) {
         '^': ps.Mountain.create({ frozen: false }),
         'T': ps.Forest.create({ frozen: false }),
         '-': ps.Water.create({ frozen: false }),
+        '~': new ps.River(),
         'o': new ps.DungeonEntrance()
     };
     for (var y = 0; y < height; y++) {
