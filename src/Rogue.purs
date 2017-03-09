@@ -275,6 +275,9 @@ armourStats _          = defaultArmourStats
 playerArmour :: GameState -> Int
 playerArmour (GameState gs) = (armourStats $ fromMaybe Wood (gs.equipment.cloak)).ap + (armourStats $ fromMaybe Wood (gs.equipment.chest)).ap + (armourStats $ fromMaybe Wood (gs.equipment.hands)).ap
 
+playerColdRes :: GameState -> Int
+playerColdRes (GameState gs) = (armourStats $ fromMaybe Wood (gs.equipment.cloak)).cr + (armourStats $ fromMaybe Wood (gs.equipment.chest)).cr + (armourStats $ fromMaybe Wood (gs.equipment.hands)).cr
+
 data PotionEffect = Healing | Warming
 
 
@@ -338,3 +341,6 @@ attack gs ac (Creature dp@{ creatureType: Player _ }) = Creature dp { stats { hp
         dmgToPlayer :: Int
         dmgToPlayer = if playerArmour gs >= (dmg ac Nothing) then 1 else (dmg ac Nothing) - playerArmour gs
 attack _ ac (Creature dc) = Creature dc { stats { hp = dc.stats.hp - dmg ac Nothing } }
+
+cold :: GameState -> GameState
+cold (GameState gs) = GameState gs { coldStatus = gs.coldStatus - 20 + playerColdRes (GameState gs) }
