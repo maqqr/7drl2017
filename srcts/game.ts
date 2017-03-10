@@ -178,7 +178,7 @@ class Game {
         }
 
         if (code == 106) {
-            this.actionlog.push("Ilmoitus: "+this.actionlog.length);
+            this.add2ActnLog("Ilmoitus: "+this.actionlog.length);
         }
 
         if (!(code in Game.keyMap)) { return; }
@@ -199,6 +199,13 @@ class Game {
 
         window.removeEventListener("keydown", this);
         this.updateLoop();
+    }
+
+    add2ActnLog(message:string) {
+        this.actionlog.push(message);
+        if (this.actionlog.length > 20) {
+            this.actionlog.splice(0,1);
+        }
     }
 
     drawTile(pos: { x: number, y: number }, visible: boolean, remember: boolean) {
