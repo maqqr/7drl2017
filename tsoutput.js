@@ -163,7 +163,7 @@ var Game = (function () {
             }
         }
         if (code == 106) {
-            this.actionlog.push("Ilmoitus: " + this.actionlog.length);
+            this.add2ActnLog("Ilmoitus: " + this.actionlog.length);
         }
         if (!(code in Game.keyMap)) {
             return;
@@ -182,6 +182,12 @@ var Game = (function () {
         }
         window.removeEventListener("keydown", this);
         this.updateLoop();
+    };
+    Game.prototype.add2ActnLog = function (message) {
+        this.actionlog.push(message);
+        if (this.actionlog.length > 20) {
+            this.actionlog.splice(0, 1);
+        }
     };
     Game.prototype.drawTile = function (pos, visible, remember) {
         if (!visible && !remember)
