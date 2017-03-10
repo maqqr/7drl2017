@@ -111,6 +111,13 @@ class Game {
         }
     }
 
+    changeLevel(newLevel : Rogue.Level, playerPos : { x: number, y: number }) {
+        this.gameState.level = newLevel;
+        this.gameState.player.pos = playerPos;
+        // TODO: add enemies to scheduler
+        this.refreshDisplay();
+    }
+
     handleEvent(e: KeyboardEvent) {
         var code = e.keyCode;
         console.log(code);
@@ -123,41 +130,31 @@ class Game {
                 var key = "" + playerPos.x + "," + playerPos.y;
                 this.currentDungeon = key;
                 this.dungeonDepth = 0;
-                if (key in this.dungeonMaps)
-                {
+                let newLevel;
+                if (key in this.dungeonMaps) {
                     let floors = this.dungeonMaps[this.currentDungeon];
-                    this.gameState.level = floors[0];
-                    this.gameState.player.pos = floors[0].up;
-                    this.refreshDisplay();
+                    newLevel = floors[0];
                 }
-                else
-                {
-                    let newLevel = this.generateLevel();
+                else {
+                    newLevel = this.generateLevel();
                     this.dungeonMaps[key] = [newLevel];
-                    this.gameState.level = newLevel;
-                    console.log("Added new dungeon level");
-                    this.gameState.player.pos = newLevel.up;
-                    this.refreshDisplay();
                 }
+                this.changeLevel(newLevel, newLevel.up);
             }
             // Stairs up & down are only found in dungeons
             else if (tileName == "StairsDown") {
                 this.dungeonDepth++;
                 let floors = this.dungeonMaps[this.currentDungeon];
+                let newLevel;
                 // If current floor is the last explored floor of the dungeon
                 if (this.dungeonDepth == floors.length) {
-                    let newLevel = this.generateLevel();
+                    newLevel = this.generateLevel();
                     floors.push(newLevel);
-                    this.gameState.level = newLevel;
-                    this.gameState.player.pos = newLevel.up;
-                    this.refreshDisplay();
                 }
                 else {
-                    let newOldLevel = floors[this.dungeonDepth]
-                    this.gameState.level = newOldLevel;
-                    this.gameState.player.pos = newOldLevel.up;
-                    this.refreshDisplay();
+                    newLevel = floors[this.dungeonDepth]
                 }
+                this.changeLevel(newLevel, newLevel.up);
             }
             else if (tileName == "StairsUp") {
                 let floors = this.dungeonMaps[this.currentDungeon];
@@ -167,16 +164,12 @@ class Game {
                     // Get the dungeons position on the world map based on the dungeonmaps key
                     let mapPos = this.currentDungeon.split(",");
                     this.currentDungeon = "worldmap";
-                    this.gameState.level = this.worldMap;
                     // Position point needs int values and .split() gives string
-                    this.gameState.player.pos = { x: parseInt(mapPos[0]), y: parseInt(mapPos[1]) };
-                    this.refreshDisplay();
+                    this.changeLevel(this.worldMap, { x: parseInt(mapPos[0]), y: parseInt(mapPos[1]) });
                 }
                 else {
                     let newOldLevel = floors[this.dungeonDepth];
-                    this.gameState.level = newOldLevel;
-                    this.gameState.player.pos = newOldLevel.down;
-                    this.refreshDisplay();
+                    this.changeLevel(newOldLevel, newOldLevel.down);
                 }
             }
         }

@@ -38,11 +38,6 @@ var Game = (function () {
         this.rememberTile = {};
         this.gameState = PS["Rogue"].initialGameState;
         this.gameState = pushToGamestate(this.gameState, worldmap);
-        // let isTransparent = function(x: number, y: number): boolean
-        // {
-        //     let tile = PS["Rogue"].getTile(this.gameState)({x: x, y: y});
-        //     return PS["Rogue"].isTileTransparent(tile);
-        // };
         this.fov = new ROT.FOV.PreciseShadowcasting(this.isTransparent.bind(this));
         this.drawMap();
         this.scheduler = new ROT.Scheduler.Speed();
@@ -85,6 +80,12 @@ var Game = (function () {
             }
         }
     };
+    Game.prototype.changeLevel = function (newLevel, playerPos) {
+        this.gameState.level = newLevel;
+        this.gameState.player.pos = playerPos;
+        // TODO: add enemies to scheduler
+        this.refreshDisplay();
+    };
     Game.prototype.handleEvent = function (e) {
         var code = e.keyCode;
         console.log(code);
@@ -96,38 +97,30 @@ var Game = (function () {
                 var key = "" + playerPos.x + "," + playerPos.y;
                 this.currentDungeon = key;
                 this.dungeonDepth = 0;
+                var newLevel = void 0;
                 if (key in this.dungeonMaps) {
                     var floors = this.dungeonMaps[this.currentDungeon];
-                    this.gameState.level = floors[0];
-                    this.gameState.player.pos = floors[0].up;
-                    this.refreshDisplay();
+                    newLevel = floors[0];
                 }
                 else {
-                    var newLevel = this.generateLevel();
+                    newLevel = this.generateLevel();
                     this.dungeonMaps[key] = [newLevel];
-                    this.gameState.level = newLevel;
-                    console.log("Added new dungeon level");
-                    this.gameState.player.pos = newLevel.up;
-                    this.refreshDisplay();
                 }
+                this.changeLevel(newLevel, newLevel.up);
             }
             else if (tileName == "StairsDown") {
                 this.dungeonDepth++;
                 var floors = this.dungeonMaps[this.currentDungeon];
+                var newLevel = void 0;
                 // If current floor is the last explored floor of the dungeon
                 if (this.dungeonDepth == floors.length) {
-                    var newLevel = this.generateLevel();
+                    newLevel = this.generateLevel();
                     floors.push(newLevel);
-                    this.gameState.level = newLevel;
-                    this.gameState.player.pos = newLevel.up;
-                    this.refreshDisplay();
                 }
                 else {
-                    var newOldLevel = floors[this.dungeonDepth];
-                    this.gameState.level = newOldLevel;
-                    this.gameState.player.pos = newOldLevel.up;
-                    this.refreshDisplay();
+                    newLevel = floors[this.dungeonDepth];
                 }
+                this.changeLevel(newLevel, newLevel.up);
             }
             else if (tileName == "StairsUp") {
                 var floors = this.dungeonMaps[this.currentDungeon];
@@ -137,16 +130,12 @@ var Game = (function () {
                     // Get the dungeons position on the world map based on the dungeonmaps key
                     var mapPos = this.currentDungeon.split(",");
                     this.currentDungeon = "worldmap";
-                    this.gameState.level = this.worldMap;
                     // Position point needs int values and .split() gives string
-                    this.gameState.player.pos = { x: parseInt(mapPos[0]), y: parseInt(mapPos[1]) };
-                    this.refreshDisplay();
+                    this.changeLevel(this.worldMap, { x: parseInt(mapPos[0]), y: parseInt(mapPos[1]) });
                 }
                 else {
                     var newOldLevel = floors[this.dungeonDepth];
-                    this.gameState.level = newOldLevel;
-                    this.gameState.player.pos = newOldLevel.down;
-                    this.refreshDisplay();
+                    this.changeLevel(newOldLevel, newOldLevel.down);
                 }
             }
         }
