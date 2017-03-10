@@ -5,11 +5,6 @@ import Data.Array (index, updateAt, snoc, deleteAt, replicate)
 import Data.Maybe (Maybe(..), fromMaybe)
 
 
--- max :: Int -> Int -> Int
--- max a b
---     | a > b     = a
---     | otherwise = b
-
 type Point = { x :: Int , y :: Int }
 
 pointPlus :: Point -> Point -> Point
