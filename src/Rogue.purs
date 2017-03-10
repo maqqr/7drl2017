@@ -67,11 +67,22 @@ creatureIcon (Creature { creatureType: Player p })  = '@'
 creatureIcon (Creature { creatureType: AlphaWolf }) = 'W'
 creatureIcon (Creature { creatureType: Wolf })      = 'w'
 creatureIcon (Creature { creatureType: Bear })      = 'B'
-creatureIcon (Creature { creatureType: Goblin })    = 'G'
+creatureIcon (Creature { creatureType: Goblin })    = 'g'
 creatureIcon (Creature { creatureType: Snowman })   = 'S'
 creatureIcon (Creature { creatureType: IceCorpse }) = 'Z'
 creatureIcon (Creature { creatureType: Tim })       = '\001'
 creatureIcon _                                      = 'S'
+
+creatureColor :: Creature -> String
+creatureColor (Creature { creatureType: Player p })  = "rgba(0, 200, 0, 0.6)"
+creatureColor (Creature { creatureType: AlphaWolf }) = "rgba(200, 200, 200, 0.6)"
+creatureColor (Creature { creatureType: Wolf })      = "rgba(100, 100, 100, 0.6)"
+creatureColor (Creature { creatureType: Bear })      = "rgba(156, 98, 66, 0.6)"
+creatureColor (Creature { creatureType: Goblin })    = "rgba(30, 150, 0, 0.6)"
+creatureColor (Creature { creatureType: Snowman })   = "rgba(200, 200, 200, 0.6)"
+creatureColor (Creature { creatureType: IceCorpse }) = "rgba(126, 121, 196, 0.6)"
+creatureColor (Creature { creatureType: Tim })       = "rgba(245, 65, 241, 0.6)"
+creatureColor _                                      = "rgba(200, 200, 200, 0.6)"
 
 creatureTypeStats :: CreatureType -> Stats
 creatureTypeStats AlphaWolf  = { hpMax: 16, hp: 16, str: 15, dex: 17, int:  9 }

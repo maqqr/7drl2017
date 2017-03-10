@@ -185,15 +185,19 @@ var Game = (function () {
         }
     };
     Game.prototype.drawMap = function () {
-        var radius = 4;
+        var radius = 5;
         var player = this.gameState.player;
         var levelWidth = this.gameState.level.width;
         var levelHeight = this.gameState.level.height;
         // Calculate player's field of view
         var visible = {};
         var fovCallback = function (x, y, r, v) {
-            visible["" + x + "," + y] = true;
-            this.setRememberTile({ x: x, y: y });
+            var dx = player.pos.x - x;
+            var dy = player.pos.y - y;
+            if (dx * dx + dy * dy < radius * radius) {
+                visible["" + x + "," + y] = true;
+                this.setRememberTile({ x: x, y: y });
+            }
         };
         this.fov.compute(player.pos.x, player.pos.y, radius, fovCallback.bind(this));
         // Add adjacent tiles to field of view
@@ -223,6 +227,16 @@ var Game = (function () {
                 var icon = PS["Rogue"].itemIcon(item.item);
                 var color = PS["Rogue"].itemColor(item.item);
                 this.display.draw(item.pos.x, item.pos.y, icon, color);
+            }
+        }
+        // Draw enemies
+        for (var i = 0; i < this.gameState.level.enemies.length; i++) {
+            var enemy = this.gameState.level.enemies[i];
+            var enemyVisible = visible[enemy.pos.x + "," + enemy.pos.y] === true;
+            if (enemyVisible) {
+                var icon = PS["Rogue"].creatureIcon(enemy);
+                var color = PS["Rogue"].creatureColor(enemy);
+                this.display.draw(enemy.pos.x, enemy.pos.y, icon, color);
             }
         }
         // Draw player
@@ -265,6 +279,14 @@ var Game = (function () {
             return result.value;
         }
         randomItem.bind(this)();
+        var enemySeed = new Date().getTime();
+        function randomEnemy() {
+            var theme = undefined;
+            var result = PS["Random"].runRandom(PS["ContentGenerator"].randomEnemy(theme)(this.dungeonDepth))(enemySeed);
+            enemySeed = result.seed;
+            return result.value;
+        }
+        randomEnemy.bind(this)();
         // Generate stairs
         var stairsUpPos = randomFreePosition();
         var stairsDownPos = randomFreePosition();
@@ -279,6 +301,13 @@ var Game = (function () {
             var pos = randomFreePosition();
             var item = randomItem();
             level.items.push({ pos: pos, item: item });
+        }
+        // Generate random enemies
+        for (var i = 0; i < 10; i++) {
+            var enemy = randomEnemy();
+            enemy.pos = randomFreePosition();
+            level.enemies.push(enemy);
+            console.log(enemy);
         }
         return level;
     };

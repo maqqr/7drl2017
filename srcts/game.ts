@@ -225,7 +225,7 @@ class Game {
     }
 
     drawMap() {
-        let radius = 4;
+        let radius = 5;
         let player = this.gameState.player;
         let levelWidth = this.gameState.level.width;
         let levelHeight = this.gameState.level.height;
@@ -233,8 +233,12 @@ class Game {
         // Calculate player's field of view
         let visible = {};
         let fovCallback = function(x, y, r, v) {
-            visible["" + x + "," + y] = true;
-            this.setRememberTile({ x: x, y: y });
+            let dx = player.pos.x - x;
+            let dy = player.pos.y - y;
+            if (dx*dx + dy*dy < radius*radius) {
+                visible["" + x + "," + y] = true;
+                this.setRememberTile({ x: x, y: y });
+            }
         }
         this.fov.compute(player.pos.x, player.pos.y, radius, fovCallback.bind(this));
 
@@ -266,8 +270,19 @@ class Game {
             let itemVisible = visible[item.pos.x + "," + item.pos.y] === true;
             if (itemVisible) {
                 let icon = PS["Rogue"].itemIcon(item.item);
-                let color = PS["Rogue"].itemColor(item.item);            
+                let color = PS["Rogue"].itemColor(item.item);
                 this.display.draw(item.pos.x, item.pos.y, icon, color);
+            }
+        }
+
+        // Draw enemies
+        for (let i=0; i < this.gameState.level.enemies.length; i++) {
+            let enemy = this.gameState.level.enemies[i];
+            let enemyVisible = visible[enemy.pos.x + "," + enemy.pos.y] === true;
+            if (enemyVisible) {
+                let icon = PS["Rogue"].creatureIcon(enemy);
+                let color = PS["Rogue"].creatureColor(enemy);
+                this.display.draw(enemy.pos.x, enemy.pos.y, icon, color);
             }
         }
 
@@ -318,6 +333,15 @@ class Game {
         }
         randomItem.bind(this)();
 
+        let enemySeed = new Date().getTime();
+        function randomEnemy() {
+            let theme = undefined;
+            let result = PS["Random"].runRandom(PS["ContentGenerator"].randomEnemy(theme)(this.dungeonDepth))(enemySeed);
+            enemySeed = result.seed;
+            return result.value;
+        }
+        randomEnemy.bind(this)();
+
         // Generate stairs
         let stairsUpPos = randomFreePosition();
         let stairsDownPos = randomFreePosition();
@@ -334,6 +358,14 @@ class Game {
             let pos = randomFreePosition();
             let item = randomItem();
             level.items.push({ pos: pos, item: item });
+        }
+
+        // Generate random enemies
+        for (let i=0; i < 10; i++) {
+            let enemy = randomEnemy();
+            enemy.pos = randomFreePosition();
+            level.enemies.push(enemy);
+            console.log(enemy);
         }
 
         return level;
