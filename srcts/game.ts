@@ -40,11 +40,13 @@ class Game {
     fov: ROT.FOV.PreciseShadowcasting;
     gameState: any;
     worldMap: Rogue.Level;
+
+    actionlog: Array<string>;
  
     constructor() {
         let tileSet = new TileSet('tileset');
         this.display = new ROT.Display({
-            width:75, height:25, fontSize: 16, spacing: 1.0,
+            width:75, height:30, fontSize: 16, spacing: 1.0,
             layout: "tile", tileColorize: true,
             tileWidth: tileSet.tileWidth, tileHeight: tileSet.tileHeight,
             tileSet: tileSet.tileSet, tileMap: tileSet.tileMap
@@ -54,6 +56,7 @@ class Game {
         this.currentDungeon = "worldmap";
         this.dungeonDepth = -1;
         this.rememberTile = {};
+        this.actionlog = [];
         this.gameState = PS["Rogue"].initialGameState;
         this.gameState = pushToGamestate(this.gameState, worldmap);
 
@@ -176,7 +179,7 @@ class Game {
         }
 
         if (code == 106) {
-            console.log("Portaat ovat: "+this.gameState.level);
+            this.actionlog.push("Ilmoitus: "+this.actionlog.length);
         }
 
         if (!(code in Game.keyMap)) { return; }
@@ -214,6 +217,17 @@ class Game {
         this.drawMap();
     }
 
+    drawLog() {
+        let itemsInLog = this.actionlog.length;
+        let grayism = 50;
+        if (itemsInLog > 0) {
+            for (let i = -1; i>-5;i--) {
+                if (itemsInLog+i <0) break;
+                this.display.drawText(0,(30+i),"%c{rgba("+String(255+i*grayism)+","+String(255+i*grayism)+","+String(255+i*grayism)+",0.8)}"+this.actionlog[itemsInLog+i]+"%c{}",106);
+            } 
+        }
+    }
+
     drawAllTiles() {
         for (let y=0; y < this.gameState.level.height; y++) {
             for (let x=0; x < this.gameState.level.width; x++) {
@@ -229,6 +243,8 @@ class Game {
         let player = this.gameState.player;
         let levelWidth = this.gameState.level.width;
         let levelHeight = this.gameState.level.height;
+
+        this.drawLog();
 
         // Calculate player's field of view
         let visible = {};

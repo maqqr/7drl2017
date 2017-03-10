@@ -27,7 +27,7 @@ var Game = (function () {
         this.rememberTile = {};
         var tileSet = new TileSet('tileset');
         this.display = new ROT.Display({
-            width: 75, height: 25, fontSize: 16, spacing: 1.0,
+            width: 75, height: 30, fontSize: 16, spacing: 1.0,
             layout: "tile", tileColorize: true,
             tileWidth: tileSet.tileWidth, tileHeight: tileSet.tileHeight,
             tileSet: tileSet.tileSet, tileMap: tileSet.tileMap
@@ -36,6 +36,7 @@ var Game = (function () {
         this.currentDungeon = "worldmap";
         this.dungeonDepth = -1;
         this.rememberTile = {};
+        this.actionlog = [];
         this.gameState = PS["Rogue"].initialGameState;
         this.gameState = pushToGamestate(this.gameState, worldmap);
         var isTransparent = function (x, y) {
@@ -142,7 +143,7 @@ var Game = (function () {
             }
         }
         if (code == 106) {
-            console.log("Portaat ovat: " + this.gameState.level);
+            this.actionlog.push("Ilmoitus: " + this.actionlog.length);
         }
         if (!(code in Game.keyMap)) {
             return;
@@ -175,6 +176,17 @@ var Game = (function () {
         this.drawAllTiles();
         this.drawMap();
     };
+    Game.prototype.drawLog = function () {
+        var itemsInLog = this.actionlog.length;
+        var grayism = 50;
+        if (itemsInLog > 0) {
+            for (var i = -1; i > -5; i--) {
+                if (itemsInLog + i < 0)
+                    break;
+                this.display.drawText(0, (30 + i), "%c{rgba(" + String(255 + i * grayism) + "," + String(255 + i * grayism) + "," + String(255 + i * grayism) + ",0.8)}" + this.actionlog[itemsInLog + i] + "%c{}", 106);
+            }
+        }
+    };
     Game.prototype.drawAllTiles = function () {
         for (var y = 0; y < this.gameState.level.height; y++) {
             for (var x = 0; x < this.gameState.level.width; x++) {
@@ -189,6 +201,7 @@ var Game = (function () {
         var player = this.gameState.player;
         var levelWidth = this.gameState.level.width;
         var levelHeight = this.gameState.level.height;
+        this.drawLog();
         // Calculate player's field of view
         var visible = {};
         var fovCallback = function (x, y, r, v) {
