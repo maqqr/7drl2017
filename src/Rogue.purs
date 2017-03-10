@@ -71,7 +71,7 @@ creatureIcon (Creature { creatureType: Goblin })    = 'g'
 creatureIcon (Creature { creatureType: Snowman })   = 'S'
 creatureIcon (Creature { creatureType: IceCorpse }) = 'Z'
 creatureIcon (Creature { creatureType: Tim })       = '\001'
-creatureIcon _                                      = 'S'
+creatureIcon _                                      = '\234'
 
 creatureColor :: Creature -> String
 creatureColor (Creature { creatureType: Player p })  = "rgba(0, 200, 0, 0.6)"

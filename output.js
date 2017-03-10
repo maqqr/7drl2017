@@ -1101,7 +1101,7 @@ var PS = {};
           if (!v.value0.frozen) {
               return ".";
           };
-          throw new Error("Failed pattern match at Rogue line 180, column 30 - line 181, column 1: " + [ v.value0.frozen.constructor.name ]);
+          throw new Error("Failed pattern match at Rogue line 175, column 30 - line 176, column 1: " + [ v.value0.frozen.constructor.name ]);
       };
       if (v instanceof Door) {
           return "+";
@@ -1157,7 +1157,7 @@ var PS = {};
       if (v instanceof ErrorTile) {
           return "ErrorTile";
       };
-      throw new Error("Failed pattern match at Rogue line 145, column 5 - line 146, column 5: " + [ v.constructor.name ]);
+      throw new Error("Failed pattern match at Rogue line 140, column 5 - line 141, column 5: " + [ v.constructor.name ]);
   });
   var showCreature = new Data_Show.Show(function (v) {
       if (v.creatureType instanceof Player) {
@@ -1406,7 +1406,7 @@ var PS = {};
       if (!v.frozen) {
           return "0.6)";
       };
-      throw new Error("Failed pattern match at Rogue line 189, column 1 - line 190, column 1: " + [ v.constructor.name ]);
+      throw new Error("Failed pattern match at Rogue line 184, column 1 - line 185, column 1: " + [ v.constructor.name ]);
   };
   var tileColor = function (v) {
       if (v instanceof Ground) {
@@ -1658,7 +1658,7 @@ var PS = {};
       if (v.creatureType instanceof Tim) {
           return "\x01";
       };
-      return "S";
+      return "\xea";
   };
   var creatureColor = function (v) {
       if (v.creatureType instanceof Player) {
@@ -1973,7 +1973,7 @@ var PS = {};
                       if (!$308) {
                           return dmg(v1)(Data_Maybe.Nothing.value) - playerArmour(v) | 0;
                       };
-                      throw new Error("Failed pattern match at Rogue line 367, column 23 - line 367, column 108: " + [ $308.constructor.name ]);
+                      throw new Error("Failed pattern match at Rogue line 362, column 23 - line 362, column 108: " + [ $308.constructor.name ]);
                   })();
                   var $312 = {};
                   for (var $313 in v2) {
