@@ -260,6 +260,19 @@ class Game {
             } 
         }
     }
+    //Draws player's stats
+    staTifY() {
+        //hp
+        let hp = this.gameState.player.stats.hp
+        let maxhp = this.gameState.player.stats.hpMax
+        let hpscale = String(Math.round(255*hp/maxhp));
+        this.display.drawText(2, 25, "HP: "+"%c{rgba(255,"+hpscale+","+hpscale+",0.6)}"+hp+"%c{}"+"/"+maxhp)
+        //coldness
+        let cold = this.gameState.coldStatus;
+        let coldscale = String(Math.round(255*(cold/100)));
+        this.display.drawText(20,25,"You are %c{rgba("+coldscale+",255,255,0.6)}"+cold+"%c{}% freezing")
+        
+    }
 
     drawAllTiles() {
         for (let y=0; y < this.gameState.level.height; y++) {
@@ -277,6 +290,7 @@ class Game {
         let levelWidth = this.gameState.level.width;
         let levelHeight = this.gameState.level.height;
 
+        this.staTifY();
         this.drawLog();
 
         // Calculate player's field of view
