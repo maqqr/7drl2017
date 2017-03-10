@@ -38,6 +38,7 @@ class Game {
     display: ROT.Display;
     scheduler: ROT.Scheduler.Speed<Actor>;
     fov: ROT.FOV.PreciseShadowcasting;
+    astar: ROT.Path.AStar;
     gameState: any;
     worldMap: Rogue.Level;
  
@@ -57,12 +58,7 @@ class Game {
         this.gameState = PS["Rogue"].initialGameState;
         this.gameState = pushToGamestate(this.gameState, worldmap);
 
-        let isTransparent = function(x: number, y: number): boolean
-        {
-            let tile = PS["Rogue"].getTile(this.gameState)({x: x, y: y});
-            return PS["Rogue"].isTileTransparent(tile);
-        };
-        this.fov = new ROT.FOV.PreciseShadowcasting(isTransparent.bind(this));
+        this.fov = new ROT.FOV.PreciseShadowcasting(this.isTransparent.bind(this));
 
         this.drawMap();
 
@@ -73,6 +69,16 @@ class Game {
         this.worldMap = this.gameState.level;
 
         this.updateLoop();
+    }
+
+    isTransparent(x: number, y: number): boolean {
+        let tile = PS["Rogue"].getTile(this.gameState)({x: x, y: y});
+        return PS["Rogue"].isTileTransparent(tile);
+    }
+
+    isPassable(x: number, y: number): boolean {
+        let tile = PS["Rogue"].getTile(this.gameState)({x: x, y: y});
+        return !PS["Rogue"].isTileSolid(tile);
     }
 
     setRememberTile(pos: { x: number, y: number }) {

@@ -38,11 +38,12 @@ var Game = (function () {
         this.rememberTile = {};
         this.gameState = PS["Rogue"].initialGameState;
         this.gameState = pushToGamestate(this.gameState, worldmap);
-        var isTransparent = function (x, y) {
-            var tile = PS["Rogue"].getTile(this.gameState)({ x: x, y: y });
-            return PS["Rogue"].isTileTransparent(tile);
-        };
-        this.fov = new ROT.FOV.PreciseShadowcasting(isTransparent.bind(this));
+        // let isTransparent = function(x: number, y: number): boolean
+        // {
+        //     let tile = PS["Rogue"].getTile(this.gameState)({x: x, y: y});
+        //     return PS["Rogue"].isTileTransparent(tile);
+        // };
+        this.fov = new ROT.FOV.PreciseShadowcasting(this.isTransparent.bind(this));
         this.drawMap();
         this.scheduler = new ROT.Scheduler.Speed();
         this.scheduler.add(new Actor(50, true), true);
@@ -50,6 +51,14 @@ var Game = (function () {
         this.worldMap = this.gameState.level;
         this.updateLoop();
     }
+    Game.prototype.isTransparent = function (x, y) {
+        var tile = PS["Rogue"].getTile(this.gameState)({ x: x, y: y });
+        return PS["Rogue"].isTileTransparent(tile);
+    };
+    Game.prototype.isPassable = function (x, y) {
+        var tile = PS["Rogue"].getTile(this.gameState)({ x: x, y: y });
+        return !PS["Rogue"].isTileSolid(tile);
+    };
     Game.prototype.setRememberTile = function (pos) {
         var key = this.currentDungeon + "," + this.dungeonDepth;
         if (!(key in this.rememberTile)) {
