@@ -30,7 +30,7 @@ initialGameState :: GameState
 initialGameState = GameState
     { level:      createLevel 75 25 (Ground { frozen: false })
     , player:     Creature {creatureType: Player {name: "Frozty"}, pos: {x: 0, y: 11}, stats: defaultStats, inv: []}
-    , coldStatus: 100
+    , coldStatus: 0
     , equipment:  { cloak: Nothing, chest: Nothing, hands: Nothing, weapon: Nothing }
     }
 
@@ -312,7 +312,7 @@ potionEffect (GameState gs) (Potion { effect: Healing }) = GameState (gs { playe
 potionEffect (GameState gs) (Potion { effect: Warming }) = GameState (gs { coldStatus = warm })
     where
         warm :: Int
-        warm = max (gs.coldStatus + 10) 100
+        warm = min (gs.coldStatus - 10) 0
 potionEffect gs _ = gs
 
 
@@ -363,4 +363,4 @@ attack gs ac (Creature dp@{ creatureType: Player _ }) = Creature dp { stats { hp
 attack _ ac (Creature dc) = Creature dc { stats { hp = dc.stats.hp - dmg ac Nothing } }
 
 cold :: GameState -> GameState
-cold (GameState gs) = GameState gs { coldStatus = gs.coldStatus - 20 + playerColdRes (GameState gs) }
+cold (GameState gs) = GameState gs { coldStatus = gs.coldStatus + 20 - playerColdRes (GameState gs) }
