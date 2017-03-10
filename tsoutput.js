@@ -226,7 +226,8 @@ var Game = (function () {
             }
         }
     };
-    Game.prototype.drwsTs = function () {
+    //Draws player's stats
+    Game.prototype.staTifY = function () {
         //hp
         var hp = this.gameState.player.stats.hp;
         var maxhp = this.gameState.player.stats.hpMax;
@@ -234,7 +235,7 @@ var Game = (function () {
         this.display.drawText(2, 25, "HP: " + "%c{rgba(255," + hpscale + "," + hpscale + ",0.6)}" + hp + "%c{}" + "/" + maxhp);
         //coldness
         var cold = this.gameState.coldStatus;
-        var coldscale = String(Math.round(255 * (cold / 100)));
+        var coldscale = String(Math.round(255 * (1 - cold / 100)));
         this.display.drawText(20, 25, "You are %c{rgba(" + coldscale + ",255,255,0.6)}" + cold + "%c{}% freezing");
     };
     Game.prototype.drawAllTiles = function () {
@@ -251,7 +252,7 @@ var Game = (function () {
         var player = this.gameState.player;
         var levelWidth = this.gameState.level.width;
         var levelHeight = this.gameState.level.height;
-        this.drwsTs();
+        this.staTifY();
         this.drawLog();
         // Calculate player's field of view
         this.visible = {};

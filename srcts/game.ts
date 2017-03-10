@@ -281,7 +281,7 @@ class Game {
         this.display.drawText(2, 25, "HP: "+"%c{rgba(255,"+hpscale+","+hpscale+",0.6)}"+hp+"%c{}"+"/"+maxhp)
         //coldness
         let cold = this.gameState.coldStatus;
-        let coldscale = String(Math.round(255*(cold/100)));
+        let coldscale = String(Math.round(255*(1-cold/100)));
         this.display.drawText(20,25,"You are %c{rgba("+coldscale+",255,255,0.6)}"+cold+"%c{}% freezing")
         
     }
