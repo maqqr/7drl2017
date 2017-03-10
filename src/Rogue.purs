@@ -107,6 +107,10 @@ setPlayer (GameState gs) pl = GameState gs { player = pl }
 getPlayer :: GameState -> Creature
 getPlayer (GameState gs) = gs.player
 
+isPlayer :: Creature -> Boolean
+isPlayer (Creature { creatureType: Player _ }) = true
+isPlayer _                                     = false
+
 type Stats = 
     { hpMax :: Int
     , hp    :: Int

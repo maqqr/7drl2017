@@ -6,7 +6,7 @@ import Data.Array (filter, head, tail)
 import Data.Maybe (Maybe(..), fromMaybe)
 import Data.Traversable (foldl)
 import Partial.Unsafe (unsafeCrashWith)
-import Random (Random, generateInt, selectOne)
+import Random (Random, generateInt)
 
 type Weighted a = { item :: a, weight :: Int }
 

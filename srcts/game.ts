@@ -108,7 +108,6 @@ class Game {
     updateLoop() {
         for(;;) {
             let current = this.scheduler.next();
-            console.log(current);
 
             if (current.isPlayer) {
                 window.addEventListener("keydown", this);
@@ -124,6 +123,22 @@ class Game {
     moveCreature(creature : any, delta : { x: number, y: number }) {
         var newPos = { x: creature.pos.x + delta.x, y: creature.pos.y + delta.y };
 
+        // Check if there is anyone at newPos
+        let blocking = null;
+        for (let other of [this.gameState.player].concat(this.gameState.level.enemies)) {
+            if (other.pos.x == newPos.x && other.pos.y == newPos.y) {
+                blocking = other;
+                break;
+            }
+        }
+        if (blocking !== null) {
+            if (PS["Rogue"].isPlayer(creature) !== PS["Rogue"].isPlayer(blocking)) {
+                // TODO: combat
+            }
+            return;
+        }
+
+        // Tile is free of creatures, attempt to move there
         let tile = PS["Rogue"].getTile(this.gameState)(newPos);
         if (!PS["Rogue"].isTileSolid(tile) && !(newPos.x < 0 || newPos.x >74) && !(newPos.y < 0 || newPos.y > 24) ) {
             creature.pos = newPos;
@@ -167,7 +182,7 @@ class Game {
 
     handleEvent(e: KeyboardEvent) {
         var code = e.keyCode;
-        console.log(code);
+        //console.log(code);
 
         if (code == 111) {
             let playerPos = {x: this.gameState.player.pos.x, y: this.gameState.player.pos.y};
