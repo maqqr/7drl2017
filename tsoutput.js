@@ -26,6 +26,7 @@ var Game = (function () {
     function Game() {
         this.dungeonMaps = {};
         this.rememberTile = {};
+        this.visible = {};
         var tileSet = new TileSet('tileset');
         this.display = new ROT.Display({
             width: 75, height: 30, fontSize: 16, spacing: 1.0,
@@ -92,12 +93,29 @@ var Game = (function () {
         if (!PS["Rogue"].isTileSolid(tile) && !(newPos.x < 0 || newPos.x > 74) && !(newPos.y < 0 || newPos.y > 24)) {
             creature.pos = newPos;
         }
+        return creature;
     };
     Game.prototype.updateAI = function (creature) {
-        var rx = ROT.RNG.getUniformInt(-1, 1);
-        var ry = ROT.RNG.getUniformInt(-1, 1);
-        var dir = { x: rx, y: ry };
-        this.moveCreature(creature, dir);
+        if (this.visible[creature.pos.x + "," + creature.pos.y] === true) {
+            var p = this.gameState.player.pos;
+            var astar = new ROT.Path.AStar(p.x, p.y, this.isPassable.bind(this));
+            var path_1 = [];
+            astar.compute(creature.pos.x, creature.pos.y, function (x, y) {
+                path_1.push({ x: x, y: y });
+            });
+            path_1.splice(0, 1);
+            if (path_1.length > 0) {
+                var nextPos = path_1[0];
+                var delta = { x: nextPos.x - creature.pos.x, y: nextPos.y - creature.pos.y };
+                this.moveCreature(creature, delta);
+            }
+        }
+        else {
+            var rx = ROT.RNG.getUniformInt(-1, 1);
+            var ry = ROT.RNG.getUniformInt(-1, 1);
+            var dir = { x: rx, y: ry };
+            this.moveCreature(creature, dir);
+        }
     };
     Game.prototype.changeLevel = function (newLevel, playerPos) {
         this.gameState.level = newLevel;
@@ -173,13 +191,8 @@ var Game = (function () {
         var diff = ROT.DIRS[8][Game.keyMap[code]];
         var newX = oldX + diff[0];
         var newY = oldY + diff[1];
-        var tile = PS["Rogue"].getTile(this.gameState)({ x: newX, y: newY });
-        console.log(tile);
-        console.log("Going to pos:" + newX + "," + newY);
-        if (!PS["Rogue"].isTileSolid(tile) && !(newX < 0 || newX > 74) && !(newY < 0 || newY > 24)) {
-            this.gameState.player.pos = { x: newX, y: newY };
-            this.drawMap();
-        }
+        this.moveCreature(this.gameState.player, { x: diff[0], y: diff[1] });
+        this.drawMap();
         window.removeEventListener("keydown", this);
         this.updateLoop();
     };
@@ -229,12 +242,12 @@ var Game = (function () {
         var levelHeight = this.gameState.level.height;
         this.drawLog();
         // Calculate player's field of view
-        var visible = {};
+        this.visible = {};
         var fovCallback = function (x, y, r, v) {
             var dx = player.pos.x - x;
             var dy = player.pos.y - y;
             if (dx * dx + dy * dy < radius * radius) {
-                visible["" + x + "," + y] = true;
+                this.visible["" + x + "," + y] = true;
                 this.setRememberTile({ x: x, y: y });
             }
         };
@@ -243,7 +256,7 @@ var Game = (function () {
         for (var dy = -1; dy <= 1; dy++) {
             for (var dx = -1; dx <= 1; dx++) {
                 var pos = { x: player.pos.x + dx, y: player.pos.y + dy };
-                visible["" + pos.x + "," + pos.y] = true;
+                this.visible["" + pos.x + "," + pos.y] = true;
                 this.setRememberTile(pos);
             }
         }
@@ -253,7 +266,7 @@ var Game = (function () {
                 var pos = { x: player.pos.x + dx, y: player.pos.y + dy };
                 if (pos.x < 0 || pos.y < 0 || pos.x >= levelWidth || pos.y >= levelHeight)
                     continue;
-                var vis = visible[pos.x + "," + pos.y] === true;
+                var vis = this.visible[pos.x + "," + pos.y] === true;
                 var rem = this.remembersTile(pos);
                 this.drawTile(pos, vis, rem);
             }
@@ -261,7 +274,7 @@ var Game = (function () {
         // Draw items
         for (var i = 0; i < this.gameState.level.items.length; i++) {
             var item = this.gameState.level.items[i];
-            var itemVisible = visible[item.pos.x + "," + item.pos.y] === true;
+            var itemVisible = this.visible[item.pos.x + "," + item.pos.y] === true;
             if (itemVisible) {
                 var icon = PS["Rogue"].itemIcon(item.item);
                 var color = PS["Rogue"].itemColor(item.item);
@@ -271,7 +284,7 @@ var Game = (function () {
         // Draw enemies
         for (var i = 0; i < this.gameState.level.enemies.length; i++) {
             var enemy = this.gameState.level.enemies[i];
-            var enemyVisible = visible[enemy.pos.x + "," + enemy.pos.y] === true;
+            var enemyVisible = this.visible[enemy.pos.x + "," + enemy.pos.y] === true;
             if (enemyVisible) {
                 var icon = PS["Rogue"].creatureIcon(enemy);
                 var color = PS["Rogue"].creatureColor(enemy);

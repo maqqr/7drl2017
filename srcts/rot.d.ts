@@ -214,12 +214,13 @@ declare module ROT.Noise {
 
 declare module ROT.Path {
     export class AStar implements IPath {
-        constructor(toX: number, toY: number, passableCallback: (x: number, y: number) => void , options: any);
+        constructor(toX: number, toY: number, passableCallback: (x: number, y: number) => boolean, options: any);
+        constructor(toX: number, toY: number, passableCallback: (x: number, y: number) => boolean);
         compute(fromX: number, fromY: number, callback: (x: number, y: number) => void);
     }
 
     export class Dijkstra implements IPath {
-        constructor(toX: number, toY: number, passableCallback: (x: number, y: number) => void , options: any);
+        constructor(toX: number, toY: number, passableCallback: (x: number, y: number) => void, options: any);
         compute(fromX: number, fromY: number, callback: (x: number, y: number) => void );
     }
 }
