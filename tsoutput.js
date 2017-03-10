@@ -12,9 +12,10 @@ var TileSet = (function () {
     return TileSet;
 }());
 var Actor = (function () {
-    function Actor(speed, isPlayer) {
+    function Actor(speed, isPlayer, index) {
         this.speed = speed;
         this.isPlayer = isPlayer;
+        this.index = index;
     }
     Actor.prototype.getSpeed = function () {
         return this.speed;
@@ -41,7 +42,7 @@ var Game = (function () {
         this.fov = new ROT.FOV.PreciseShadowcasting(this.isTransparent.bind(this));
         this.drawMap();
         this.scheduler = new ROT.Scheduler.Speed();
-        this.scheduler.add(new Actor(50, true), true);
+        this.scheduler.add(new Actor(50, true, -1), true);
         this.currentDungeon = "worldmap";
         this.worldMap = this.gameState.level;
         this.updateLoop();
@@ -78,12 +79,33 @@ var Game = (function () {
                 window.addEventListener("keydown", this);
                 break;
             }
+            else {
+                var enemy = this.gameState.level.enemies[current.index];
+                this.updateAI(enemy);
+            }
         }
+    };
+    Game.prototype.moveCreature = function (creature, delta) {
+        var newPos = { x: creature.pos.x + delta.x, y: creature.pos.y + delta.y };
+        var tile = PS["Rogue"].getTile(this.gameState)(newPos);
+        if (!PS["Rogue"].isTileSolid(tile) && !(newPos.x < 0 || newPos.x > 74) && !(newPos.y < 0 || newPos.y > 24)) {
+            creature.pos = newPos;
+        }
+    };
+    Game.prototype.updateAI = function (creature) {
+        var rx = ROT.RNG.getUniformInt(-1, 1);
+        var ry = ROT.RNG.getUniformInt(-1, 1);
+        var dir = { x: rx, y: ry };
+        this.moveCreature(creature, dir);
     };
     Game.prototype.changeLevel = function (newLevel, playerPos) {
         this.gameState.level = newLevel;
         this.gameState.player.pos = playerPos;
-        // TODO: add enemies to scheduler
+        this.scheduler.clear();
+        this.scheduler.add(new Actor(50, true, -1), true);
+        for (var i = 0; i < this.gameState.level.enemies.length; i++) {
+            this.scheduler.add(new Actor(50, false, i), true);
+        }
         this.refreshDisplay();
     };
     Game.prototype.handleEvent = function (e) {
@@ -305,7 +327,6 @@ var Game = (function () {
             var enemy = randomEnemy();
             enemy.pos = randomFreePosition();
             level.enemies.push(enemy);
-            console.log(enemy);
         }
         return level;
     };

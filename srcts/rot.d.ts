@@ -67,6 +67,7 @@ declare module ROT {
         static getSeed(): number;
         static getState();
         static getUniform(): number;
+        static getUniformInt(minBound: number, maxBound: number): number;
         static getWeightedValue(data: any): string;
         static setSeed(seed: number);
         static setState(state);
@@ -98,6 +99,7 @@ declare module ROT.Scheduler {
         constructor();
         add(item: T, repeating: boolean): void;
         next(): T;
+        clear(): void;
     }
 }
 
