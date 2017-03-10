@@ -1311,7 +1311,7 @@ var PS = {};
   };
   var frozenColor = function (v) {
       if (v.frozen) {
-          return "0.2)";
+          return "0.1)";
       };
       if (!v.frozen) {
           return "0.6)";

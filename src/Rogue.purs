@@ -181,7 +181,7 @@ tileIcon (DungeonEntrance) = 'o'
 tileIcon _                 = '?'
 
 frozenColor :: Frozen -> String
-frozenColor { frozen: true } = "0.2)"
+frozenColor { frozen: true } = "0.1)"
 frozenColor { frozen: false } = "0.6)"
 
 tileColor :: Tile -> String
