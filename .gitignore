@@ -5,3 +5,5 @@
 /.psc*
 /.psa*
 .vscode/
+tsoutput.js
+tsoutput.js.map
