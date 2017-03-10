@@ -41,7 +41,7 @@ class Game {
     display: ROT.Display;
     scheduler: ROT.Scheduler.Speed<Actor>;
     fov: ROT.FOV.PreciseShadowcasting;
-    astar: ROT.Path.AStar;
+    visible: {[id: string]: boolean} = {};
     gameState: any;
     worldMap: Rogue.Level;
 
@@ -128,13 +128,30 @@ class Game {
         if (!PS["Rogue"].isTileSolid(tile) && !(newPos.x < 0 || newPos.x >74) && !(newPos.y < 0 || newPos.y > 24) ) {
             creature.pos = newPos;
         }
+        return creature;
     }
 
     updateAI(creature : any) {
-        var rx = ROT.RNG.getUniformInt(-1, 1);
-        var ry = ROT.RNG.getUniformInt(-1, 1);
-        var dir = { x: rx, y: ry };
-        this.moveCreature(creature, dir);
+        if (this.visible[creature.pos.x + "," + creature.pos.y] === true) {
+            let p = this.gameState.player.pos;
+            let astar = new ROT.Path.AStar(p.x, p.y, this.isPassable.bind(this));
+            let path = [];
+            astar.compute(creature.pos.x, creature.pos.y, function(x, y) {
+                path.push({ x: x, y: y});
+            });
+            path.splice(0, 1);
+            if (path.length > 0) {
+                let nextPos = path[0];
+                let delta = { x: nextPos.x - creature.pos.x, y: nextPos.y - creature.pos.y };
+                this.moveCreature(creature, delta);
+            }
+        }
+        else {
+            var rx = ROT.RNG.getUniformInt(-1, 1);
+            var ry = ROT.RNG.getUniformInt(-1, 1);
+            var dir = { x: rx, y: ry };
+            this.moveCreature(creature, dir);
+        }
     }
 
     changeLevel(newLevel : Rogue.Level, playerPos : { x: number, y: number }) {
@@ -216,13 +233,8 @@ class Game {
         var newX = oldX + diff[0];
         var newY = oldY + diff[1];
 
-        let tile = PS["Rogue"].getTile(this.gameState)({x: newX, y: newY});
-        console.log(tile);
-        console.log("Going to pos:"+newX+","+newY);
-        if (!PS["Rogue"].isTileSolid(tile) && !(newX < 0 || newX >74) && !(newY < 0 || newY > 24) ) {
-            this.gameState.player.pos = { x: newX, y: newY };
-            this.drawMap();
-        }
+        this.moveCreature(this.gameState.player, { x: diff[0], y: diff[1] });
+        this.drawMap();
 
         window.removeEventListener("keydown", this);
         this.updateLoop();
@@ -294,12 +306,12 @@ class Game {
         this.drawLog();
 
         // Calculate player's field of view
-        let visible = {};
+        this.visible = {};
         let fovCallback = function(x, y, r, v) {
             let dx = player.pos.x - x;
             let dy = player.pos.y - y;
             if (dx*dx + dy*dy < radius*radius) {
-                visible["" + x + "," + y] = true;
+                this.visible["" + x + "," + y] = true;
                 this.setRememberTile({ x: x, y: y });
             }
         }
@@ -309,7 +321,7 @@ class Game {
         for (let dy = -1; dy <= 1; dy++) {
             for (let dx = -1; dx <= 1; dx++) {
                 let pos = { x: player.pos.x + dx, y: player.pos.y + dy };
-                visible["" + pos.x + "," + pos.y] = true;
+                this.visible["" + pos.x + "," + pos.y] = true;
                 this.setRememberTile(pos);
             }
         }
@@ -321,7 +333,7 @@ class Game {
                 if (pos.x < 0 || pos.y < 0 || pos.x >= levelWidth || pos.y >= levelHeight)
                     continue;
 
-                let vis = visible[pos.x + "," + pos.y] === true;
+                let vis = this.visible[pos.x + "," + pos.y] === true;
                 let rem = this.remembersTile(pos);
                 this.drawTile(pos, vis, rem);
             }
@@ -330,7 +342,7 @@ class Game {
         // Draw items
         for (let i=0; i < this.gameState.level.items.length; i++) {
             let item = this.gameState.level.items[i];
-            let itemVisible = visible[item.pos.x + "," + item.pos.y] === true;
+            let itemVisible = this.visible[item.pos.x + "," + item.pos.y] === true;
             if (itemVisible) {
                 let icon = PS["Rogue"].itemIcon(item.item);
                 let color = PS["Rogue"].itemColor(item.item);
@@ -341,7 +353,7 @@ class Game {
         // Draw enemies
         for (let i=0; i < this.gameState.level.enemies.length; i++) {
             let enemy = this.gameState.level.enemies[i];
-            let enemyVisible = visible[enemy.pos.x + "," + enemy.pos.y] === true;
+            let enemyVisible = this.visible[enemy.pos.x + "," + enemy.pos.y] === true;
             if (enemyVisible) {
                 let icon = PS["Rogue"].creatureIcon(enemy);
                 let color = PS["Rogue"].creatureColor(enemy);
