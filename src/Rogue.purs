@@ -203,7 +203,7 @@ tileColor (Door t)     = "rgba(200, 180, 50, " <> frozenColor t
 tileColor River        = "rgba(10, 10, 125, 0.6)"
 tileColor _            = "rgba(120, 120, 120, 0.6)"
 
-data Theme = DwarvenMine | GoblinCave | Cave | WizardTower
+data Theme = DwarvenMine | GoblinCave | Cave | IceCave | WizardTower
 
 derive instance eqTheme :: Eq Theme
 
@@ -212,6 +212,7 @@ themeName DwarvenMine = "dwarven mines"
 themeName GoblinCave = "goblin caves"
 themeName Cave = "caves"
 themeName WizardTower = "wizard's hideout"
+themeName IceCave = "ice caves"
 
 type Level =
     { tiles   :: Array Tile

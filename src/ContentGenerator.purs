@@ -107,12 +107,12 @@ randomEnemy :: Theme -> Int -> Random Creature
 randomEnemy theme depth = randomCreature
     where
         randomCreatureType :: Array (Weighted CreatureType)
-        randomCreatureType = [{ item: AlphaWolf, weight: 20 }
-                             ,{ item: Wolf,      weight: 60 }
-                             ,{ item: Bear,      weight: 30 }
-                             ,{ item: Goblin,    weight: 60 }
-                             ,{ item: Snowman,   weight: 30 }
-                             ,{ item: IceCorpse, weight: 50 }
+        randomCreatureType = [{ item: AlphaWolf, weight: if theme == Cave then 100 else 5 }
+                             ,{ item: Wolf,      weight: if theme == Cave then 300 else 30 }
+                             ,{ item: Bear,      weight: if theme == Cave then 300 else 30 }
+                             ,{ item: Goblin,    weight: if theme == GoblinCave then 400 else 10 }
+                             ,{ item: Snowman,   weight: if theme == IceCave then 200 else 5 }
+                             ,{ item: IceCorpse, weight: if theme == IceCave then 200 else 5 }
                              ]
 
         randomCreatureStats :: Array (Weighted Stats)
