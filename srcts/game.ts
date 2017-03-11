@@ -260,7 +260,7 @@ class Game {
             this.add2ActnLog("Ilmoitus: "+this.actionlog.length);
         }
 
-        if (!(code in Game.keyMap)) {
+        if (code in Game.keyMap) {
             var oldX = this.gameState.player.pos.x;
             var oldY = this.gameState.player.pos.y;
 
@@ -426,10 +426,11 @@ class Game {
         for (let i=0; i<3; i++) {
             map.create();
         }
-        map.create(function() {
-            console.log();
+        map.create(function(x, y, c) {
+            console.log(x, y, c);
         });
         //map.connect();
+        return level;
     }
 
     generateLevel(): Rogue.Level {
