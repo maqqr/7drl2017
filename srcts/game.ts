@@ -133,10 +133,13 @@ class Game {
             blocking = this.gameState.player;
         }
 
+
         if (blocking !== null) {
             if (PS["Rogue"].isPlayer(creature) !== PS["Rogue"].isPlayer(blocking)) {
                 let result = PS["Rogue"].attack(this.gameState)(creature)(blocking);
                 blocking.stats.hp = result.stats.hp;
+
+                console.log(blocking.stats.hp);
 
                 if (blocking.stats.hp <= 0 && !PS["Rogue"].isPlayer(blocking)) {
                     delete this.gameState.level.enemies[blockingId];
@@ -332,7 +335,7 @@ class Game {
         this.dungeonDepth = -1;
         this.rememberTile = {};
         this.actionlog = [];
-        this.gameState = JSON.parse(JSON.stringify(PS["Rogue"].initialGameState));
+        this.gameState = PS["Rogue"].initialGameState();
         this.state = State.InGame;
         this.themes = {};
         this.visible = {};

@@ -26,8 +26,8 @@ newtype GameState = GameState
     , equipment  :: { cloak :: Maybe Item , chest :: Maybe Item , hands :: Maybe Item , weapon :: Maybe Item }
     }
 
-initialGameState :: GameState
-initialGameState = GameState
+initialGameState :: Unit -> GameState
+initialGameState _ = GameState
     { level:      createLevel 75 25 (Ground { frozen: false })
     , player:     Creature {creatureType: Player {name: "Frozty"}, pos: {x: 0, y: 11}, stats: defaultStats, inv: [], time: 0.0 }
     , coldStatus: 0
