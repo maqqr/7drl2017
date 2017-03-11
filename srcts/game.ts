@@ -284,6 +284,8 @@ class Game {
             var newX = oldX + diff[0];
             var newY = oldY + diff[1];
 
+            this.gameState = PS["Rogue"].cold(this.gameState);
+
             this.moveCreature(this.gameState.player, { x: diff[0], y: diff[1] });
             this.drawMap();
 

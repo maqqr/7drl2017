@@ -29,7 +29,7 @@ newtype GameState = GameState
 initialGameState :: Unit -> GameState
 initialGameState _ = GameState
     { level:      createLevel 75 25 (Ground { frozen: false })
-    , player:     Creature {creatureType: Player {name: "Frozty"}, pos: {x: 0, y: 11}, stats: defaultStats, inv: [], time: 0.0 }
+    , player:     Creature {creatureType: Player {name: "Frozty"}, pos: {x: 0, y: 11}, stats: defaultStats unit, inv: [], time: 0.0 }
     , coldStatus: 0
     , equipment:  { cloak: Nothing, chest: Nothing, hands: Nothing, weapon: Nothing }
     }
@@ -123,8 +123,8 @@ type Stats =
     , int   :: Int
     }
 
-defaultStats :: Stats
-defaultStats = { hpMax: 200, hp: 200, str: 10, dex: 10, int: 10 }
+defaultStats :: Unit -> Stats
+defaultStats _ = { hpMax: 200, hp: 200, str: 10, dex: 10, int: 10 }
 
 addStats :: Stats -> Stats -> Stats
 addStats a b = { hpMax: a.hpMax + b.hpMax, hp: a.hp + b.hp, str: a.str + b.str, dex: a.dex + b.dex, int: a.int + b.int }
@@ -375,8 +375,8 @@ attack gs ac (Creature dp@{ creatureType: Player _ }) =
     Creature dp { stats { hp = dp.stats.hp - dmgToPlayer } }
     where
         dmgToPlayer :: Int
-        dmgToPlayer = min 1 $ (dmg ac Nothing) - playerArmour gs
+        dmgToPlayer = (dmg ac Nothing) - playerArmour gs
 attack _ ac (Creature dc) = Creature dc { stats { hp = dc.stats.hp - dmg ac Nothing } }
 
 cold :: GameState -> GameState
-cold (GameState gs) = GameState gs { coldStatus = gs.coldStatus + 20 - playerColdRes (GameState gs) }
+cold (GameState gs) = GameState gs { coldStatus = gs.coldStatus + 1 - playerColdRes (GameState gs) }
