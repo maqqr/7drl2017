@@ -136,7 +136,8 @@ class Game {
 
         if (blocking !== null) {
             if (PS["Rogue"].isPlayer(creature) !== PS["Rogue"].isPlayer(blocking)) {
-                let result = PS["Rogue"].attack(this.gameState)(creature)(blocking);
+                let seed = new Date().getTime();
+                let result = PS["Rogue"].attack(seed)(this.gameState)(creature)(blocking);
                 let name = PS["Data.Show"].show(PS["Rogue"].showCreature)(creature);
                 name = name.charAt(0).toUpperCase() + name.slice(1);
                 let blockname = PS["Data.Show"].show(PS["Rogue"].showCreature)(blocking);

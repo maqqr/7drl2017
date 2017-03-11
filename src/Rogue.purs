@@ -4,6 +4,7 @@ import Prelude
 import Data.Array (index, updateAt, snoc, deleteAt, replicate)
 import Data.Maybe (Maybe(..), fromMaybe)
 import Data.StrMap (StrMap, empty)
+import Random
 
 type Point = { x :: Int , y :: Int }
 
@@ -364,19 +365,24 @@ unEquip (GameState gs) 3 = GameState (gs { equipment { hands  = Nothing }, playe
 unEquip (GameState gs) 4 = GameState (gs { equipment { weapon = Nothing }, player = addItem gs.player gs.equipment.weapon })
 unEquip gs _             = gs
 
-dmg :: Creature -> Maybe Item -> Int
-dmg (Creature c) (Just (Weapon w)) = c.stats.str + (weaponPrefixStats (w.prefix)).dmg + (weaponTypeStats (w.weaponType)).dmg
-dmg (Creature c) _                 = c.stats.str * creatureBaseDmg (Creature c)
+dmg :: Creature -> Maybe Item -> Random Int
+dmg (Creature c) (Just (Weapon w)) =
+    let maxDam = c.stats.str + (weaponPrefixStats (w.prefix)).dmg + (weaponTypeStats (w.weaponType)).dmg
+    in generateInt 0 maxDam
+dmg (Creature c) _ =
+    let maxDam = c.stats.str * creatureBaseDmg (Creature c)
+    in generateInt 0 maxDam
 
-attack :: GameState -> Creature -> Creature -> Creature
-attack (GameState gs) ap@(Creature { creatureType: Player _ }) (Creature dc) =
-    Creature dc { stats { hp = dc.stats.hp - dmg ap (gs.equipment.weapon) } }
-attack gs ac (Creature dp@{ creatureType: Player _ }) =
-    Creature dp { stats { hp = dp.stats.hp - dmgToPlayer } }
-    where
-        dmgToPlayer :: Int
-        dmgToPlayer = (dmg ac Nothing) - playerArmour gs
-attack _ ac (Creature dc) = Creature dc { stats { hp = dc.stats.hp - dmg ac Nothing } }
+attack :: Seed -> GameState -> Creature -> Creature -> Creature
+attack seed (GameState gs) ap@(Creature { creatureType: Player _ }) (Creature dc) =
+    let d = (runRandom (dmg ap (gs.equipment.weapon)) seed).value
+    in Creature dc { stats { hp = dc.stats.hp - d } }
+attack seed gs ac (Creature dp@{ creatureType: Player _ }) =
+    let d = (runRandom (dmg ac Nothing) seed).value - playerArmour gs
+    in Creature dp { stats { hp = dp.stats.hp - d } }
+attack seed _ ac (Creature dc) =
+    let d = (runRandom (dmg ac Nothing) seed).value
+    in Creature dc { stats { hp = dc.stats.hp - d } }
 
 cold :: GameState -> GameState
 cold (GameState gs) = GameState gs { coldStatus = gs.coldStatus + 1 - playerColdRes (GameState gs) }
