@@ -18,7 +18,8 @@ class TileSet {
 const enum State {
     InGame,
     Inventory,
-    MessageBuffer
+    MessageBuffer,
+    GitGud
 }
 
 class Game {
@@ -54,15 +55,10 @@ class Game {
         this.handlers[State.Inventory] = this.handleInventory.bind(this);
         this.handlers[State.MessageBuffer] = this.handleMessageBuffer.bind(this);
 
-        this.currentDungeon = "worldmap";
-        this.dungeonDepth = -1;
-        this.rememberTile = {};
-        this.actionlog = [];
-        this.gameState = PS["Rogue"].initialGameState;
-        this.gameState = pushToGamestate(this, this.gameState, worldmap);
-        this.state = State.InGame;
 
         this.fov = new ROT.FOV.PreciseShadowcasting(this.isTransparent.bind(this));
+
+        this.startNewGame();
 
         this.drawMap();
 
@@ -194,17 +190,28 @@ class Game {
 
     handleMessageBuffer(e: KeyboardEvent) {
         this.state = State.InGame;
-        this.display.clear();
-        this.drawMap();
+        this.refreshDisplay();
     }
 
     handleInventory(e: KeyboardEvent) {
         // TODO
     }
 
+    handleGitGud(e: KeyboardEvent) {
+       var code = e.keyCode;
+       if (code == ROT.VK_RETURN) {
+           this.startNewGame();
+       }
+    }
+
     handleInGame(e: KeyboardEvent) {
         var code = e.keyCode;
         //console.log(code);
+
+        if(this.checkAliveStatus() == false) {
+            this.state = State.GitGud;
+            return;
+        }
 
         if (code == ROT.VK_DIVIDE) {
             let playerPos = {x: this.gameState.player.pos.x, y: this.gameState.player.pos.y};
@@ -288,7 +295,7 @@ class Game {
 
     add2ActnLog(message:string) {
         this.actionlog.push(message);
-        if (this.actionlog.length > 20) {
+        if (this.actionlog.length > 30) {
             this.actionlog.splice(0,1);
         }
     }
@@ -310,20 +317,34 @@ class Game {
 
     drawLog(lines:number) {
         let itemsInLog = this.actionlog.length;
-        let grayism = Math.round(200/lines);
+        let grayism = Math.round(230/lines);
         if (itemsInLog > 0) {
             for (let i = -1; i>(-1-lines);i--) {
                 if (itemsInLog+i <0) break;
+                this.display.drawText(0, (30+i), "%c{rgba(0,0,0,1.0)}bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb%c{}");
                 this.display.drawText(0,(30+i),"%c{rgba("+String(255+i*grayism)+","+String(255+i*grayism)+","+String(255+i*grayism)+",0.8)}"+this.actionlog[itemsInLog+i]+"%c{}",106);
             } 
         }
+    }
+
+    startNewGame() {
+        this.currentDungeon = "worldmap";
+        this.dungeonDepth = -1;
+        this.rememberTile = {};
+        this.actionlog = [];
+        this.gameState = PS["Rogue"].initialGameState;
+        this.gameState = pushToGamestate(this, this.gameState, worldmap);
+        this.state = State.InGame;
+        this.themes = {};
+        this.visible = {};
+        this.refreshDisplay();
     }
     
     /**
      * Draws the player's stats.
      */
     staTifY() {
-        this.display.drawText(0, 25, "%c{rgba(0,0,0,1.0)}bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb%c{}");
+        this.display.drawText(0, 25, "%c{rgba(0,0,0,1.0)}bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb%c{}");
         //hp
         let hp = this.gameState.player.stats.hp
         let maxhp = this.gameState.player.stats.hpMax
@@ -334,6 +355,14 @@ class Game {
         let coldscale = String(Math.round(255*(1-cold/100)));
         this.display.drawText(20,25,"You are %c{rgba("+coldscale+",255,255,0.6)}"+cold+"%c{}% freezing")
         
+    }
+
+    checkAliveStatus() {
+        if(this.gameState.player.stats.hp <=0 || this.gameState.coldStatus >=100) {
+            this.drawEncouragement();
+            return false;
+        }
+        return true;
     }
 
     drawAllTiles() {
@@ -348,9 +377,13 @@ class Game {
 
     drawmMsgbuFF() {
         this.display.clear();
-        this.drawLog(20);
+        this.drawLog(30);
+    }
 
-
+    drawEncouragement() {
+        this.display.clear();
+        this.display.drawText(30,12,"Nigga you ded");
+        this.display.drawText(30,13,"Press Enter to git gud");
     }
 
     drawMap() {
