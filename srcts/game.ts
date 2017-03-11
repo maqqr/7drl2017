@@ -54,7 +54,7 @@ class Game {
         this.handlers[State.InGame] = this.handleInGame.bind(this);
         this.handlers[State.Inventory] = this.handleInventory.bind(this);
         this.handlers[State.MessageBuffer] = this.handleMessageBuffer.bind(this);
-
+        this.handlers[State.GitGud] = this.handleGitGud.bind(this);
 
         this.fov = new ROT.FOV.PreciseShadowcasting(this.isTransparent.bind(this));
 
@@ -332,11 +332,11 @@ class Game {
         this.dungeonDepth = -1;
         this.rememberTile = {};
         this.actionlog = [];
-        this.gameState = PS["Rogue"].initialGameState;
-        this.gameState = pushToGamestate(this, this.gameState, worldmap);
+        this.gameState = JSON.parse(JSON.stringify(PS["Rogue"].initialGameState));
         this.state = State.InGame;
         this.themes = {};
         this.visible = {};
+        this.gameState = pushToGamestate(this, this.gameState, worldmap);
         this.refreshDisplay();
     }
     
