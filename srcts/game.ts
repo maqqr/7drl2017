@@ -199,7 +199,11 @@ class Game {
     }
 
     handleInventory(e: KeyboardEvent) {
-        // TODO
+        let code = e.keyCode;
+        if (code == ROT.VK_RETURN || code == ROT.VK_I) {
+            this.state = State.InGame;
+            this.refreshDisplay();
+        }
     }
 
     handleGitGud(e: KeyboardEvent) {
@@ -274,10 +278,38 @@ class Game {
             this.add2ActnLog("Ilmoitus: "+this.actionlog.length);
         }
 
+        // Show message buffer
         if (code == ROT.VK_M) {
             this.drawmMsgbuFF();
             this.state = State.MessageBuffer;
             return;
+        }
+
+        // Show inventory
+        if (code == ROT.VK_I) {
+            this.state = State.Inventory;
+            this.drawInventory();
+            return;
+        }
+
+        // Pickup item
+        if (code == ROT.VK_G || code == ROT.VK_COMMA) {
+            let itemsAtPlayer = []
+            for (let item of this.gameState.level.items) {
+                if (PS["Rogue"].pointEquals(this.gameState.player.pos)(item.pos)) {
+                    itemsAtPlayer.push(item);
+                }
+            }
+
+            if (itemsAtPlayer.length == 1) {
+                let item = itemsAtPlayer[0];
+                let index = this.gameState.level.items.indexOf(item);
+                this.gameState.level.items.splice(index, 1);
+                this.gameState.player.inv.push(item.item);
+            }
+            else if (itemsAtPlayer.length > 1) {
+                // TODO pick up one of several items
+            }
         }
 
         if (code in Game.keyMap) {
@@ -391,6 +423,19 @@ class Game {
         this.display.clear();
         this.display.drawText(30,12,"Nigga you ded");
         this.display.drawText(30,13,"Press Enter to git gud");
+    }
+
+    drawInventory() {
+        this.display.clear();
+        this.display.drawText(2, 2, "Inventory");
+
+        for (let i=0; i<this.gameState.player.inv.length; i++) {
+            let item = this.gameState.player.inv[i];
+            let key = String.fromCharCode(65 + i);
+            this.display.drawText(3, 4 + i, key + " - " + PS["Rogue"].itemName(item));
+        }
+
+        this.display.drawText(2, 28, "Press Enter to return");
     }
 
     drawMap() {
