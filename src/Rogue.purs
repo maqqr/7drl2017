@@ -4,7 +4,7 @@ import Prelude
 import Data.Array (index, updateAt, snoc, deleteAt, replicate)
 import Data.Maybe (Maybe(..), fromMaybe)
 import Data.StrMap (StrMap, empty)
-import Random
+import Random (Random, Seed, generateInt, runRandom)
 
 type Point = { x :: Int , y :: Int }
 

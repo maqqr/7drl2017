@@ -22,6 +22,13 @@ const enum State {
     GitGud
 }
 
+const enum InventoryState {
+    Show,
+    Drop,
+    Equip,
+    Unequip
+}
+
 class Game {
     static readonly keyMap: { [id: number] : number }
         = { 104: 0, 105: 1, 102: 2, 99: 3, 98: 4, 97: 5, 100: 6, 103: 7};
@@ -36,6 +43,7 @@ class Game {
     gameState: any;
     worldMap: Rogue.Level;
     state: State;
+    invState: InventoryState;
     handlers: { [id: number]: (e: KeyboardEvent) => void } = {};
     themes: { [id: string]: Rogue.Theme } = {};
 
@@ -200,7 +208,7 @@ class Game {
 
     handleInventory(e: KeyboardEvent) {
         let code = e.keyCode;
-        if (code == ROT.VK_RETURN || code == ROT.VK_I) {
+        if (code == ROT.VK_RETURN || code == ROT.VK_SPACE || code == ROT.VK_I) {
             this.state = State.InGame;
             this.refreshDisplay();
         }
@@ -288,6 +296,14 @@ class Game {
         // Show inventory
         if (code == ROT.VK_I) {
             this.state = State.Inventory;
+            this.invState = InventoryState.Show;
+            this.drawInventory();
+            return;
+        }
+
+        if (code == ROT.VK_E) {
+            this.state = State.Inventory;
+            this.invState = InventoryState.Equip;
             this.drawInventory();
             return;
         }
@@ -427,15 +443,17 @@ class Game {
 
     drawInventory() {
         this.display.clear();
-        this.display.drawText(2, 2, "Inventory");
+
+        console.log(this.invState);
+
+        if (this.invState == InventoryState.Show)
+            this.display.drawText(2, 2, "Inventory");
 
         for (let i=0; i<this.gameState.player.inv.length; i++) {
             let item = this.gameState.player.inv[i];
             let key = String.fromCharCode(65 + i);
             this.display.drawText(3, 4 + i, key + " - " + PS["Rogue"].itemName(item));
         }
-
-        this.display.drawText(2, 28, "Press Enter to return");
     }
 
     drawMap() {
