@@ -98,6 +98,7 @@ declare module ROT.Scheduler {
     export class Speed<T> {
         constructor();
         add(item: T, repeating: boolean): void;
+        remove(item: T): void;
         next(): T;
         clear(): void;
     }

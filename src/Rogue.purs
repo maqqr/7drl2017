@@ -68,10 +68,10 @@ creatureIcon (Creature { creatureType: AlphaWolf }) = 'W'
 creatureIcon (Creature { creatureType: Wolf })      = 'w'
 creatureIcon (Creature { creatureType: Bear })      = 'B'
 creatureIcon (Creature { creatureType: Goblin })    = 'g'
-creatureIcon (Creature { creatureType: Snowman })   = 'S'
+creatureIcon (Creature { creatureType: Snowman })   = '\234'
 creatureIcon (Creature { creatureType: IceCorpse }) = 'Z'
 creatureIcon (Creature { creatureType: Tim })       = '\001'
-creatureIcon _                                      = '\234'
+creatureIcon _                                      = '?'
 
 creatureColor :: Creature -> String
 creatureColor (Creature { creatureType: Player p })  = "rgba(0, 200, 0, 0.6)"
@@ -345,7 +345,7 @@ equip (GameState gs) (Armour a) 1 = GameState (gs { equipment { cloak = isCorrec
 equip (GameState gs) (Armour a) 2 = GameState (gs { equipment { chest = isCorrectArmour (Armour a) a.armourType 2 } })
 equip (GameState gs) (Armour a) 3 = GameState (gs { equipment { hands = isCorrectArmour (Armour a) a.armourType 3 } })
 equip (GameState gs) w          4 = GameState(gs { equipment { weapon = Just w } })
-equip gs _ _ = gs
+equip gs _ _                      = gs
 
 unEquip :: GameState -> Int -> GameState
 unEquip (GameState gs) 1 = GameState (gs { equipment { cloak  = Nothing }, player = addItem gs.player gs.equipment.cloak })
@@ -359,11 +359,13 @@ dmg (Creature c) (Just (Weapon w)) = c.stats.str + (weaponPrefixStats (w.prefix)
 dmg (Creature c) _                 = c.stats.str * creatureBaseDmg (Creature c)
 
 attack :: GameState -> Creature -> Creature -> Creature
-attack (GameState gs) ap@(Creature { creatureType: Player _ }) (Creature dc) = Creature dc { stats { hp = dc.stats.hp - dmg ap (gs.equipment.weapon) } }
-attack gs ac (Creature dp@{ creatureType: Player _ }) = Creature dp { stats { hp = dmgToPlayer } }
+attack (GameState gs) ap@(Creature { creatureType: Player _ }) (Creature dc) =
+    Creature dc { stats { hp = dc.stats.hp - dmg ap (gs.equipment.weapon) } }
+attack gs ac (Creature dp@{ creatureType: Player _ }) =
+    Creature dp { stats { hp = dp.stats.hp - dmgToPlayer } }
     where
         dmgToPlayer :: Int
-        dmgToPlayer = if playerArmour gs >= (dmg ac Nothing) then 1 else (dmg ac Nothing) - playerArmour gs
+        dmgToPlayer = min 1 $ (dmg ac Nothing) - playerArmour gs
 attack _ ac (Creature dc) = Creature dc { stats { hp = dc.stats.hp - dmg ac Nothing } }
 
 cold :: GameState -> GameState

@@ -18,12 +18,12 @@ class TileSet {
 class Actor {
     speed: number;
     isPlayer: boolean;
-    index: number;
+    creature: any;
 
-    constructor(speed: number, isPlayer: boolean, index: number) {
+    constructor(speed: number, isPlayer: boolean, creature: any) {
         this.speed = speed;
         this.isPlayer = isPlayer;
-        this.index = index;
+        this.creature = creature;
     }
     getSpeed(): number {
         return this.speed;
@@ -40,6 +40,7 @@ class Game {
     dungeonDepth: number; // -1 = world map, 0 = first level, 1 = second level
     display: ROT.Display;
     scheduler: ROT.Scheduler.Speed<Actor>;
+    actors: Array<Actor>;
     fov: ROT.FOV.PreciseShadowcasting;
     visible: {[id: string]: boolean} = {};
     gameState: any;
@@ -68,13 +69,37 @@ class Game {
 
         this.drawMap();
 
+        this.actors = [];
         this.scheduler = new ROT.Scheduler.Speed<Actor>();
-        this.scheduler.add(new Actor(50, true, -1), true);
+        //this.scheduler.add(new Actor(50, true, -1), true);
+        this.addCreature(this.gameState.player, true);
 
         this.currentDungeon = "worldmap";
         this.worldMap = this.gameState.level;
 
         this.updateLoop();
+    }
+
+    addCreature(creature: any, isPlayer: boolean) {
+        let actor = new Actor(50, isPlayer, creature);
+        this.actors.push(creature);
+        this.scheduler.add(actor, true);
+    }
+
+    removeCreature(creature: any) {
+        let actor = null;
+        for (let a of this.actors) {
+            if (a.creature == creature) {
+                actor = a.creature;
+                break;
+            }
+        }
+
+        if (actor !== null) {
+            let index = this.actors.indexOf(actor);
+            this.actors.splice(index, 1);
+            this.scheduler.remove(actor);
+        }
     }
 
     isTransparent(x: number, y: number): boolean {
@@ -114,7 +139,7 @@ class Game {
                 break;
             }
             else {
-                let enemy = this.gameState.level.enemies[current.index];
+                let enemy = current.creature; //this.gameState.level.enemies[current.index];
                 this.updateAI(enemy);
             }
         }
@@ -133,7 +158,14 @@ class Game {
         }
         if (blocking !== null) {
             if (PS["Rogue"].isPlayer(creature) !== PS["Rogue"].isPlayer(blocking)) {
-                // TODO: combat
+                let result = PS["Rogue"].attack(this.gameState)(creature)(blocking);
+                blocking.stats.hp = result.stats.hp;
+
+                if (blocking.stats.hp <= 0 && !PS["Rogue"].isPlayer(blocking)) {
+                    let index = this.gameState.level.enemies.indexOf(blocking);
+                    this.gameState.level.enemies.splice(index, 1);
+                    this.removeCreature(blocking);
+                }
             }
             return;
         }
@@ -172,10 +204,15 @@ class Game {
     changeLevel(newLevel : Rogue.Level, playerPos : { x: number, y: number }) {
         this.gameState.level = newLevel;
         this.gameState.player.pos = playerPos;
-        this.scheduler.clear();
-        this.scheduler.add(new Actor(50, true, -1), true);
-        for (let i = 0; i < this.gameState.level.enemies.length; i++) {
-            this.scheduler.add(new Actor(50, false, i), true);
+        
+        // this.scheduler.clear();
+        // this.scheduler.add(new Actor(50, true, -1), true);
+        // for (let i = 0; i < this.gameState.level.enemies.length; i++) {
+        //     this.scheduler.add(new Actor(50, false, i), true);
+        // }
+
+        for (let enemy of this.gameState.level.enemies) {
+            this.addCreature(enemy, false);
         }
         this.refreshDisplay();
     }
@@ -289,6 +326,7 @@ class Game {
     }
     //Draws player's stats
     staTifY() {
+        this.display.drawText(0, 25, "%c{rgba(0,0,0,1.0)}bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb%c{}");
         //hp
         let hp = this.gameState.player.stats.hp
         let maxhp = this.gameState.player.stats.hpMax
