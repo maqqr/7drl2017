@@ -15,6 +15,12 @@ class TileSet {
     }
 }
 
+const enum State {
+    InGame,
+    Inventory,
+    MessageBuffer
+}
+
 class Game {
     static readonly keyMap: { [id: number] : number }
         = { 104: 0, 105: 1, 102: 2, 99: 3, 98: 4, 97: 5, 100: 6, 103: 7};
@@ -28,6 +34,8 @@ class Game {
     visible: {[id: string]: boolean} = {};
     gameState: any;
     worldMap: Rogue.Level;
+    state: State;
+    handlers: { [id: number]: (e: KeyboardEvent) => void } = {};
 
     actionlog: Array<string>;
  
@@ -41,12 +49,17 @@ class Game {
         });
         document.body.appendChild(this.display.getContainer());
 
+        this.handlers[State.InGame] = this.handleInGame.bind(this);
+        this.handlers[State.Inventory] = this.handleInventory.bind(this);
+        this.handlers[State.MessageBuffer] = this.handleMessageBuffer.bind(this);
+
         this.currentDungeon = "worldmap";
         this.dungeonDepth = -1;
         this.rememberTile = {};
         this.actionlog = [];
         this.gameState = PS["Rogue"].initialGameState;
         this.gameState = pushToGamestate(this.gameState, worldmap);
+        this.state = State.InGame;
 
         this.fov = new ROT.FOV.PreciseShadowcasting(this.isTransparent.bind(this));
 
@@ -173,10 +186,24 @@ class Game {
     }
 
     handleEvent(e: KeyboardEvent) {
+        if (this.state in this.handlers) {
+            this.handlers[this.state](e);
+        }
+    }
+
+    handleMessageBuffer(e: KeyboardEvent) {
+        // TODO
+    }
+
+    handleInventory(e: KeyboardEvent) {
+        // TODO
+    }
+
+    handleInGame(e: KeyboardEvent) {
         var code = e.keyCode;
         //console.log(code);
 
-        if (code == 111) {
+        if (code == ROT.VK_DIVIDE) {
             let playerPos = {x: this.gameState.player.pos.x, y: this.gameState.player.pos.y};
             let potentialDoor = PS["Rogue"].getTile(this.gameState)(playerPos);
             let tileName = PS["Data.Show"].show(PS["Rogue"].showTile)(potentialDoor);
@@ -228,7 +255,7 @@ class Game {
             }
         }
 
-        if (code == 106) {
+        if (code == ROT.VK_MULTIPLY) {
             this.add2ActnLog("Ilmoitus: "+this.actionlog.length);
         }
 
