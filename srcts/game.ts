@@ -137,6 +137,9 @@ class Game {
         if (blocking !== null) {
             if (PS["Rogue"].isPlayer(creature) !== PS["Rogue"].isPlayer(blocking)) {
                 let result = PS["Rogue"].attack(this.gameState)(creature)(blocking);
+                let name = PS["Data.Show"].show(PS["Rogue"].showCreature)(creature);
+                name = name.charAt(0).toUpperCase() + name.slice(1);
+                this.add2ActnLog(name+" hit "+PS["Data.Show"].show(PS["Rogue"].showCreature)(blocking)+" for "+String(blocking.stats.hp-result.stats.hp)+" damage.");
                 blocking.stats.hp = result.stats.hp;
 
                 if (blocking.stats.hp <= 0 && !PS["Rogue"].isPlayer(blocking)) {
