@@ -454,6 +454,30 @@ class Game {
         return level;
     }
 
+    createIceCave(width: number, height: number, level: Rogue.Level): Rogue.Level {
+        for (let y=0; y<height; y++) {
+            for (let x=0; x<width; x++) {
+                level = PS["Rogue"].setLevelTile(level)(PS["Rogue"].Wall.create({frozen: true}))({ x: x, y: y});
+            }
+        }
+        let map = new ROT.Map.Cellular(width, height, { connected: true });
+        map.randomize(0.5);
+        for (let i=0; i<3; i++) {
+            map.create();
+        }
+        let callback = function(x, y, value) {
+            if (value == 0 || !(x > 0 && y > 0 && x < width - 1 && y < height - 1))
+                return;
+            let position = { x: x, y: y };
+            let floor = PS["Rogue"].Ground.create({ frozen: true });
+
+            level = PS["Rogue"].setLevelTile(level)(floor)(position);
+        }
+        map.create(callback);
+        map.connect(callback, 1);
+        return level;
+    }
+
     generateLevel(): Rogue.Level {
         let width = 75;
         let height = 23;
@@ -465,6 +489,9 @@ class Game {
 
         if (theme instanceof PS["Rogue"].GoblinCave || theme instanceof PS["Rogue"].Cave) {
             level = this.createCave(width, height, level);
+        }
+        else if (theme instanceof PS["Rogue"].IceCave) {
+            level = this.createIceCave(width, height, level);
         }
         else {
             level = this.createDungeon(width, height, level);
@@ -491,7 +518,6 @@ class Game {
 
         let itemSeed = new Date().getTime();
         function randomItem() {
-            let theme = undefined;
             let result = PS["Random"].runRandom(PS["ContentGenerator"].randomItem(theme)(this.dungeonDepth))(itemSeed);
             itemSeed = result.seed;
             return result.value;
@@ -500,7 +526,6 @@ class Game {
 
         let enemySeed = new Date().getTime();
         function randomEnemy() {
-            let theme = undefined;
             let result = PS["Random"].runRandom(PS["ContentGenerator"].randomEnemy(theme)(this.dungeonDepth))(enemySeed);
             enemySeed = result.seed;
             return result.value;

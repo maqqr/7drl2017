@@ -43,6 +43,7 @@ function pushToGamestate(game: Game, gameState, map) {
     let themes = [ new ps.DwarvenMine()
                  , new ps.GoblinCave()
                  , new ps.Cave()
+                 , new ps.IceCave()
                  ];
     let themeIndex = 0;
     let nextTheme = function() {

@@ -823,6 +823,13 @@ var PS = {};
       Cave.value = new Cave();
       return Cave;
   })();
+  var IceCave = (function () {
+      function IceCave() {
+
+      };
+      IceCave.value = new IceCave();
+      return IceCave;
+  })();
   var WizardTower = (function () {
       function WizardTower() {
 
@@ -1199,6 +1206,9 @@ var PS = {};
       };
       if (v instanceof WizardTower) {
           return "wizard's hideout";
+      };
+      if (v instanceof IceCave) {
+          return "ice caves";
       };
       throw new Error("Failed pattern match at Rogue line 211, column 1 - line 212, column 1: " + [ v.constructor.name ]);
   };
@@ -1617,6 +1627,9 @@ var PS = {};
               return true;
           };
           if (x instanceof Cave && y instanceof Cave) {
+              return true;
+          };
+          if (x instanceof IceCave && y instanceof IceCave) {
               return true;
           };
           if (x instanceof WizardTower && y instanceof WizardTower) {
@@ -2136,6 +2149,7 @@ var PS = {};
   exports["DwarvenMine"] = DwarvenMine;
   exports["GoblinCave"] = GoblinCave;
   exports["Cave"] = Cave;
+  exports["IceCave"] = IceCave;
   exports["WizardTower"] = WizardTower;
   exports["Ground"] = Ground;
   exports["Wall"] = Wall;
@@ -2350,6 +2364,7 @@ var PS = {};
   var Data_Semiring = PS["Data.Semiring"];
   var Data_Ring = PS["Data.Ring"];
   var Data_Functor = PS["Data.Functor"];
+  var Data_Eq = PS["Data.Eq"];
   var Control_Bind = PS["Control.Bind"];
   var Control_Applicative = PS["Control.Applicative"];        
   var randomTheme = Random.unsafeSelectOne()([ Rogue.DwarvenMine.value, Rogue.GoblinCave.value, Rogue.Cave.value ]);
@@ -2395,16 +2410,52 @@ var PS = {};
       return function (depth) {
           var randomCreatureType = [ {
               item: Rogue.AlphaWolf.value, 
-              weight: 20
+              weight: (function () {
+                  var $15 = Data_Eq.eq(Rogue.eqTheme)(theme)(Rogue.Cave.value);
+                  if ($15) {
+                      return 100;
+                  };
+                  if (!$15) {
+                      return 5;
+                  };
+                  throw new Error("Failed pattern match at ContentGenerator line 110, column 58 - line 110, column 91: " + [ $15.constructor.name ]);
+              })()
           }, {
               item: Rogue.Wolf.value, 
-              weight: 60
+              weight: (function () {
+                  var $16 = Data_Eq.eq(Rogue.eqTheme)(theme)(Rogue.Cave.value);
+                  if ($16) {
+                      return 300;
+                  };
+                  if (!$16) {
+                      return 30;
+                  };
+                  throw new Error("Failed pattern match at ContentGenerator line 111, column 58 - line 111, column 92: " + [ $16.constructor.name ]);
+              })()
           }, {
               item: Rogue.Bear.value, 
-              weight: 30
+              weight: (function () {
+                  var $17 = Data_Eq.eq(Rogue.eqTheme)(theme)(Rogue.Cave.value);
+                  if ($17) {
+                      return 300;
+                  };
+                  if (!$17) {
+                      return 30;
+                  };
+                  throw new Error("Failed pattern match at ContentGenerator line 112, column 58 - line 112, column 92: " + [ $17.constructor.name ]);
+              })()
           }, {
               item: Rogue.Goblin.value, 
-              weight: 60
+              weight: (function () {
+                  var $18 = Data_Eq.eq(Rogue.eqTheme)(theme)(Rogue.GoblinCave.value);
+                  if ($18) {
+                      return 400;
+                  };
+                  if (!$18) {
+                      return 10;
+                  };
+                  throw new Error("Failed pattern match at ContentGenerator line 113, column 58 - line 113, column 98: " + [ $18.constructor.name ]);
+              })()
           }, {
               item: Rogue.Snowman.value, 
               weight: 30
