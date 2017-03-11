@@ -22,7 +22,7 @@ Status: *Working on it* :snowflake:
 
 ```
 bower install
-pulp build --skip-entry-point --main Rogue --modules Rogue --to output.js
+pulp build --skip-entry-point --main Rogue --modules Rogue,Random,ContentGenerator --to output.js
 tsc -p . --out tsoutput.js
 ```
 
