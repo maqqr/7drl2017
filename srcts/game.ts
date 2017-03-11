@@ -139,8 +139,6 @@ class Game {
                 let result = PS["Rogue"].attack(this.gameState)(creature)(blocking);
                 blocking.stats.hp = result.stats.hp;
 
-                console.log(blocking.stats.hp);
-
                 if (blocking.stats.hp <= 0 && !PS["Rogue"].isPlayer(blocking)) {
                     delete this.gameState.level.enemies[blockingId];
                 }
