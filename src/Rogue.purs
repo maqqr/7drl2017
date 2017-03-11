@@ -207,6 +207,11 @@ data Theme = DwarvenMine | GoblinCave | Cave | WizardTower
 
 derive instance eqTheme :: Eq Theme
 
+themeName :: Theme -> String
+themeName DwarvenMine = "dwarven mines"
+themeName GoblinCave = "goblin caves"
+themeName Cave = "caves"
+themeName WizardTower = "wizard's hideout"
 
 type Level =
     { tiles   :: Array Tile

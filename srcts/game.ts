@@ -426,10 +426,16 @@ class Game {
         for (let i=0; i<3; i++) {
             map.create();
         }
-        map.create(function(x, y, c) {
-            console.log(x, y, c);
-        });
-        //map.connect();
+        let callback = function(x, y, value) {
+            if (value == 0 || !(x > 0 && y > 0 && x < width - 1 && y < height - 1))
+                return;
+            let position = { x: x, y: y };
+            let floor = PS["Rogue"].Ground.create({ frozen: false });
+
+            level = PS["Rogue"].setLevelTile(level)(floor)(position);
+        }
+        map.create(callback);
+        map.connect(callback, 1);
         return level;
     }
 
@@ -440,9 +446,15 @@ class Game {
         let level = PS["Rogue"].createLevel(width)(height)(fillTile);
         level.enemies = {};
 
-        let key = this.gameState.player.pos.x + "," + this.gameState.player.pos.y;
-        let theme = this.themes[key];
-        level = this.createDungeon(width, height, level);
+        let theme = this.themes[this.currentDungeon];
+
+        if (theme instanceof PS["Rogue"].GoblinCave || theme instanceof PS["Rogue"].Cave) {
+            level = this.createCave(width, height, level);
+        }
+        else {
+            level = this.createDungeon(width, height, level);
+        }
+        this.add2ActnLog("You enter the " + PS["Rogue"].themeName(theme) + " floor " + (this.dungeonDepth + 1) + ".");
 
         let freePositions = [];
         for (let y=0; y<height; y++)

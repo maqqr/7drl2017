@@ -424,6 +424,7 @@ declare module ROT.Map {
         constructor(width: number, height: number, options: any);
         randomize(probability: number);
         set(x: number, y: number, value: number);
+        connect(callback: any, connectWalls: number);
     }
 
     export class Digger extends Dungeon implements IMap {
