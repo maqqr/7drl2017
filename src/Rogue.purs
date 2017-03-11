@@ -4,7 +4,7 @@ import Prelude
 import Data.Array (index, updateAt, snoc, deleteAt, replicate)
 import Data.Maybe (Maybe(..), fromMaybe)
 import Data.StrMap (StrMap, empty)
-import Random
+import Random (Random, Seed, generateInt, runRandom)
 
 type Point = { x :: Int , y :: Int }
 
@@ -30,7 +30,7 @@ newtype GameState = GameState
 initialGameState :: Unit -> GameState
 initialGameState _ = GameState
     { level:      createLevel 75 25 (Ground { frozen: false })
-    , player:     Creature {creatureType: Player {name: "Frozty"}, pos: {x: 0, y: 11}, stats: defaultStats unit, inv: [], time: 0.0 }
+    , player:     Creature {creatureType: Player {name: "Frozty"}, pos: {x: 0, y: 11}, stats: defaultStats unit, inv: [Wood, Wood], time: 0.0 }
     , coldStatus: 0
     , equipment:  { cloak: Nothing, chest: Nothing, hands: Nothing, weapon: Nothing }
     }
@@ -250,6 +250,13 @@ data Item = Weapon { weaponType :: WeaponType, prefix :: WeaponPrefix }
         --| Scroll { effect :: Effect }
           | Potion { effect :: PotionEffect }    
           | Wood
+
+itemName :: Item -> String
+itemName (Weapon w) = "weapon"
+itemName (Armour a) = "armour"
+-- itemName (Scroll s) = "scroll"
+itemName (Potion p) = "potion"
+itemName Wood       = "wood"
 
 itemIcon :: Item -> Char
 itemIcon (Weapon w) = '/' 
