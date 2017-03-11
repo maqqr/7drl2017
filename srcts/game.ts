@@ -148,7 +148,12 @@ class Game {
                 let result = PS["Rogue"].attack(seed)(this.gameState)(creature)(blocking);
                 let name = PS["Data.Show"].show(PS["Rogue"].showCreature)(creature);
                 name = name.charAt(0).toUpperCase() + name.slice(1);
-                this.add2ActnLog(name+" hit "+PS["Data.Show"].show(PS["Rogue"].showCreature)(blocking)+" for "+String(blocking.stats.hp-result.stats.hp)+" damage.");
+                let blockname = PS["Data.Show"].show(PS["Rogue"].showCreature)(blocking);
+                blockname = blockname.charAt(0).toUpperCase() + blockname.slice(1);
+                this.add2ActnLog(name+" hit "+PS["Data.Show"].show(PS["Rogue"].showCreature)(blocking)+" for %c{rgba(255,0,0,0.8)}"+String(blocking.stats.hp-result.stats.hp)+"%c{} damage.");
+                if(result.stats.hp <=0) {
+                    this.add2ActnLog(blockname+" died for some reason.");
+                }
                 blocking.stats.hp = result.stats.hp;
 
                 if (blocking.stats.hp <= 0 && !PS["Rogue"].isPlayer(blocking)) {
@@ -377,7 +382,36 @@ class Game {
             for (let i = -1; i>(-1-lines);i--) {
                 if (itemsInLog+i <0) break;
                 this.display.drawText(0, (30+i), "%c{rgba(0,0,0,1.0)}bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb%c{}");
-                this.display.drawText(0,(30+i),"%c{rgba("+String(255+i*grayism)+","+String(255+i*grayism)+","+String(255+i*grayism)+",0.8)}"+this.actionlog[itemsInLog+i]+"%c{}",106);
+                let linecolor = "%c{rgba("+String(255+i*grayism)+","+String(255+i*grayism)+","+String(255+i*grayism)+",0.8)}";
+                //Make sure that the line color continues after possible colorized text
+                let nextLine = this.actionlog[itemsInLog+i];
+                let colorPos = nextLine.indexOf("%c{}");
+                if (colorPos!=-1) {
+                    
+                    //Fade the color
+                    let cStartPos = nextLine.indexOf("%c{rgba(") + 3;
+                    let cLength = 0;
+                    let commaPos = 0;
+                    while (nextLine.charAt(cStartPos+cLength) != ")") {
+                        cLength +=1;
+                        if (nextLine.charAt(cStartPos+cLength) == ",") commaPos =cStartPos+cLength;
+                    }
+                    let black = ROT.Color.fromString("rgb(0,0,0)");
+                    let colorRot = ROT.Color.fromString("rgb"+nextLine.slice(cStartPos+3,commaPos-1)+")");
+                    colorRot = ROT.Color.interpolate(colorRot, black,(0.5));
+
+
+                    //TODO: Replace the color
+                    nextLine = nextLine.replace(nextLine.slice(cStartPos,cStartPos+cLength),colorRot.toString());
+
+
+                    //Last changes
+                    colorPos = nextLine.indexOf("%c{}");
+                    nextLine = nextLine.slice(0,colorPos+4) + linecolor + nextLine.slice(colorPos+4);
+
+
+                }
+                this.display.drawText(0,(30+i),linecolor+nextLine+"%c{}",106);
             } 
         }
     }
@@ -391,6 +425,7 @@ class Game {
         this.state = State.InGame;
         this.themes = {};
         this.visible = {};
+        this.dungeonMaps = {};
         this.gameState = pushToGamestate(this, this.gameState, worldmap);
         this.refreshDisplay();
     }
