@@ -261,21 +261,15 @@ class Game {
             this.add2ActnLog("Ilmoitus: "+this.actionlog.length);
         }
 
-<<<<<<< HEAD
         if (code == ROT.VK_M) {
             this.drawmMsgbuFF();
             this.state = State.MessageBuffer;
             return;
         }
 
-        if (!(code in Game.keyMap)) { return; }
-        var oldX = this.gameState.player.pos.x;
-        var oldY = this.gameState.player.pos.y;
-=======
-        if (!(code in Game.keyMap)) {
+        if (code in Game.keyMap) {
             var oldX = this.gameState.player.pos.x;
             var oldY = this.gameState.player.pos.y;
->>>>>>> e85538309f27115f6485bb6f029a67b66c143bc3
 
             var diff = ROT.DIRS[8][Game.keyMap[code]];
             var newX = oldX + diff[0];
