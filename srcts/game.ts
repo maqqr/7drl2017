@@ -348,18 +348,20 @@ class Game {
                         cLength +=1;
                         if (nextLine.charAt(cStartPos+cLength) == ",") commaPos =cStartPos+cLength;
                     }
-                    let black = ROT.Color.fromString("rgb(0,0,0)");
-                    let colorRot = ROT.Color.fromString("rgb"+nextLine.slice(cStartPos+3,commaPos-1)+")");
-                    colorRot = ROT.Color.interpolate(colorRot, black,(0.5));
-
+                    let black = ROT.Color.fromString("rgb(1,1,1)");
+                    let colorRot = ROT.Color.fromString("rgb"+nextLine.slice(cStartPos+4,commaPos)+")");
+                    
+                    colorRot = ROT.Color.interpolate(colorRot, black,1-(255+i*grayism)/255); //TODO fix this
+                    console.log(colorRot.toString());
 
                     //TODO: Replace the color
-                    nextLine = nextLine.replace(nextLine.slice(cStartPos,cStartPos+cLength),colorRot.toString());
+                    nextLine = nextLine.replace(nextLine.slice(cStartPos+3,cStartPos+cLength),"("+colorRot.toString());
 
 
                     //Last changes
                     colorPos = nextLine.indexOf("%c{}");
                     nextLine = nextLine.slice(0,colorPos+4) + linecolor + nextLine.slice(colorPos+4);
+                    console.log(nextLine);
 
 
                 }
