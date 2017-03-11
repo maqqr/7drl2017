@@ -192,7 +192,8 @@ class Game {
     }
 
     handleMessageBuffer(e: KeyboardEvent) {
-        // TODO
+        this.state = State.InGame;
+        this.drawMap();
     }
 
     handleInventory(e: KeyboardEvent) {
@@ -257,6 +258,12 @@ class Game {
 
         if (code == ROT.VK_MULTIPLY) {
             this.add2ActnLog("Ilmoitus: "+this.actionlog.length);
+        }
+
+        if (code == ROT.VK_M) {
+            this.drawmMsgbuFF();
+            this.state = State.MessageBuffer;
+            return;
         }
 
         if (!(code in Game.keyMap)) { return; }
@@ -334,6 +341,13 @@ class Game {
                 this.drawTile(pos, false, rem);
             }
         }
+    }
+
+    drawmMsgbuFF() {
+        this.display.clear();
+        
+
+
     }
 
     drawMap() {
