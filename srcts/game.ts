@@ -193,7 +193,9 @@ class Game {
     }
 
     handleMessageBuffer(e: KeyboardEvent) {
-        // TODO
+        this.state = State.InGame;
+        this.display.clear();
+        this.drawMap();
     }
 
     handleInventory(e: KeyboardEvent) {
@@ -260,6 +262,12 @@ class Game {
             this.add2ActnLog("Ilmoitus: "+this.actionlog.length);
         }
 
+        if (code == ROT.VK_M) {
+            this.drawmMsgbuFF();
+            this.state = State.MessageBuffer;
+            return;
+        }
+
         if (code in Game.keyMap) {
             var oldX = this.gameState.player.pos.x;
             var oldY = this.gameState.player.pos.y;
@@ -300,11 +308,11 @@ class Game {
         this.drawMap();
     }
 
-    drawLog() {
+    drawLog(lines:number) {
         let itemsInLog = this.actionlog.length;
-        let grayism = 50;
+        let grayism = Math.round(200/lines);
         if (itemsInLog > 0) {
-            for (let i = -1; i>-5;i--) {
+            for (let i = -1; i>(-1-lines);i--) {
                 if (itemsInLog+i <0) break;
                 this.display.drawText(0,(30+i),"%c{rgba("+String(255+i*grayism)+","+String(255+i*grayism)+","+String(255+i*grayism)+",0.8)}"+this.actionlog[itemsInLog+i]+"%c{}",106);
             } 
@@ -338,6 +346,13 @@ class Game {
         }
     }
 
+    drawmMsgbuFF() {
+        this.display.clear();
+        this.drawLog(20);
+
+
+    }
+
     drawMap() {
         let radius = 5;
         let player = this.gameState.player;
@@ -345,7 +360,7 @@ class Game {
         let levelHeight = this.gameState.level.height;
 
         this.staTifY();
-        this.drawLog();
+        this.drawLog(4);
 
         // Calculate player's field of view
         this.visible = {};
