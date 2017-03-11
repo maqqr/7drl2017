@@ -397,10 +397,10 @@ class Game {
                         cLength +=1;
                         if (nextLine.charAt(cStartPos+cLength) == ",") commaPos =cStartPos+cLength;
                     }
-                    let black = ROT.Color.fromString("rgb(1,1,1)");
+                    let black = ROT.Color.fromString("rgb(0,0,0)");
                     let colorRot = ROT.Color.fromString("rgb"+nextLine.slice(cStartPos+4,commaPos)+")");
                     
-                    colorRot = ROT.Color.interpolate(colorRot, black,1-(255+i*grayism)/255); //TODO fix this
+                    colorRot = ROT.Color.interpolate(colorRot, black,(1-(230+i*grayism)/230)*0.75); //TODO fix this
                     
 
                     //TODO: Replace the color
