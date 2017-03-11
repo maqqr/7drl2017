@@ -4,6 +4,10 @@ declare module Rogue {
         y: number;
     }
 
+    class Creature {
+        pos: Point;
+    }
+
     class Tile {
     }
 

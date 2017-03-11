@@ -3,7 +3,7 @@ module Rogue where
 import Prelude
 import Data.Array (index, updateAt, snoc, deleteAt, replicate)
 import Data.Maybe (Maybe(..), fromMaybe)
-
+import Data.StrMap (StrMap, empty)
 
 type Point = { x :: Int , y :: Int }
 
@@ -29,7 +29,7 @@ newtype GameState = GameState
 initialGameState :: GameState
 initialGameState = GameState
     { level:      createLevel 75 25 (Ground { frozen: false })
-    , player:     Creature {creatureType: Player {name: "Frozty"}, pos: {x: 0, y: 11}, stats: defaultStats, inv: []}
+    , player:     Creature {creatureType: Player {name: "Frozty"}, pos: {x: 0, y: 11}, stats: defaultStats, inv: [], time: 0.0 }
     , coldStatus: 0
     , equipment:  { cloak: Nothing, chest: Nothing, hands: Nothing, weapon: Nothing }
     }
@@ -39,6 +39,7 @@ newtype Creature = Creature
     , pos          :: Point
     , stats        :: Stats
     , inv          :: Array Item
+    , time         :: Number
     }
 
 data CreatureType = Player { name :: String }
@@ -61,6 +62,9 @@ instance showCreature :: Show Creature where
     show (Creature { creatureType: IceCorpse }) = "frozen zombie"
     show (Creature { creatureType: Tim })       = "evil sorcerer"
     show _                                      = "Ismo"
+
+creatureSpeed :: Creature -> Number
+creatureSpeed _ = 500.0
 
 creatureIcon :: Creature -> Char
 creatureIcon (Creature { creatureType: Player p })  = '@'
@@ -208,7 +212,7 @@ type Level =
     { tiles   :: Array Tile
     , width   :: Int
     , height  :: Int
-    , enemies :: Array Creature
+    , enemies :: StrMap Creature
     , items   :: Array { pos :: Point, item :: Item }
     , up      :: Point
     , down    :: Point
@@ -217,7 +221,7 @@ type Level =
 createLevel :: Int -> Int -> Tile -> Level
 createLevel x y t =
     let zero = { x: 0, y: 0 }
-    in { tiles: replicate (x*y) t, width: x, height: y, enemies: [], items: [], up: zero, down: zero }
+    in { tiles: replicate (x*y) t, width: x, height: y, enemies: empty, items: [], up: zero, down: zero }
 
 getLevelTile :: Level -> Point -> Tile
 getLevelTile level p = fromMaybe ErrorTile $ index (level.tiles) (p.y * level.width + p.x)

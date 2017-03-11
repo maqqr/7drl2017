@@ -124,4 +124,4 @@ randomEnemy theme depth = randomCreature
         randomCreature = do
             s <- randomWeighted randomCreatureStats
             c <- randomWeighted randomCreatureType
-            pure $ Creature { creatureType: c, pos: { x: 0, y: 0 }, stats: addStats s (creatureTypeStats c) , inv: [] }
+            pure $ Creature { creatureType: c, pos: { x: 0, y: 0 }, stats: addStats s (creatureTypeStats c) , inv: [], time: 0.0 }

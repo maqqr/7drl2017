@@ -15,21 +15,6 @@ class TileSet {
     }
 }
 
-class Actor {
-    speed: number;
-    isPlayer: boolean;
-    creature: any;
-
-    constructor(speed: number, isPlayer: boolean, creature: any) {
-        this.speed = speed;
-        this.isPlayer = isPlayer;
-        this.creature = creature;
-    }
-    getSpeed(): number {
-        return this.speed;
-    }
-}
-
 class Game {
     static readonly keyMap: { [id: number] : number }
         = { 104: 0, 105: 1, 102: 2, 99: 3, 98: 4, 97: 5, 100: 6, 103: 7};
@@ -39,8 +24,6 @@ class Game {
     currentDungeon: string;
     dungeonDepth: number; // -1 = world map, 0 = first level, 1 = second level
     display: ROT.Display;
-    scheduler: ROT.Scheduler.Speed<Actor>;
-    actors: Array<Actor>;
     fov: ROT.FOV.PreciseShadowcasting;
     visible: {[id: string]: boolean} = {};
     gameState: any;
@@ -69,37 +52,10 @@ class Game {
 
         this.drawMap();
 
-        this.actors = [];
-        this.scheduler = new ROT.Scheduler.Speed<Actor>();
-        //this.scheduler.add(new Actor(50, true, -1), true);
-        this.addCreature(this.gameState.player, true);
-
         this.currentDungeon = "worldmap";
         this.worldMap = this.gameState.level;
 
-        this.updateLoop();
-    }
-
-    addCreature(creature: any, isPlayer: boolean) {
-        let actor = new Actor(50, isPlayer, creature);
-        this.actors.push(creature);
-        this.scheduler.add(actor, true);
-    }
-
-    removeCreature(creature: any) {
-        let actor = null;
-        for (let a of this.actors) {
-            if (a.creature == creature) {
-                actor = a.creature;
-                break;
-            }
-        }
-
-        if (actor !== null) {
-            let index = this.actors.indexOf(actor);
-            this.actors.splice(index, 1);
-            this.scheduler.remove(actor);
-        }
+        this.playerTurn();
     }
 
     isTransparent(x: number, y: number): boolean {
@@ -130,41 +86,50 @@ class Game {
         return false;
     }
 
-    updateLoop() {
-        for(;;) {
-            let current = this.scheduler.next();
-
-            if (current.isPlayer) {
-                window.addEventListener("keydown", this);
-                break;
-            }
-            else {
-                let enemy = current.creature; //this.gameState.level.enemies[current.index];
-                this.updateAI(enemy);
-            }
-        }
+    playerTurn() {
+        window.addEventListener("keydown", this);
     }
 
-    moveCreature(creature : any, delta : { x: number, y: number }) {
+    updateLoop(deltaTime: number) {
+        for (let id in this.gameState.level.enemies) {
+            let enemy = this.gameState.level.enemies[id];
+            let speed = PS["Rogue"].creatureSpeed(enemy);
+            enemy.time += deltaTime;
+            while (enemy.time >= speed) {
+                enemy.time -= speed;
+                this.updateAI(id, enemy);
+            }
+        }
+
+        this.playerTurn();
+    }
+
+    moveCreature(creature: any, delta: { x: number, y: number }) {
         var newPos = { x: creature.pos.x + delta.x, y: creature.pos.y + delta.y };
 
         // Check if there is anyone at newPos
+        let blockingId: string = null;
         let blocking = null;
-        for (let other of [this.gameState.player].concat(this.gameState.level.enemies)) {
+        for (let id in this.gameState.level.enemies) {
+            let other = this.gameState.level.enemies[id];
             if (other.pos.x == newPos.x && other.pos.y == newPos.y) {
+                blockingId = id;
                 blocking = other;
                 break;
             }
         }
+        if (newPos.x == this.gameState.player.pos.x && newPos.y == this.gameState.player.pos.y) {
+            blockingId = "player";
+            blocking = this.gameState.player;
+        }
+
         if (blocking !== null) {
             if (PS["Rogue"].isPlayer(creature) !== PS["Rogue"].isPlayer(blocking)) {
                 let result = PS["Rogue"].attack(this.gameState)(creature)(blocking);
                 blocking.stats.hp = result.stats.hp;
 
                 if (blocking.stats.hp <= 0 && !PS["Rogue"].isPlayer(blocking)) {
-                    let index = this.gameState.level.enemies.indexOf(blocking);
-                    this.gameState.level.enemies.splice(index, 1);
-                    this.removeCreature(blocking);
+                    delete this.gameState.level.enemies[blockingId];
                 }
             }
             return;
@@ -178,7 +143,7 @@ class Game {
         return creature;
     }
 
-    updateAI(creature : any) {
+    updateAI(id: string, creature: any) {
         if (this.visible[creature.pos.x + "," + creature.pos.y] === true) {
             let p = this.gameState.player.pos;
             let astar = new ROT.Path.AStar(p.x, p.y, this.isPassable.bind(this));
@@ -204,16 +169,6 @@ class Game {
     changeLevel(newLevel : Rogue.Level, playerPos : { x: number, y: number }) {
         this.gameState.level = newLevel;
         this.gameState.player.pos = playerPos;
-        
-        // this.scheduler.clear();
-        // this.scheduler.add(new Actor(50, true, -1), true);
-        // for (let i = 0; i < this.gameState.level.enemies.length; i++) {
-        //     this.scheduler.add(new Actor(50, false, i), true);
-        // }
-
-        for (let enemy of this.gameState.level.enemies) {
-            this.addCreature(enemy, false);
-        }
         this.refreshDisplay();
     }
 
@@ -289,7 +244,9 @@ class Game {
         this.drawMap();
 
         window.removeEventListener("keydown", this);
-        this.updateLoop();
+
+        let deltaTime = PS["Rogue"].creatureSpeed(this.gameState.player);
+        this.updateLoop(deltaTime);
     }
 
     add2ActnLog(message:string) {
@@ -324,7 +281,10 @@ class Game {
             } 
         }
     }
-    //Draws player's stats
+    
+    /**
+     * Draws the player's stats.
+     */
     staTifY() {
         this.display.drawText(0, 25, "%c{rgba(0,0,0,1.0)}bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb%c{}");
         //hp
@@ -404,8 +364,8 @@ class Game {
         }
 
         // Draw enemies
-        for (let i=0; i < this.gameState.level.enemies.length; i++) {
-            let enemy = this.gameState.level.enemies[i];
+        for (let id in this.gameState.level.enemies) {
+            let enemy = this.gameState.level.enemies[id];
             let enemyVisible = this.visible[enemy.pos.x + "," + enemy.pos.y] === true;
             if (enemyVisible) {
                 let icon = PS["Rogue"].creatureIcon(enemy);
@@ -492,7 +452,7 @@ class Game {
         for (let i=0; i < 10; i++) {
             let enemy = randomEnemy();
             enemy.pos = randomFreePosition();
-            level.enemies.push(enemy);
+            level.enemies[i] = enemy;
         }
 
         return level;
