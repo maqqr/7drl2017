@@ -326,6 +326,7 @@ class Game {
                 let item = itemsAtPlayer[0];
                 let index = this.gameState.level.items.indexOf(item);
                 this.gameState.level.items.splice(index, 1);
+                this.add2ActnLog(PS["Data.Show"].show(PS["Rogue"].showCreature)(this.gameState.player)+ " picked up %c{rgba(0,255,0,1.0)}"+PS["Rogue"].itemName(item.item)+"%c{}!.")
                 this.gameState.player.inv.push(item.item);
             }
             else if (itemsAtPlayer.length > 1) {
@@ -400,7 +401,7 @@ class Game {
                     let colorRot = ROT.Color.fromString("rgb"+nextLine.slice(cStartPos+4,commaPos)+")");
                     
                     colorRot = ROT.Color.interpolate(colorRot, black,1-(255+i*grayism)/255); //TODO fix this
-                    console.log(colorRot.toString());
+                    
 
                     //TODO: Replace the color
                     nextLine = nextLine.replace(nextLine.slice(cStartPos+3,cStartPos+cLength),"("+colorRot.toString());
@@ -409,7 +410,6 @@ class Game {
                     //Last changes
                     colorPos = nextLine.indexOf("%c{}");
                     nextLine = nextLine.slice(0,colorPos+4) + linecolor + nextLine.slice(colorPos+4);
-                    console.log(nextLine);
 
 
                 }
