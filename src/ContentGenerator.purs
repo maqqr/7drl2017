@@ -5,8 +5,8 @@ import Rogue
 import Data.Array (filter, head, tail)
 import Data.Maybe (Maybe(..), fromMaybe)
 import Data.Traversable (foldl)
-import Partial.Unsafe (unsafeCrashWith)
-import Random (Random, generateInt)
+import Partial.Unsafe (unsafeCrashWith, unsafePartial)
+import Random (Random, generateInt, unsafeSelectOne)
 
 type Weighted a = { item :: a, weight :: Int }
 
@@ -32,6 +32,8 @@ randomWeighted initialItems =
 filterNegativeWeights :: forall a. Array (Weighted a) -> Array (Weighted a)
 filterNegativeWeights = filter (\x -> x.weight > 0)
 
+randomTheme :: Random Theme
+randomTheme = unsafePartial $ unsafeSelectOne [DwarvenMine, GoblinCave, Cave]
 
 randomItem :: Theme -> Int -> Random Item
 randomItem theme depth = do

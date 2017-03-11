@@ -802,12 +802,12 @@ var PS = {};
       Sharp.value = new Sharp();
       return Sharp;
   })();
-  var Mine = (function () {
-      function Mine() {
+  var DwarvenMine = (function () {
+      function DwarvenMine() {
 
       };
-      Mine.value = new Mine();
-      return Mine;
+      DwarvenMine.value = new DwarvenMine();
+      return DwarvenMine;
   })();
   var GoblinCave = (function () {
       function GoblinCave() {
@@ -1595,7 +1595,7 @@ var PS = {};
   };
   var eqTheme = new Data_Eq.Eq(function (x) {
       return function (y) {
-          if (x instanceof Mine && y instanceof Mine) {
+          if (x instanceof DwarvenMine && y instanceof DwarvenMine) {
               return true;
           };
           if (x instanceof GoblinCave && y instanceof GoblinCave) {
@@ -2118,7 +2118,7 @@ var PS = {};
   exports["Wood"] = Wood;
   exports["Healing"] = Healing;
   exports["Warming"] = Warming;
-  exports["Mine"] = Mine;
+  exports["DwarvenMine"] = DwarvenMine;
   exports["GoblinCave"] = GoblinCave;
   exports["Cave"] = Cave;
   exports["WizardTower"] = WizardTower;
@@ -2327,14 +2327,15 @@ var PS = {};
   var Data_Traversable = PS["Data.Traversable"];
   var Partial_Unsafe = PS["Partial.Unsafe"];
   var Random = PS["Random"];
+  var Data_Function = PS["Data.Function"];
   var Data_Ord = PS["Data.Ord"];
   var Data_Foldable = PS["Data.Foldable"];
   var Data_Semiring = PS["Data.Semiring"];
   var Data_Ring = PS["Data.Ring"];
   var Data_Functor = PS["Data.Functor"];
   var Control_Bind = PS["Control.Bind"];
-  var Data_Function = PS["Data.Function"];
   var Control_Applicative = PS["Control.Applicative"];        
+  var randomTheme = Random.unsafeSelectOne()([ Rogue.DwarvenMine.value, Rogue.GoblinCave.value, Rogue.Cave.value ]);
   var filterNegativeWeights = Data_Array.filter(function (x) {
       return x.weight > 0;
   });
@@ -2349,25 +2350,25 @@ var PS = {};
               var items = __copy_items;
               var weight = __copy_weight;
               tco: while (true) {
-                  var $11 = Data_Array.head(items);
-                  if ($11 instanceof Data_Maybe.Nothing) {
+                  var $12 = Data_Array.head(items);
+                  if ($12 instanceof Data_Maybe.Nothing) {
                       return Partial_Unsafe.unsafeCrashWith("empty array in randomWeighted");
                   };
-                  if ($11 instanceof Data_Maybe.Just) {
-                      var $12 = weight > $11.value0.weight;
-                      if ($12) {
+                  if ($12 instanceof Data_Maybe.Just) {
+                      var $13 = weight > $12.value0.weight;
+                      if ($13) {
                           var tail$prime = Data_Maybe.fromMaybe([  ])(Data_Array.tail(items));
-                          var __tco_weight = weight - $11.value0.weight | 0;
+                          var __tco_weight = weight - $12.value0.weight | 0;
                           items = tail$prime;
                           weight = __tco_weight;
                           continue tco;
                       };
-                      if (!$12) {
-                          return $11.value0.item;
+                      if (!$13) {
+                          return $12.value0.item;
                       };
-                      throw new Error("Failed pattern match at ContentGenerator line 23, column 21 - line 26, column 40: " + [ $12.constructor.name ]);
+                      throw new Error("Failed pattern match at ContentGenerator line 23, column 21 - line 26, column 40: " + [ $13.constructor.name ]);
                   };
-                  throw new Error("Failed pattern match at ContentGenerator line 20, column 13 - line 26, column 40: " + [ $11.constructor.name ]);
+                  throw new Error("Failed pattern match at ContentGenerator line 20, column 13 - line 26, column 40: " + [ $12.constructor.name ]);
               };
           };
       };
@@ -2556,5 +2557,6 @@ var PS = {};
   exports["filterNegativeWeights"] = filterNegativeWeights;
   exports["randomEnemy"] = randomEnemy;
   exports["randomItem"] = randomItem;
+  exports["randomTheme"] = randomTheme;
   exports["randomWeighted"] = randomWeighted;
 })(PS["ContentGenerator"] = PS["ContentGenerator"] || {});

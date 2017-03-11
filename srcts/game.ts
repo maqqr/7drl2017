@@ -36,6 +36,7 @@ class Game {
     worldMap: Rogue.Level;
     state: State;
     handlers: { [id: number]: (e: KeyboardEvent) => void } = {};
+    themes: { [id: string]: Rogue.Theme } = {};
 
     actionlog: Array<string>;
  
@@ -58,7 +59,7 @@ class Game {
         this.rememberTile = {};
         this.actionlog = [];
         this.gameState = PS["Rogue"].initialGameState;
-        this.gameState = pushToGamestate(this.gameState, worldmap);
+        this.gameState = pushToGamestate(this, this.gameState, worldmap);
         this.state = State.InGame;
 
         this.fov = new ROT.FOV.PreciseShadowcasting(this.isTransparent.bind(this));
@@ -259,21 +260,22 @@ class Game {
             this.add2ActnLog("Ilmoitus: "+this.actionlog.length);
         }
 
-        if (!(code in Game.keyMap)) { return; }
-        var oldX = this.gameState.player.pos.x;
-        var oldY = this.gameState.player.pos.y;
+        if (!(code in Game.keyMap)) {
+            var oldX = this.gameState.player.pos.x;
+            var oldY = this.gameState.player.pos.y;
 
-        var diff = ROT.DIRS[8][Game.keyMap[code]];
-        var newX = oldX + diff[0];
-        var newY = oldY + diff[1];
+            var diff = ROT.DIRS[8][Game.keyMap[code]];
+            var newX = oldX + diff[0];
+            var newY = oldY + diff[1];
 
-        this.moveCreature(this.gameState.player, { x: diff[0], y: diff[1] });
-        this.drawMap();
+            this.moveCreature(this.gameState.player, { x: diff[0], y: diff[1] });
+            this.drawMap();
 
-        window.removeEventListener("keydown", this);
+            window.removeEventListener("keydown", this);
 
-        let deltaTime = PS["Rogue"].creatureSpeed(this.gameState.player);
-        this.updateLoop(deltaTime);
+            let deltaTime = PS["Rogue"].creatureSpeed(this.gameState.player);
+            this.updateLoop(deltaTime);
+        }
     }
 
     add2ActnLog(message:string) {
@@ -405,12 +407,7 @@ class Game {
         this.display.draw(player.pos.x, player.pos.y, '@', "rgba(0, 200, 0, 0.6)");
     }
 
-    generateLevel(): Rogue.Level {
-        let width = 75;
-        let height = 23;
-        let fillTile = PS["Rogue"].Wall.create({ frozen: false });
-        let level = PS["Rogue"].createLevel(width)(height)(fillTile);
-
+    createDungeon(width: number, height: number, level: Rogue.Level): Rogue.Level {
         let digger = new ROT.Map.Digger(width, height);
         let digCallback = function(x, y, value) {
             if (value === 1) { return; }
@@ -420,6 +417,31 @@ class Game {
             level = PS["Rogue"].setLevelTile(level)(floor)(position);
         }
         digger.create(digCallback.bind(this));
+        return level;
+    }
+
+    createCave(width: number, height: number, level: Rogue.Level): Rogue.Level {
+        let map = new ROT.Map.Cellular(width, height, { connected: true });
+        map.randomize(0.5);
+        for (let i=0; i<3; i++) {
+            map.create();
+        }
+        map.create(function() {
+            console.log();
+        });
+        //map.connect();
+    }
+
+    generateLevel(): Rogue.Level {
+        let width = 75;
+        let height = 23;
+        let fillTile = PS["Rogue"].Wall.create({ frozen: false });
+        let level = PS["Rogue"].createLevel(width)(height)(fillTile);
+        level.enemies = {};
+
+        let key = this.gameState.player.pos.x + "," + this.gameState.player.pos.y;
+        let theme = this.themes[key];
+        level = this.createDungeon(width, height, level);
 
         let freePositions = [];
         for (let y=0; y<height; y++)

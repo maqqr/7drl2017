@@ -25,7 +25,7 @@ worldmap[22] = "----------------------------------------------------------------
 worldmap[23] = "---------------------------------------------------------------------------";
 worldmap[24] = "---------------------------------------------------------------------------";
 
-function pushToGamestate(gameState, map) {
+function pushToGamestate(game: Game, gameState, map) {
     let ps = PS["Rogue"];
     let width = worldmap[0].length;
     let height = worldmap.length;
@@ -38,7 +38,17 @@ function pushToGamestate(gameState, map) {
                 , '-': ps.Water.create({ frozen: false })
                 , '~': new ps.River()
                 , 'o': new ps.DungeonEntrance()
-                };
+            };
+    
+    let themes = [ new ps.DwarvenMine()
+                 , new ps.GoblinCave()
+                 , new ps.Cave()
+                 ];
+    let themeIndex = 0;
+    let nextTheme = function() {
+        themeIndex = (themeIndex + 1) % themes.length;
+        return themes[themeIndex];
+    }
 
     for (let y=0; y<height; y++) {
         for (let x=0; x<width; x++) {
@@ -46,6 +56,10 @@ function pushToGamestate(gameState, map) {
             let tile = tiles[char];
             if (tile !== undefined) {
                 gameState = ps.setTile(gameState)(tile)({x: x, y: y});
+
+                if (char === 'o') {
+                    game.themes[x + "," + y] = nextTheme();
+                }
             }
         }
     }
