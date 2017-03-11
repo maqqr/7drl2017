@@ -203,7 +203,7 @@ tileColor (Door t)     = "rgba(200, 180, 50, " <> frozenColor t
 tileColor River        = "rgba(10, 10, 125, 0.6)"
 tileColor _            = "rgba(120, 120, 120, 0.6)"
 
-data Theme = Mine | GoblinCave | Cave | WizardTower
+data Theme = DwarvenMine | GoblinCave | Cave | WizardTower
 
 derive instance eqTheme :: Eq Theme
 

@@ -8,6 +8,9 @@ declare module Rogue {
         pos: Point;
     }
 
+    class Theme {
+    }
+
     class Tile {
     }
 
