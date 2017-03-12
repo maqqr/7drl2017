@@ -213,9 +213,23 @@ class Game {
 
     handleInventory(e: KeyboardEvent) {
         let code = e.keyCode;
-        if (code == ROT.VK_RETURN || code == ROT.VK_SPACE || code == ROT.VK_I) {
+        if (code == ROT.VK_RETURN || code == ROT.VK_SPACE || (code == ROT.VK_I && this.invState == InventoryState.Show)) {
             this.state = State.InGame;
             this.refreshDisplay();
+        }
+        else {
+            let itemIndex = code - 65;
+            if (itemIndex >= 0 && itemIndex < this.gameState.player.inv.length) {
+                if (this.invState == InventoryState.Drop) {
+                    let item = this.gameState.player.inv[itemIndex];
+                    this.gameState.player.inv.splice(itemIndex, 1);
+                    this.gameState.level.items.push({ pos: this.gameState.player.pos, item: item });
+                    this.add2ActnLog("You drop " + PS["Rogue"].itemName(item) + ".");
+                }
+
+                this.state = State.InGame;
+                this.refreshDisplay();
+            }
         }
     }
 
@@ -298,17 +312,14 @@ class Game {
             return;
         }
 
-        // Show inventory
-        if (code == ROT.VK_I) {
+        // Show inventory, equip, drop
+        if (code == ROT.VK_I || code == ROT.VK_E || code == ROT.VK_D) {
             this.state = State.Inventory;
-            this.invState = InventoryState.Show;
-            this.drawInventory();
-            return;
-        }
-
-        if (code == ROT.VK_E) {
-            this.state = State.Inventory;
-            this.invState = InventoryState.Equip;
+            let invStates = {};
+            invStates[ROT.VK_I] = InventoryState.Show;
+            invStates[ROT.VK_E] = InventoryState.Equip;
+            invStates[ROT.VK_D] = InventoryState.Drop;
+            this.invState = invStates[code];
             this.drawInventory();
             return;
         }
@@ -483,13 +494,19 @@ class Game {
 
         console.log(this.invState);
 
-        if (this.invState == InventoryState.Show)
-            this.display.drawText(2, 2, "Inventory");
+        if (this.invState == InventoryState.Show || this.invState == InventoryState.Equip || this.invState == InventoryState.Drop) {
+            if (this.invState == InventoryState.Show)
+                this.display.drawText(2, 2, "Inventory");
+            if (this.invState == InventoryState.Equip)
+                this.display.drawText(2, 2, "Select item to equip");
+            if (this.invState == InventoryState.Drop)
+                this.display.drawText(2, 2, "Select item to drop");
 
-        for (let i=0; i<this.gameState.player.inv.length; i++) {
-            let item = this.gameState.player.inv[i];
-            let key = String.fromCharCode(65 + i);
-            this.display.drawText(3, 4 + i, key + " - " + PS["Rogue"].itemName(item));
+            for (let i=0; i<this.gameState.player.inv.length; i++) {
+                let item = this.gameState.player.inv[i];
+                let key = String.fromCharCode(65 + i);
+                this.display.drawText(3, 4 + i, key + " - " + PS["Rogue"].itemName(item));
+            }
         }
     }
 
