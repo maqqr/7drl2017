@@ -142,7 +142,7 @@ creatureTypeStats GiantIceElemental = { hpMax: 15, hp: 15, str: 14, dex: 10, int
 creatureTypeStats Snake             = { hpMax:  6, hp:  6, str:  6, dex: 13, int: 10 }
 creatureTypeStats GiantSnake        = { hpMax: 12, hp: 12, str: 10, dex:  9, int: 10 }
 creatureTypeStats DwarfGhost        = { hpMax: 12, hp: 12, str: 12, dex: 10, int: 10 }
-creatureTypeStats Bat               = { hpMax:  4, hp:  4, str:  4, dex: 15, int: 10 }
+creatureTypeStats Bat               = { hpMax:  4, hp:  4, str:  4, dex: 13, int: 10 }
 creatureTypeStats (Player _)        = { hpMax: 12, hp: 12, str: 12, dex: 10, int: 10 }
 
 -- creatureBaseDmg :: Creature -> Int
@@ -341,19 +341,21 @@ itemColor _                            = "rgba(102, 51, 0, 0.6)"
 
 type WeaponStats = { dmg :: Int, hit :: Int, weight :: Int }
 
-data WeaponType = Axe | Dagger | Sword | Spear
+data WeaponType = Axe | Dagger | Sword | Spear | Halberd
 
 weaponTypeName :: WeaponType -> String
 weaponTypeName Axe = "axe"
 weaponTypeName Dagger = "dagger"
 weaponTypeName Sword = "sword"
 weaponTypeName Spear = "spear"
+weaponTypeName Halberd = "halberd"
 
 weaponTypeStats :: WeaponType -> WeaponStats
-weaponTypeStats Axe    = { dmg:  6, hit: -20, weight:  6 }
-weaponTypeStats Dagger = { dmg:  1, hit:  10, weight:  2 }
-weaponTypeStats Sword  = { dmg:  3, hit:   0, weight:  4 }
-weaponTypeStats Spear  = { dmg:  2, hit:  10, weight:  3 }
+weaponTypeStats Axe     = { dmg:  6, hit: -20, weight:  6 }
+weaponTypeStats Dagger  = { dmg:  1, hit:  10, weight:  2 }
+weaponTypeStats Sword   = { dmg:  3, hit:   0, weight:  4 }
+weaponTypeStats Spear   = { dmg:  2, hit:  10, weight:  3 }
+weaponTypeStats Halberd = { dmg:  4, hit:   0, weight:  5 }
 
 data WeaponPrefix = Common | Rusty | Masterwork | Sharp
 

@@ -1375,6 +1375,13 @@ var PS = {};
       Spear.value = new Spear();
       return Spear;
   })();
+  var Halberd = (function () {
+      function Halberd() {
+
+      };
+      Halberd.value = new Halberd();
+      return Halberd;
+  })();
   var Common = (function () {
       function Common() {
 
@@ -1789,7 +1796,14 @@ var PS = {};
               weight: 3
           };
       };
-      throw new Error("Failed pattern match at Rogue line 353, column 1 - line 353, column 59: " + [ v.constructor.name ]);
+      if (v instanceof Halberd) {
+          return {
+              dmg: 4, 
+              hit: 0, 
+              weight: 5
+          };
+      };
+      throw new Error("Failed pattern match at Rogue line 354, column 1 - line 354, column 60: " + [ v.constructor.name ]);
   };
   var weaponTypeName = function (v) {
       if (v instanceof Axe) {
@@ -1803,6 +1817,9 @@ var PS = {};
       };
       if (v instanceof Spear) {
           return "spear";
+      };
+      if (v instanceof Halberd) {
+          return "halberd";
       };
       throw new Error("Failed pattern match at Rogue line 347, column 1 - line 348, column 1: " + [ v.constructor.name ]);
   };
@@ -1847,7 +1864,7 @@ var PS = {};
       if (v instanceof Sharp) {
           return "sharp";
       };
-      throw new Error("Failed pattern match at Rogue line 361, column 1 - line 362, column 1: " + [ v.constructor.name ]);
+      throw new Error("Failed pattern match at Rogue line 363, column 1 - line 364, column 1: " + [ v.constructor.name ]);
   };
   var weaponHitChance = function (v) {
       if (v instanceof Data_Maybe.Just && v.value0 instanceof Weapon) {
@@ -2111,7 +2128,7 @@ var PS = {};
       if (v instanceof Warming) {
           return "liquid fire";
       };
-      throw new Error("Failed pattern match at Rogue line 425, column 1 - line 426, column 1: " + [ v.constructor.name ]);
+      throw new Error("Failed pattern match at Rogue line 427, column 1 - line 428, column 1: " + [ v.constructor.name ]);
   };
   var potionEffect = function (v) {
       return function (v1) {
@@ -2187,7 +2204,7 @@ var PS = {};
           if (Data_Boolean.otherwise) {
               return y;
           };
-          throw new Error("Failed pattern match at Rogue line 495, column 1 - line 497, column 20: " + [ x.constructor.name, y.constructor.name ]);
+          throw new Error("Failed pattern match at Rogue line 497, column 1 - line 499, column 20: " + [ x.constructor.name, y.constructor.name ]);
       };
   };
   var max$prime = function (x) {
@@ -2198,7 +2215,7 @@ var PS = {};
           if (Data_Boolean.otherwise) {
               return y;
           };
-          throw new Error("Failed pattern match at Rogue line 500, column 1 - line 502, column 20: " + [ x.constructor.name, y.constructor.name ]);
+          throw new Error("Failed pattern match at Rogue line 502, column 1 - line 504, column 20: " + [ x.constructor.name, y.constructor.name ]);
       };
   };
   var itemIcon = function (v) {
@@ -2621,7 +2638,7 @@ var PS = {};
               hpMax: 4, 
               hp: 4, 
               str: 4, 
-              dex: 15, 
+              dex: 13, 
               "int": 10
           };
       };
@@ -2830,7 +2847,7 @@ var PS = {};
               weight: 6
           };
       };
-      throw new Error("Failed pattern match at Rogue line 394, column 1 - line 394, column 53: " + [ v.constructor.name ]);
+      throw new Error("Failed pattern match at Rogue line 396, column 1 - line 396, column 53: " + [ v.constructor.name ]);
   };
   var armourTypeName = function (v) {
       if (v instanceof Cloak) {
@@ -2885,7 +2902,7 @@ var PS = {};
       if (v instanceof Wood) {
           return 5;
       };
-      throw new Error("Failed pattern match at Rogue line 441, column 1 - line 441, column 113: " + [ v.constructor.name ]);
+      throw new Error("Failed pattern match at Rogue line 443, column 1 - line 443, column 113: " + [ v.constructor.name ]);
   };
   var totalEnc = function (v) {
       var weapon = Data_Maybe.maybe(0)(itemWeight)(v.equipment.weapon);
@@ -2908,7 +2925,7 @@ var PS = {};
       if (v instanceof MasterworkA) {
           return "masterwork";
       };
-      throw new Error("Failed pattern match at Rogue line 401, column 1 - line 402, column 1: " + [ v.constructor.name ]);
+      throw new Error("Failed pattern match at Rogue line 403, column 1 - line 404, column 1: " + [ v.constructor.name ]);
   };
   var itemName = function (v) {
       if (v instanceof Weapon) {
@@ -3180,6 +3197,7 @@ var PS = {};
   exports["Dagger"] = Dagger;
   exports["Sword"] = Sword;
   exports["Spear"] = Spear;
+  exports["Halberd"] = Halberd;
   exports["addArmourStats"] = addArmourStats;
   exports["addItem"] = addItem;
   exports["addStats"] = addStats;
@@ -3316,7 +3334,7 @@ var PS = {};
                   if (!$15) {
                       return 5;
                   };
-                  throw new Error("Failed pattern match at ContentGenerator line 111, column 66 - line 111, column 99: " + [ $15.constructor.name ]);
+                  throw new Error("Failed pattern match at ContentGenerator line 112, column 66 - line 112, column 99: " + [ $15.constructor.name ]);
               })()
           }, {
               item: Rogue.Wolf.value, 
@@ -3328,7 +3346,7 @@ var PS = {};
                   if (!$16) {
                       return 30;
                   };
-                  throw new Error("Failed pattern match at ContentGenerator line 112, column 66 - line 112, column 100: " + [ $16.constructor.name ]);
+                  throw new Error("Failed pattern match at ContentGenerator line 113, column 66 - line 113, column 100: " + [ $16.constructor.name ]);
               })()
           }, {
               item: Rogue.Bear.value, 
@@ -3340,7 +3358,7 @@ var PS = {};
                   if (!$17) {
                       return 30;
                   };
-                  throw new Error("Failed pattern match at ContentGenerator line 113, column 66 - line 113, column 100: " + [ $17.constructor.name ]);
+                  throw new Error("Failed pattern match at ContentGenerator line 114, column 66 - line 114, column 100: " + [ $17.constructor.name ]);
               })()
           }, {
               item: Rogue.Goblin.value, 
@@ -3352,7 +3370,7 @@ var PS = {};
                   if (!$18) {
                       return 10;
                   };
-                  throw new Error("Failed pattern match at ContentGenerator line 114, column 66 - line 114, column 106: " + [ $18.constructor.name ]);
+                  throw new Error("Failed pattern match at ContentGenerator line 115, column 66 - line 115, column 106: " + [ $18.constructor.name ]);
               })()
           }, {
               item: Rogue.Snowman.value, 
@@ -3364,7 +3382,7 @@ var PS = {};
                   if (!$19) {
                       return 5;
                   };
-                  throw new Error("Failed pattern match at ContentGenerator line 115, column 66 - line 115, column 126: " + [ $19.constructor.name ]);
+                  throw new Error("Failed pattern match at ContentGenerator line 116, column 66 - line 116, column 126: " + [ $19.constructor.name ]);
               })()
           }, {
               item: Rogue.IceCorpse.value, 
@@ -3376,7 +3394,7 @@ var PS = {};
                   if (!$20) {
                       return 5;
                   };
-                  throw new Error("Failed pattern match at ContentGenerator line 116, column 66 - line 116, column 126: " + [ $20.constructor.name ]);
+                  throw new Error("Failed pattern match at ContentGenerator line 117, column 66 - line 117, column 126: " + [ $20.constructor.name ]);
               })()
           }, {
               item: Rogue.IceElemental.value, 
@@ -3388,7 +3406,7 @@ var PS = {};
                   if (!$21) {
                       return 5;
                   };
-                  throw new Error("Failed pattern match at ContentGenerator line 117, column 66 - line 117, column 126: " + [ $21.constructor.name ]);
+                  throw new Error("Failed pattern match at ContentGenerator line 118, column 66 - line 118, column 126: " + [ $21.constructor.name ]);
               })()
           }, {
               item: Rogue.GiantIceElemental.value, 
@@ -3400,7 +3418,7 @@ var PS = {};
                   if (!$22) {
                       return 0;
                   };
-                  throw new Error("Failed pattern match at ContentGenerator line 118, column 66 - line 118, column 106: " + [ $22.constructor.name ]);
+                  throw new Error("Failed pattern match at ContentGenerator line 119, column 66 - line 119, column 106: " + [ $22.constructor.name ]);
               })()
           }, {
               item: Rogue.Snake.value, 
@@ -3412,7 +3430,7 @@ var PS = {};
                   if (!$23) {
                       return 0;
                   };
-                  throw new Error("Failed pattern match at ContentGenerator line 119, column 66 - line 119, column 99: " + [ $23.constructor.name ]);
+                  throw new Error("Failed pattern match at ContentGenerator line 120, column 66 - line 120, column 99: " + [ $23.constructor.name ]);
               })()
           }, {
               item: Rogue.GiantSnake.value, 
@@ -3424,7 +3442,7 @@ var PS = {};
                   if (!$24) {
                       return 0;
                   };
-                  throw new Error("Failed pattern match at ContentGenerator line 120, column 66 - line 120, column 99: " + [ $24.constructor.name ]);
+                  throw new Error("Failed pattern match at ContentGenerator line 121, column 66 - line 121, column 99: " + [ $24.constructor.name ]);
               })()
           }, {
               item: Rogue.DwarfGhost.value, 
@@ -3436,7 +3454,7 @@ var PS = {};
                   if (!$25) {
                       return 0;
                   };
-                  throw new Error("Failed pattern match at ContentGenerator line 121, column 66 - line 121, column 106: " + [ $25.constructor.name ]);
+                  throw new Error("Failed pattern match at ContentGenerator line 122, column 66 - line 122, column 106: " + [ $25.constructor.name ]);
               })()
           }, {
               item: Rogue.Bat.value, 
@@ -3448,7 +3466,7 @@ var PS = {};
                   if (!$26) {
                       return 30;
                   };
-                  throw new Error("Failed pattern match at ContentGenerator line 122, column 66 - line 122, column 100: " + [ $26.constructor.name ]);
+                  throw new Error("Failed pattern match at ContentGenerator line 123, column 66 - line 123, column 100: " + [ $26.constructor.name ]);
               })()
           } ];
           var randomCreatureStats = [ {
@@ -3515,9 +3533,9 @@ var PS = {};
                       return 100;
                   };
                   if (!$29) {
-                      return 5;
+                      return 10;
                   };
-                  throw new Error("Failed pattern match at ContentGenerator line 53, column 54 - line 53, column 94: " + [ $29.constructor.name ]);
+                  throw new Error("Failed pattern match at ContentGenerator line 53, column 55 - line 53, column 96: " + [ $29.constructor.name ]);
               })()
           }, {
               item: Rogue.Dagger.value, 
@@ -3528,6 +3546,18 @@ var PS = {};
           }, {
               item: Rogue.Spear.value, 
               weight: 20
+          }, {
+              item: Rogue.Halberd.value, 
+              weight: (function () {
+                  var $30 = Data_Eq.eq(Rogue.eqTheme)(theme)(Rogue.DwarvenMine.value);
+                  if ($30) {
+                      return 100;
+                  };
+                  if (!$30) {
+                      return 5;
+                  };
+                  throw new Error("Failed pattern match at ContentGenerator line 57, column 55 - line 57, column 95: " + [ $30.constructor.name ]);
+              })()
           } ];
           var weaponPrefixWeights = [ {
               item: Rogue.Common.value, 
