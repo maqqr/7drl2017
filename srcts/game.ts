@@ -111,9 +111,12 @@ class Game {
         uequLi.appendChild(uequText);
         helpUl.appendChild(uequLi);
 
-        
-
         document.body.appendChild(helpUl);
+
+        let storyP = document.createElement("p");
+        let storyText = document.createTextNode("You are a fearless peasant called Frozty. An evil wizard has cast a spell that covered the world in everfrost. The everfrost is damaging your next year's pumpkin harvest. The wizard has to die.");
+        storyP.appendChild(storyText);
+        document.body.appendChild(storyP);
 
         this.handlers[State.InGame] = this.handleInGame.bind(this);
         this.handlers[State.Inventory] = this.handleInventory.bind(this);
