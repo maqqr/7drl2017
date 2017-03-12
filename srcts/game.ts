@@ -549,6 +549,8 @@ class Game {
                     newLevel = this.generateLevel();
                     this.dungeonMaps[key] = [newLevel];
                 }
+                let theme = this.themes[this.currentDungeon];
+                    this.add2ActnLog("You enter the " + PS["Rogue"].themeName(theme) + " floor " + (this.dungeonDepth + 1) + ".");
                 this.changeLevel(newLevel, newLevel.up);
             }
             // Stairs up & down are only found in dungeons
@@ -564,6 +566,8 @@ class Game {
                 else {
                     newLevel = floors[this.dungeonDepth]
                 }
+                let theme = this.themes[this.currentDungeon];
+                this.add2ActnLog("You enter the " + PS["Rogue"].themeName(theme) + " floor " + (this.dungeonDepth + 1) + ".");
                 this.changeLevel(newLevel, newLevel.up);
             }
             else if (tileName == "StairsUp") {
@@ -578,6 +582,8 @@ class Game {
                     this.changeLevel(this.worldMap, { x: parseInt(mapPos[0]), y: parseInt(mapPos[1]) });
                 }
                 else {
+                    let theme = this.themes[this.currentDungeon];
+                    this.add2ActnLog("You enter the " + PS["Rogue"].themeName(theme) + " floor " + (this.dungeonDepth + 1) + ".");
                     let newOldLevel = floors[this.dungeonDepth];
                     this.changeLevel(newOldLevel, newOldLevel.down);
                 }
@@ -1051,7 +1057,6 @@ class Game {
         else {
             level = this.createDungeon(width, height, level);
         }
-        this.add2ActnLog("You enter the " + PS["Rogue"].themeName(theme) + " floor " + (this.dungeonDepth + 1) + ".");
 
         let freePositions = [];
         for (let y=0; y<height; y++)
