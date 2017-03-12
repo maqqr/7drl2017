@@ -231,6 +231,7 @@ class Game {
 
                 this.state = State.InGame;
                 this.refreshDisplay();
+                this.nextTurn();
             }
         }
     }
@@ -345,6 +346,9 @@ class Game {
             else if (itemsAtPlayer.length > 1) {
                 // TODO pick up one of several items
             }
+
+            this.nextTurn();
+            return;
         }
 
         // Check if player pressed numpad keys
@@ -360,19 +364,21 @@ class Game {
 
             let success = this.moveCreature(this.gameState.player, { x: diff[0], y: diff[1] });
             if (success) {
-                this.drawMap();
-                window.removeEventListener("keydown", this);
-                let deltaTime = PS["Rogue"].creatureSpeed(this.gameState.player);
-                this.updateLoop(deltaTime);
+                this.nextTurn();
             }
+            return;
         }
 
         // Wait for one turn
         if (code == ROT.VK_NUMPAD5) {
-            window.removeEventListener("keydown", this);
-            let deltaTime = PS["Rogue"].creatureSpeed(this.gameState.player);
-            this.updateLoop(deltaTime);
+            this.nextTurn();
         }
+    }
+
+    nextTurn() {
+        window.removeEventListener("keydown", this);
+        let deltaTime = PS["Rogue"].creatureSpeed(this.gameState.player);
+        this.updateLoop(deltaTime);
     }
 
     add2ActnLog(message:string) {
