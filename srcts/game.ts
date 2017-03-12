@@ -32,7 +32,7 @@ const enum InventoryState {
 
 class Game {
     static readonly keyMap: { [id: number] : number }
-        = { 104: 0, 105: 1, 102: 2, 99: 3, 98: 4, 97: 5, 100: 6, 103: 7};
+        = { 104: 0, 105: 1, 102: 2, 99: 3, 98: 4, 97: 5, 100: 6, 103: 7, 37: 6, 38: 0, 39: 2, 40: 4, 33: 1, 34: 3, 46: 5, 45:7};
 
     dungeonMaps: {[id: string] : Array<Rogue.Level>} = {};
     rememberTile: {[id: string] : {[id: string] : boolean}} = {};
@@ -67,12 +67,12 @@ class Game {
 
         let helpUl = document.createElement("ul");
         let moveLi = document.createElement("li");
-        let moveText = document.createTextNode("NumPad numbers - move")
+        let moveText = document.createTextNode("NumPad numbers or arrow keys + DEL, END, INS, PGUP, PGDOWN - move")
         moveLi.appendChild(moveText);
         helpUl.appendChild(moveLi);
 
         let divLi = document.createElement("li");
-        let divText = document.createTextNode("NumPad / (division) - move into dungeons and between floors")
+        let divText = document.createTextNode("NumPad / (division) or HOME - move into dungeons and between floors")
         divLi.appendChild(divText);
         helpUl.appendChild(divLi);
 
@@ -111,9 +111,12 @@ class Game {
         uequLi.appendChild(uequText);
         helpUl.appendChild(uequLi);
 
-        
-
         document.body.appendChild(helpUl);
+
+        let storyP = document.createElement("p");
+        let storyText = document.createTextNode("You are a fearless peasant called Frozty. An evil wizard has cast a spell that covered the world in everfrost. The everfrost is damaging your next year's pumpkin harvest. The wizard has to die.");
+        storyP.appendChild(storyText);
+        document.body.appendChild(storyP);
 
         this.handlers[State.InGame] = this.handleInGame.bind(this);
         this.handlers[State.Inventory] = this.handleInventory.bind(this);
@@ -382,7 +385,7 @@ class Game {
             return;
         }
 
-        if (code == ROT.VK_DIVIDE) {
+        if (code == ROT.VK_DIVIDE || code == ROT.VK_HOME) {
             let playerPos = {x: this.gameState.player.pos.x, y: this.gameState.player.pos.y};
             let potentialDoor = PS["Rogue"].getTile(this.gameState)(playerPos);
             let tileName = PS["Data.Show"].show(PS["Rogue"].showTile)(potentialDoor);
@@ -509,7 +512,7 @@ class Game {
         }
 
         // Wait for one turn
-        if (code == ROT.VK_NUMPAD5) {
+        if (code == ROT.VK_NUMPAD5 || code == ROT.VK_END) {
             this.nextTurn();
         }
     }
