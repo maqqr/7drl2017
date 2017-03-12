@@ -535,6 +535,13 @@ class Game {
                 if (tileName == "Hideout") {
                     this.add2ActnLog("You see an entrance to the evil wizard's hideout here.");
                 }
+                if(this.gameState.player.pos.x != oldX || this.gameState.player.pos.y !=oldY) {
+                    for (let i = 0; i< this.gameState.level.items.length;i++) {
+                        if (this.gameState.level.items[i].pos.x == this.gameState.player.pos.x && this.gameState.level.items[i].pos.y == this.gameState.player.pos.y) {
+                            this.add2ActnLog("You step on %c{rgba(0,255,0,0.8)}"+PS["Rogue"].itemName(this.gameState.level.items[i].item) +"%c{}.")
+                        }
+                }
+                }
                 this.nextTurn();
             }
             return;
