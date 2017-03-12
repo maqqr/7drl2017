@@ -479,7 +479,7 @@ class Game {
                 this.inputtedName = this.inputtedName.slice(0,this.inputtedName.length-1);
                  this.display.drawText(25,10, "Enter your name: "+this.inputtedName+"%c{rgba(0,0,0,1)}bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb%c{}");
             }
-            else if (code >=65 && code <= 90) {
+            else if (code >=65 && code <= 90 && this.inputtedName.length <=12) {
                 let insertChar = String.fromCharCode(code);
                 if(this.inputtedName.length>0) insertChar = insertChar.toLowerCase();
                 this.inputtedName += insertChar;
