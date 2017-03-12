@@ -33,7 +33,7 @@ filterNegativeWeights :: forall a. Array (Weighted a) -> Array (Weighted a)
 filterNegativeWeights = filter (\x -> x.weight > 0)
 
 randomTheme :: Random Theme
-randomTheme = unsafePartial $ unsafeSelectOne [DwarvenMine, GoblinCave, Cave]
+randomTheme = unsafePartial $ unsafeSelectOne [DwarvenMine, GoblinCave, Cave, IceCave]
 
 randomItem :: Theme -> Int -> Random Item
 randomItem theme depth = do
@@ -50,16 +50,16 @@ randomItem theme depth = do
         ------------ Weapon generation ------------
 
         weaponTypeWeights :: Array (Weighted WeaponType)
-        weaponTypeWeights = [{ item: Axe,    weight: 15 }
+        weaponTypeWeights = [{ item: Axe,    weight: if theme == DwarvenMine then 100 else 5 }
                             ,{ item: Dagger, weight: 40 }
-                            ,{ item: Sword,  weight: 10 }
+                            ,{ item: Sword,  weight: 20 }
                             ]
 
         weaponPrefixWeights :: Array (Weighted WeaponPrefix)
-        weaponPrefixWeights = [{ item: Common,     weight: 30 }
-                              ,{ item: Rusty,      weight: 30 }
-                              ,{ item: Masterwork, weight: 0}
-                              ,{ item: Sharp,      weight: 10 }
+        weaponPrefixWeights = [{ item: Common,     weight: 30 - depth }
+                              ,{ item: Rusty,      weight: 30 - depth * 10 }
+                              ,{ item: Masterwork, weight: 0 + depth * 2}
+                              ,{ item: Sharp,      weight: 10 + depth * 5 }
                               ]
 
         randomWeapon :: Random Item
@@ -77,10 +77,10 @@ randomItem theme depth = do
                             ]
 
         armourPrefixWeights :: Array (Weighted ArmourPrefix)
-        armourPrefixWeights = [{ item: CommonA,     weight: 30 }
-                              ,{ item: LightA,      weight: 20 }
-                              ,{ item: ThickA,      weight: 10}
-                              ,{ item: MasterworkA, weight: 5 }
+        armourPrefixWeights = [{ item: CommonA,     weight: 30 - depth }
+                              ,{ item: LightA,      weight: 20 + depth }
+                              ,{ item: ThickA,      weight: 10 + depth * 2 }
+                              ,{ item: MasterworkA, weight: 5 + depth }
                               ]
         
         randomArmour :: Random Item

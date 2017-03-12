@@ -2,7 +2,9 @@ module Rogue where
 
 import Prelude
 import Data.Array (index, updateAt, snoc, deleteAt, replicate)
-import Data.Maybe (Maybe(..), fromMaybe)
+import Data.Int (toNumber)
+import Data.Maybe (Maybe(..), fromMaybe, maybe)
+import Data.Traversable (foldl)
 import Data.StrMap (StrMap, empty)
 import Random (Random, Seed, generateInt, runRandom)
 
@@ -25,6 +27,7 @@ newtype GameState = GameState
     , player     :: Creature
     , coldStatus :: Int
     , coldStep   :: Int
+    , maxEnc     :: Int
     , equipment  :: { cloak :: Maybe Item , chest :: Maybe Item , hands :: Maybe Item , weapon :: Maybe Item }
     }
 
@@ -34,8 +37,19 @@ initialGameState _ = GameState
     , player:     Creature {creatureType: Player {name: "Frozty"}, pos: {x: 0, y: 11}, stats: defaultStats unit, inv: [Wood, Wood, Armour { armourType: Cloak, prefix: CommonA }, Weapon { weaponType: Dagger, prefix: Rusty }], time: 0.0 }
     , coldStatus: 0
     , coldStep: 0
+    , maxEnc: 70
     , equipment:  { cloak: Nothing, chest: Nothing, hands: Nothing, weapon: Nothing }
     }
+
+totalEnc :: GameState -> Int
+totalEnc (GameState gs@{ player: Creature player}) =
+    cloak + chest + hands + weapon + inv
+    where
+        inv = foldl (+) 0 $ map itemWeight player.inv
+        cloak = maybe 0 itemWeight gs.equipment.cloak
+        chest = maybe 0 itemWeight gs.equipment.chest
+        hands = maybe 0 itemWeight gs.equipment.hands
+        weapon = maybe 0 itemWeight gs.equipment.weapon
 
 newtype Creature = Creature
     { creatureType :: CreatureType
@@ -70,7 +84,7 @@ createWizard :: Unit -> Creature
 createWizard _ = Creature { creatureType: Tim, stats: { hpMax: 20, hp: 20, str: 10, dex: 10, int: 10 }, inv: [], pos: { x: 0, y: 0 }, time: 0.0}
 
 creatureSpeed :: Creature -> Number
-creatureSpeed _ = 500.0
+creatureSpeed (Creature c) = toNumber $ 300 - c.stats.dex * 10
 
 creatureIcon :: Creature -> Char
 creatureIcon (Creature { creatureType: Player p })  = '@'
@@ -303,9 +317,9 @@ weaponTypeName Dagger = "dagger"
 weaponTypeName Sword = "sword"
 
 weaponTypeStats :: WeaponType -> WeaponStats
-weaponTypeStats Axe    = { dmg:  6, hit: -3, weight:  6 }
-weaponTypeStats Dagger = { dmg: -2, hit:  2, weight:  2 }
-weaponTypeStats _      = { dmg:  2, hit:  0, weight:  4 }
+weaponTypeStats Axe    = { dmg:  6, hit: -20, weight:  6 }
+weaponTypeStats Dagger = { dmg:  1, hit:  10, weight:  2 }
+weaponTypeStats Sword  = { dmg:  3, hit:   0, weight:  4 }
 
 data WeaponPrefix = Common | Rusty | Masterwork | Sharp
 
@@ -316,10 +330,10 @@ weaponPrefixName Masterwork = "masterwork"
 weaponPrefixName Sharp = "sharp"
 
 weaponPrefixStats :: WeaponPrefix -> WeaponStats
-weaponPrefixStats Rusty      = { dmg: -2, hit: 0, weight: -1 }
-weaponPrefixStats Masterwork = { dmg:  4, hit: 2, weight:  0 }
-weaponPrefixStats Sharp      = { dmg:  2, hit: 0, weight:  0 }
-weaponPrefixStats _          = { dmg:  0, hit: 0, weight:  0 }
+weaponPrefixStats Rusty      = { dmg: -2, hit: -5, weight: -1 }
+weaponPrefixStats Masterwork = { dmg:  4, hit: 10, weight:  0 }
+weaponPrefixStats Sharp      = { dmg:  2, hit:  5, weight:  0 }
+weaponPrefixStats _          = { dmg:  0, hit:  0, weight:  0 }
 
 
 type ArmourStats = { ap :: Int, cr :: Int, weight :: Int }
@@ -390,10 +404,10 @@ potionEffect gs _ = gs
 
 
 itemWeight :: Item -> Int
-itemWeight (Weapon w) = ((weaponTypeStats w.weaponType).weight) + ((weaponPrefixStats w.prefix).weight)
-itemWeight (Armour a) = ((armourTypeStats a.armourType).weight) + ((armourPrefixStats a.prefix).weight)
-itemWeight Wood       = 10
-itemWeight _          = 2
+itemWeight (Weapon w) = max' 1 $ ((weaponTypeStats w.weaponType).weight) + ((weaponPrefixStats w.prefix).weight)
+itemWeight (Armour a) = max' 1 $  ((armourTypeStats a.armourType).weight) + ((armourPrefixStats a.prefix).weight)
+itemWeight (Potion _) = 1
+itemWeight Wood       = 5
 
 addItem :: Creature -> Maybe Item -> Creature
 addItem (Creature c) (Just i) = Creature ( c { inv = snoc (c.inv) i } )
@@ -423,9 +437,21 @@ unEquip (GameState gs) 3 = GameState (gs { equipment { hands  = Nothing }, playe
 unEquip (GameState gs) 4 = GameState (gs { equipment { weapon = Nothing }, player = addItem gs.player gs.equipment.weapon })
 unEquip gs _             = gs
 
+weaponDamage :: Maybe Item -> Int
+weaponDamage (Just (Weapon w)) = (weaponPrefixStats (w.prefix)).dmg + (weaponTypeStats (w.weaponType)).dmg
+weaponDamage _                 = 1
+
+weaponHitChance :: Maybe Item -> Int
+weaponHitChance (Just (Weapon w)) = (weaponTypeStats w.weaponType).hit
+weaponHitChance _                 = 0
+
+creatureHitChance :: GameState -> Creature -> Int
+creatureHitChance (GameState gs) (Creature c@{ creatureType: (Player _) }) = 40 + c.stats.dex * 2 + weaponHitChance gs.equipment.weapon
+creatureHitChance _ (Creature c)                                           = 40 + c.stats.dex * 2
+
 dmg :: Creature -> Maybe Item -> Random Int
-dmg (Creature c) (Just (Weapon w)) =
-    let maxDam = c.stats.str + (weaponPrefixStats (w.prefix)).dmg + (weaponTypeStats (w.weaponType)).dmg
+dmg (Creature c) (Just w@(Weapon _)) =
+    let maxDam = c.stats.str + weaponDamage (Just w)
     in generateInt 0 maxDam
 dmg (Creature c) _ =
     let maxDam = c.stats.str

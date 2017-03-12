@@ -216,24 +216,30 @@ class Game {
                     green = "%c{rgba(255,51,153,0.6)}";
                     brown = "%c{rgba(0,255,0,0.8)}";
                 }
-                let seed = new Date().getTime();
-                let result = PS["Rogue"].attack(seed)(this.gameState)(creature)(blocking);
+
+                let hitChance = PS["Rogue"].creatureHitChance(this.gameState)(creature);
                 let name = PS["Data.Show"].show(PS["Rogue"].showCreature)(creature);
                 name = name.charAt(0).toUpperCase() + name.slice(1);
                 let blockname = PS["Data.Show"].show(PS["Rogue"].showCreature)(blocking);
-                //blockname = blockname.charAt(0).toUpperCase() + blockname.slice(1);
-                this.add2ActnLog(green+name+"%c{} hit "+brown+PS["Data.Show"].show(PS["Rogue"].showCreature)(blocking)+"%c{} for %c{rgba(255,0,0,0.8)}"+String(blocking.stats.hp-result.stats.hp)+"%c{} damage.");
-                if(result.stats.hp <=0) {
-                    this.add2ActnLog(green+name+"%c{} killed the "+brown+blockname+"%c{}.");
+                if (ROT.RNG.getUniformInt(0, 100) < hitChance) {
+                    let seed = new Date().getTime();
+                    let result = PS["Rogue"].attack(seed)(this.gameState)(creature)(blocking);
+                    this.add2ActnLog(green+name+"%c{} hit "+brown+PS["Data.Show"].show(PS["Rogue"].showCreature)(blocking)+"%c{} for %c{rgba(255,0,0,0.8)}"+String(blocking.stats.hp-result.stats.hp)+"%c{} damage.");
+                    if(result.stats.hp <=0) {
+                        this.add2ActnLog(green+name+"%c{} killed the "+brown+blockname+"%c{}.");
 
-                    if (blockname == "evil wizard") {
-                        this.wizardDead = true;
+                        if (blockname == "evil wizard") {
+                            this.wizardDead = true;
+                        }
+                    }
+                    blocking.stats.hp = result.stats.hp;
+
+                    if (blocking.stats.hp <= 0 && !PS["Rogue"].isPlayer(blocking)) {
+                        delete this.gameState.level.enemies[blockingId];
                     }
                 }
-                blocking.stats.hp = result.stats.hp;
-
-                if (blocking.stats.hp <= 0 && !PS["Rogue"].isPlayer(blocking)) {
-                    delete this.gameState.level.enemies[blockingId];
+                else {
+                    this.add2ActnLog(green+name+"%c{} tried to hit "+brown+blockname+"%c{}, but missed!");
                 }
             }
             return true;
@@ -295,6 +301,61 @@ class Game {
             this.refreshDisplay();
         }
         else {
+            // Unequip item
+            if (this.invState == InventoryState.Unequip) {
+                let rogue = PS["Rogue"];
+                let maybe = PS["Data.Maybe"];
+
+                if (code == ROT.VK_A) {
+                    if (maybe.isJust(this.gameState.equipment.cloak)) {
+                        let equipped = this.gameState.equipment.cloak.value0;
+                        this.gameState.equipment.cloak = new maybe.Nothing();
+                        this.gameState.player.inv.push(equipped);
+                        this.add2ActnLog("You take off the " + rogue.itemName(equipped) + ".");
+                    }
+                    else {
+                        this.add2ActnLog("You don't have a cloak.");
+                    }
+                }
+
+                if (code == ROT.VK_B) {
+                    if (maybe.isJust(this.gameState.equipment.chest)) {
+                        let equipped = this.gameState.equipment.chest.value0;
+                        this.gameState.player.inv.push(equipped);
+                        this.add2ActnLog("You take off the " + rogue.itemName(equipped) + ".");
+                    }
+                    else {
+                        this.add2ActnLog("You don't have anything on your torso.");
+                    }
+                }
+
+                if (code == ROT.VK_C) {
+                    if (maybe.isJust(this.gameState.equipment.hands)) {
+                        let equipped = this.gameState.equipment.hands.value0;
+                        this.gameState.player.inv.push(equipped);
+                        this.add2ActnLog("You take off the " + rogue.itemName(equipped) + ".");
+                    }
+                    else {
+                        this.add2ActnLog("You don't have gloves.");
+                    }
+                }
+
+                if (code == ROT.VK_D) {
+                    if (maybe.isJust(this.gameState.equipment.weapon)) {
+                        let equipped = this.gameState.equipment.weapon.value0;
+                        this.gameState.player.inv.push(equipped);
+                        this.add2ActnLog("You take off the " + rogue.itemName(equipped) + ".");
+                    }
+                    else {
+                        this.add2ActnLog("You can't remove your fists.");
+                    }
+                }
+
+                this.state = State.InGame;
+                this.refreshDisplay();
+                this.nextTurn();
+            }
+
             let itemIndex = code - 65;
             if (itemIndex >= 0 && itemIndex < this.gameState.player.inv.length) {
                 let item = this.gameState.player.inv[itemIndex];
@@ -337,6 +398,7 @@ class Game {
                     }
                 }
 
+                // Equip item
                 if (this.invState == InventoryState.Equip) {
                     let rogue = PS["Rogue"];
                     let maybe = PS["Data.Maybe"];
@@ -554,19 +616,17 @@ class Game {
                 }
             }
 
-            if (itemsAtPlayer.length == 1) {
-                let item = itemsAtPlayer[0];
-                let index = this.gameState.level.items.indexOf(item);
-                this.gameState.level.items.splice(index, 1);
-                this.add2ActnLog(PS["Data.Show"].show(PS["Rogue"].showCreature)(this.gameState.player)+ " picked up %c{rgba(0,255,0,1.0)}"+PS["Rogue"].itemName(item.item)+"%c{}!")
-                this.gameState.player.inv.push(item.item);
-            }
-            else if (itemsAtPlayer.length > 1) {
+            if (itemsAtPlayer.length > 0) {
                 let item = itemsAtPlayer[itemsAtPlayer.length-1];
                 let index = this.gameState.level.items.indexOf(item);
-                this.gameState.level.items.splice(index, 1);
-                this.add2ActnLog(PS["Data.Show"].show(PS["Rogue"].showCreature)(this.gameState.player)+ " picked up %c{rgba(0,255,0,1.0)}"+PS["Rogue"].itemName(item.item)+"%c{}!")
-                this.gameState.player.inv.push(item.item);
+                if (PS["Rogue"].totalEnc(this.gameState) + PS["Rogue"].itemWeight(item.item) <= this.gameState.maxEnc) {
+                    this.gameState.level.items.splice(index, 1);
+                    this.add2ActnLog(PS["Data.Show"].show(PS["Rogue"].showCreature)(this.gameState.player)+ " picked up %c{rgba(0,255,0,1.0)}"+PS["Rogue"].itemName(item.item)+"%c{}!")
+                    this.gameState.player.inv.push(item.item);
+                }
+                else {
+                    this.add2ActnLog("You can't pick up the " + PS["Rogue"].itemName(item.item) + ". You are carrying too much.")
+                }
             }
 
             this.nextTurn();
@@ -621,7 +681,6 @@ class Game {
     increaseCold() {
         let dungeonWarmth = this.currentDungeon == "worldmap" ? 0 : 3;
         let coldResistance = dungeonWarmth + PS["Rogue"].playerColdRes(this.gameState);
-        console.log(this.gameState.coldStep, coldResistance);
         this.gameState.coldStep++;
         if (this.gameState.coldStep > coldResistance) {
             this.gameState.coldStatus++;
@@ -798,17 +857,17 @@ class Game {
         text[InventoryState.Drop] = "Select item to drop:";
         text[InventoryState.Use] = "Select item to use:";
 
-        let maybeItemName = function(maybeItem) {
+        let maybeItemName = function(maybeItem, nothingName) {
             let maybe = PS["Data.Maybe"];
             let rogue = PS["Rogue"];
-            return maybe.maybe("nothing")(rogue.itemName)(maybeItem);
+            return maybe.maybe(nothingName)(rogue.itemName)(maybeItem);
         };
 
         let drawEquipment = function(sx: number, sy: number) {
-            this.display.drawText(sx+1, sy+2, "cloak  - " + maybeItemName(this.gameState.equipment.cloak));
-            this.display.drawText(sx+1, sy+3, "torso  - " + maybeItemName(this.gameState.equipment.chest));
-            this.display.drawText(sx+1, sy+4, "gloves - " + maybeItemName(this.gameState.equipment.hands));
-            this.display.drawText(sx+1, sy+5, "weapon - " + maybeItemName(this.gameState.equipment.weapon));
+            this.display.drawText(sx+1, sy+2, "cloak  - " + maybeItemName(this.gameState.equipment.cloak, "nothing"));
+            this.display.drawText(sx+1, sy+3, "torso  - " + maybeItemName(this.gameState.equipment.chest, "nothing"));
+            this.display.drawText(sx+1, sy+4, "gloves - " + maybeItemName(this.gameState.equipment.hands, "nothing"));
+            this.display.drawText(sx+1, sy+5, "weapon - " + maybeItemName(this.gameState.equipment.weapon, "fists"));
         }
 
         if (this.invState !== InventoryState.Unequip) {
@@ -817,8 +876,21 @@ class Game {
             for (let i=0; i<this.gameState.player.inv.length; i++) {
                 let item = this.gameState.player.inv[i];
                 let key = String.fromCharCode(65 + i);
-                this.display.drawText(3, 4 + i, key + " - " + PS["Rogue"].itemName(item));
+                let weight = PS["Rogue"].itemWeight(item);
+                this.display.drawText(3, 4 + i, key + " - " + PS["Rogue"].itemName(item) + " (" + weight + " lbs)");
             }
+
+            let ap = PS["Rogue"].playerArmour(this.gameState);
+            let cr = PS["Rogue"].playerColdRes(this.gameState);
+            let maxDam = this.gameState.player.stats.str + PS["Rogue"].weaponDamage(this.gameState.equipment.weapon);
+            let hit = PS["Rogue"].creatureHitChance(this.gameState)(this.gameState.player);
+
+            this.display.drawText(35, 12, "Armour points    : " + ap);
+            this.display.drawText(35, 13, "Cold resistance  : " + cr);
+            this.display.drawText(35, 14, "Weapon damage    : 0 - " + maxDam);
+            this.display.drawText(35, 15, "Weapon hit chance: " + hit + "%");
+
+            this.display.drawText(35, 28, "Total encumbrance: " + PS["Rogue"].totalEnc(this.gameState) + " / " + this.gameState.maxEnc + " lbs.");
 
             this.display.drawText(2, 28, "Space or return - cancel");
             
@@ -829,7 +901,7 @@ class Game {
             this.display.drawText(2, 2, text[this.invState]);
             this.display.drawText(3, 4, "A - cloak");
             this.display.drawText(3, 5, "B - torso");
-            this.display.drawText(3, 6, "C - torso");
+            this.display.drawText(3, 6, "C - gloves");
             this.display.drawText(3, 7, "D - weapon");
             
             this.display.drawText(35, 2, "Equipment");
