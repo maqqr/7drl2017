@@ -59,6 +59,62 @@ class Game {
         });
         document.body.appendChild(this.display.getContainer());
 
+        let helpP = document.createElement("p");
+        let helpText = document.createTextNode("List of possible button commands:")
+        helpP.appendChild(helpText);
+        document.body.appendChild(helpP);
+
+        let helpUl = document.createElement("ul");
+        let moveLi = document.createElement("li");
+        let moveText = document.createTextNode("NumPad numbers for moving")
+        moveLi.appendChild(moveText);
+        helpUl.appendChild(moveLi);
+
+
+        let useLi = document.createElement("li");
+        let useText = document.createTextNode("U for using items")
+        useLi.appendChild(useText);
+        helpUl.appendChild(useLi);
+
+        let divLi = document.createElement("li");
+        let divText = document.createTextNode("/ (division) for moving into dungeons and between floors")
+        divLi.appendChild(divText);
+        helpUl.appendChild(divLi);
+
+        let messLi = document.createElement("li");
+        let messText = document.createTextNode("M for message log")
+        messLi.appendChild(messText);
+        helpUl.appendChild(messLi);
+
+        let invLi = document.createElement("li");
+        let invText = document.createTextNode("I for inventory")
+        invLi.appendChild(invText);
+        helpUl.appendChild(invLi);
+
+        let drpLi = document.createElement("li");
+        let drpText = document.createTextNode("D for dropping items")
+        drpLi.appendChild(drpText);
+        helpUl.appendChild(drpLi);
+
+        let getLi = document.createElement("li");
+        let getText = document.createTextNode("G for picking up items")
+        getLi.appendChild(getText);
+        helpUl.appendChild(getLi);
+
+        let equLi = document.createElement("li");
+        let equText = document.createTextNode("E for equipping items")
+        equLi.appendChild(equText);
+        helpUl.appendChild(equLi);
+
+        let uequLi = document.createElement("li");
+        let uequText = document.createTextNode("T for taking off (unequip) items")
+        uequLi.appendChild(uequText);
+        helpUl.appendChild(uequLi);
+
+        
+
+        document.body.appendChild(helpUl);
+
         this.handlers[State.InGame] = this.handleInGame.bind(this);
         this.handlers[State.Inventory] = this.handleInventory.bind(this);
         this.handlers[State.MessageBuffer] = this.handleMessageBuffer.bind(this);
