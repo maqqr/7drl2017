@@ -67,48 +67,47 @@ class Game {
 
         let helpUl = document.createElement("ul");
         let moveLi = document.createElement("li");
-        let moveText = document.createTextNode("NumPad numbers for moving")
+        let moveText = document.createTextNode("NumPad numbers - move")
         moveLi.appendChild(moveText);
         helpUl.appendChild(moveLi);
 
-
-        let useLi = document.createElement("li");
-        let useText = document.createTextNode("U for using items")
-        useLi.appendChild(useText);
-        helpUl.appendChild(useLi);
-
         let divLi = document.createElement("li");
-        let divText = document.createTextNode("/ (division) for moving into dungeons and between floors")
+        let divText = document.createTextNode("NumPad / (division) - move into dungeons and between floors")
         divLi.appendChild(divText);
         helpUl.appendChild(divLi);
 
+        let useLi = document.createElement("li");
+        let useText = document.createTextNode("U - use items")
+        useLi.appendChild(useText);
+        helpUl.appendChild(useLi);
+
         let messLi = document.createElement("li");
-        let messText = document.createTextNode("M for message log")
+        let messText = document.createTextNode("M - message log")
         messLi.appendChild(messText);
         helpUl.appendChild(messLi);
 
         let invLi = document.createElement("li");
-        let invText = document.createTextNode("I for inventory")
+        let invText = document.createTextNode("I - inventory")
         invLi.appendChild(invText);
         helpUl.appendChild(invLi);
 
         let drpLi = document.createElement("li");
-        let drpText = document.createTextNode("D for dropping items")
+        let drpText = document.createTextNode("D - drop items")
         drpLi.appendChild(drpText);
         helpUl.appendChild(drpLi);
 
         let getLi = document.createElement("li");
-        let getText = document.createTextNode("G for picking up items")
+        let getText = document.createTextNode("G - pick up items")
         getLi.appendChild(getText);
         helpUl.appendChild(getLi);
 
         let equLi = document.createElement("li");
-        let equText = document.createTextNode("E for equipping items")
+        let equText = document.createTextNode("E - equip items")
         equLi.appendChild(equText);
         helpUl.appendChild(equLi);
 
         let uequLi = document.createElement("li");
-        let uequText = document.createTextNode("T for taking off (unequip) items")
+        let uequText = document.createTextNode("T - take off (unequip) items")
         uequLi.appendChild(uequText);
         helpUl.appendChild(uequLi);
 
@@ -202,15 +201,25 @@ class Game {
 
         if (blocking !== null) {
             if (PS["Rogue"].isPlayer(creature) !== PS["Rogue"].isPlayer(blocking)) {
+                let green = "";
+                let brown = "";
+                if(PS["Rogue"].isPlayer(creature)) {
+                    green = "%c{rgba(0,255,0,0.8)}";
+                    brown = "%c{rgba(255,51,153,0.6)}";
+                }
+                else {
+                    green = "%c{rgba(255,51,153,0.6)}";
+                    brown = "%c{rgba(0,255,0,0.8)}";
+                }
                 let seed = new Date().getTime();
                 let result = PS["Rogue"].attack(seed)(this.gameState)(creature)(blocking);
                 let name = PS["Data.Show"].show(PS["Rogue"].showCreature)(creature);
                 name = name.charAt(0).toUpperCase() + name.slice(1);
                 let blockname = PS["Data.Show"].show(PS["Rogue"].showCreature)(blocking);
-                blockname = blockname.charAt(0).toUpperCase() + blockname.slice(1);
-                this.add2ActnLog(name+" hit "+PS["Data.Show"].show(PS["Rogue"].showCreature)(blocking)+" for %c{rgba(255,0,0,0.8)}"+String(blocking.stats.hp-result.stats.hp)+"%c{} damage.");
+                //blockname = blockname.charAt(0).toUpperCase() + blockname.slice(1);
+                this.add2ActnLog(green+name+"%c{} hit "+brown+PS["Data.Show"].show(PS["Rogue"].showCreature)(blocking)+"%c{} for %c{rgba(255,0,0,0.8)}"+String(blocking.stats.hp-result.stats.hp)+"%c{} damage.");
                 if(result.stats.hp <=0) {
-                    this.add2ActnLog(blockname+" died for some reason.");
+                    this.add2ActnLog(green+name+"%c{} killed the "+brown+blockname+"%c{} ");
                 }
                 blocking.stats.hp = result.stats.hp;
 
@@ -446,7 +455,7 @@ class Game {
                 let item = itemsAtPlayer[0];
                 let index = this.gameState.level.items.indexOf(item);
                 this.gameState.level.items.splice(index, 1);
-                this.add2ActnLog(PS["Data.Show"].show(PS["Rogue"].showCreature)(this.gameState.player)+ " picked up %c{rgba(0,255,0,1.0)}"+PS["Rogue"].itemName(item.item)+"%c{}!.")
+                this.add2ActnLog(PS["Data.Show"].show(PS["Rogue"].showCreature)(this.gameState.player)+ " picked up %c{rgba(0,255,0,1.0)}"+PS["Rogue"].itemName(item.item)+"%c{}!")
                 this.gameState.player.inv.push(item.item);
             }
             else if (itemsAtPlayer.length > 1) {
@@ -543,35 +552,43 @@ class Game {
                 let linecolor = "%c{rgba("+String(255+i*grayism)+","+String(255+i*grayism)+","+String(255+i*grayism)+",0.8)}";
                 //Make sure that the line color continues after possible colorized text
                 let nextLine = this.actionlog[itemsInLog+i];
-                let colorPos = nextLine.indexOf("%c{}");
-                if (colorPos!=-1) {
-                    
-                    //Fade the color
-                    let cStartPos = nextLine.indexOf("%c{rgba(") + 3;
-                    let cLength = 0;
-                    let commaPos = 0;
-                    while (nextLine.charAt(cStartPos+cLength) != ")") {
-                        cLength +=1;
-                        if (nextLine.charAt(cStartPos+cLength) == ",") commaPos =cStartPos+cLength;
-                    }
-                    let black = ROT.Color.fromString("rgb(0,0,0)");
-                    let colorRot = ROT.Color.fromString("rgb"+nextLine.slice(cStartPos+4,commaPos)+")");
-                    
-                    colorRot = ROT.Color.interpolate(colorRot, black,(1-(230+i*grayism)/230)*0.75); 
-                    
 
-                    nextLine = nextLine.replace(nextLine.slice(cStartPos+3,cStartPos+cLength),"("+colorRot.toString());
-
-
-                    //Last changes
-                    colorPos = nextLine.indexOf("%c{}");
-                    nextLine = nextLine.slice(0,colorPos+4) + linecolor + nextLine.slice(colorPos+4);
-
-
+                let colorPos = nextLine.lastIndexOf("%c{r");
+                if (colorPos != -1) {
+                    do {
+                        nextLine = this.fadeColorInStringAtPositionByScalingWithLinecolor(nextLine, colorPos, (i*grayism),linecolor);
+                        let newCPos = nextLine.lastIndexOf("%c{r", colorPos-1);
+                        if (newCPos == -1 || newCPos == colorPos) {
+                            break;
+                        }
+                        else {
+                            colorPos = newCPos;
+                        }
+                    } while(true);
                 }
+
                 this.display.drawText(0,(30+i),linecolor+nextLine+"%c{}",106);
             } 
         }
+    }
+    fadeColorInStringAtPositionByScalingWithLinecolor(line:string, pos:number, scale:number, linecolor:string) {
+        let cLength = 0;
+        let commaPos = 0;
+        while (line.charAt(pos+cLength) != ")") {
+            cLength +=1;
+            if (line.charAt(pos+cLength) == ",") commaPos =pos+cLength;
+        }
+        let black = ROT.Color.fromString("rgb(0,0,0)");
+        let colorRot = ROT.Color.fromString("rgb"+line.slice(pos+7,commaPos)+")");
+        
+        colorRot = ROT.Color.interpolate(colorRot, black,(1-(230+scale)/230)*0.75); 
+
+        line = line.replace(line.slice(pos+6,pos+cLength),"("+colorRot.toString());
+        //Last changes
+        let endPos = line.indexOf("%c{}",pos)+4;
+        line = line.slice(0,endPos) + linecolor + line.slice(endPos);
+        
+        return line;
     }
 
     startNewGame() {
