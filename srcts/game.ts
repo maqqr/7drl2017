@@ -472,18 +472,18 @@ class Game {
     handleStart(e: KeyboardEvent) {
         this.display.clear();
         var code = e.keyCode;
-        console.log(code);
+        this.display.drawText(11,20,"Press Enter to select name. You can erase with Delete.")
         if(this.enteredName == false) {
-            this.display.drawText(25,10, "You are: "+this.inputtedName+"%c{rgba(0,0,0,1)}bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb%c{}");
+            this.display.drawText(25,10, "Enter your name: "+this.inputtedName+"%c{rgba(0,0,0,1)}bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb%c{}");
             if(code == ROT.VK_DELETE && this.inputtedName.length>0) {
                 this.inputtedName = this.inputtedName.slice(0,this.inputtedName.length-1);
-                 this.display.drawText(25,10, "You are: "+this.inputtedName+"%c{rgba(0,0,0,1)}bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb%c{}");
+                 this.display.drawText(25,10, "Enter your name: "+this.inputtedName+"%c{rgba(0,0,0,1)}bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb%c{}");
             }
-            else if (code >=65 && code <= 90) {
+            else if (code >=65 && code <= 90 && this.inputtedName.length <=12) {
                 let insertChar = String.fromCharCode(code);
                 if(this.inputtedName.length>0) insertChar = insertChar.toLowerCase();
                 this.inputtedName += insertChar;
-                 this.display.drawText(25,10, "You are: "+this.inputtedName+"%c{rgba(0,0,0,1)}bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb%c{}");
+                 this.display.drawText(25,10, "Enter your name: "+this.inputtedName+"%c{rgba(0,0,0,1)}bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb%c{}");
             }
             else if (code == ROT.VK_RETURN && this.inputtedName.length > 0) {
                 this.enteredName = true;
@@ -497,7 +497,7 @@ class Game {
             if (code == ROT.VK_RETURN) {
                 this.state = State.InGame;
                 let storyP = document.createElement("p");
-                let storyText = document.createTextNode("You are a fearless peasant called "+PS["Data.Show"].show(PS["Rogue"].showCreature)(this.gameState.player)+". An evil wizard has cast a spell that covered the world in everfrost. The everfrost is damaging your next year's pumpkin harvest. The wizard has to die.");
+                let storyText = document.createTextNode("You are a fearless peasant called "+PS["Data.Show"].show(PS["Rogue"].showCreature)(this.gameState.player)+". An evil wizard has cast a spell that covered the world in everfrost. The everfrost is damaging your pumpkin harvest. The wizard has to die.");
                 storyP.appendChild(storyText);
                 document.body.appendChild(storyP);
                 this.refreshDisplay();
@@ -512,8 +512,8 @@ class Game {
         this.display.clear();
         this.display.drawText(13,10,"You are a fearless peasant called %c{rgba(0,255,0,0.8)}"+PS["Data.Show"].show(PS["Rogue"].showCreature)(this.gameState.player)+"%c{}.");
         this.display.drawText(3,11,"%c{rgba(245, 65, 241, 0.6)}An evil wizard%c{} has cast a spell that covered the world in %c{rgba(153,255,255,0.8)}everfrost%c{}.");
-        this.display.drawText(7,12,"%c{rgba(153,255,255,0.8)}The everfrost%c{} is damaging your next year's %c{rgba(255,128,0,0.8)}pumpkin%c{} harvest.");
-        this.display.drawText(20,13,"%c{rgba(245, 65, 241, 0.6)}The wizard%c{} has to %c{rgba(255, 0, 0, 1)}die%c{}.");
+        this.display.drawText(10,12,"%c{rgba(153,255,255,0.8)}The everfrost%c{} is damaging your %c{rgba(255,128,0,0.8)}pumpkin%c{} harvest.");
+        this.display.drawText(22,13,"%c{rgba(245, 65, 241, 0.6)}The wizard%c{} has to %c{rgba(255, 0, 0, 1)}die%c{}.");
     }
 
     handleInGame(e: KeyboardEvent) {
@@ -798,7 +798,8 @@ class Game {
         this.gameState = pushToGamestate(this, this.gameState, worldmap);
         //this.refreshDisplay();
         this.display.clear();
-        this.display.drawText(25,10, "You are: "+this.inputtedName);
+        this.display.drawText(25,10, "Enter your name: "+this.inputtedName+"%c{rgba(0,0,0,1)}bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb%c{}");
+        this.display.drawText(11,20,"Press Enter to select name. You can erase with Delete.")
     }
     
     /**
