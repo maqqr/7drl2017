@@ -491,7 +491,10 @@ class Game {
             else if (code == ROT.VK_RETURN && this.inputtedName.length > 0) {
                 this.enteredName = true;
                 this.gameState.player.creatureType.value0.name = this.inputtedName;
-
+                let possibleText = document.getElementById("story");
+                if(possibleText != null) {
+                       document.body.removeChild(possibleText);
+                }
                 this.displayStory();
             }
         }
@@ -499,10 +502,12 @@ class Game {
             this.displayStory();
             if (code == ROT.VK_RETURN) {
                 this.state = State.InGame;
-                let storyP = document.createElement("p");
                 let storyText = document.createTextNode("You are a fearless peasant called "+PS["Data.Show"].show(PS["Rogue"].showCreature)(this.gameState.player)+". An evil wizard has cast a spell that covered the world in everfrost. The everfrost is damaging your pumpkin harvest. The wizard has to die.");
+                let storyP = document.createElement("p");
+                storyP.setAttribute("id","story");
                 storyP.appendChild(storyText);
                 document.body.appendChild(storyP);
+                
                 this.refreshDisplay();
             }
 
