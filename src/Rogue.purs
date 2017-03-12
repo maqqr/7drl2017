@@ -303,9 +303,9 @@ weaponTypeName Dagger = "dagger"
 weaponTypeName Sword = "sword"
 
 weaponTypeStats :: WeaponType -> WeaponStats
-weaponTypeStats Axe    = { dmg:  6, hit: -3, weight:  6 }
-weaponTypeStats Dagger = { dmg: -2, hit:  2, weight:  2 }
-weaponTypeStats _      = { dmg:  2, hit:  0, weight:  4 }
+weaponTypeStats Axe    = { dmg:  6, hit: -20, weight:  6 }
+weaponTypeStats Dagger = { dmg:  1, hit:  10, weight:  2 }
+weaponTypeStats Sword  = { dmg:  3, hit:   0, weight:  4 }
 
 data WeaponPrefix = Common | Rusty | Masterwork | Sharp
 
@@ -316,10 +316,10 @@ weaponPrefixName Masterwork = "masterwork"
 weaponPrefixName Sharp = "sharp"
 
 weaponPrefixStats :: WeaponPrefix -> WeaponStats
-weaponPrefixStats Rusty      = { dmg: -2, hit: 0, weight: -1 }
-weaponPrefixStats Masterwork = { dmg:  4, hit: 2, weight:  0 }
-weaponPrefixStats Sharp      = { dmg:  2, hit: 0, weight:  0 }
-weaponPrefixStats _          = { dmg:  0, hit: 0, weight:  0 }
+weaponPrefixStats Rusty      = { dmg: -2, hit: -5, weight: -1 }
+weaponPrefixStats Masterwork = { dmg:  4, hit: 10, weight:  0 }
+weaponPrefixStats Sharp      = { dmg:  2, hit:  5, weight:  0 }
+weaponPrefixStats _          = { dmg:  0, hit:  0, weight:  0 }
 
 
 type ArmourStats = { ap :: Int, cr :: Int, weight :: Int }
@@ -423,9 +423,21 @@ unEquip (GameState gs) 3 = GameState (gs { equipment { hands  = Nothing }, playe
 unEquip (GameState gs) 4 = GameState (gs { equipment { weapon = Nothing }, player = addItem gs.player gs.equipment.weapon })
 unEquip gs _             = gs
 
+weaponDamage :: Maybe Item -> Int
+weaponDamage (Just (Weapon w)) = (weaponPrefixStats (w.prefix)).dmg + (weaponTypeStats (w.weaponType)).dmg
+weaponDamage _                 = 1
+
+weaponHitChance :: Maybe Item -> Int
+weaponHitChance (Just (Weapon w)) = (weaponTypeStats w.weaponType).hit
+weaponHitChance _                 = 0
+
+creatureHitChance :: GameState -> Creature -> Int
+creatureHitChance (GameState gs) (Creature c@{ creatureType: (Player _) }) = 40 + c.stats.dex * 2 + weaponHitChance gs.equipment.weapon
+creatureHitChance _ (Creature c)                                           = 40 + c.stats.dex * 2
+
 dmg :: Creature -> Maybe Item -> Random Int
-dmg (Creature c) (Just (Weapon w)) =
-    let maxDam = c.stats.str + (weaponPrefixStats (w.prefix)).dmg + (weaponTypeStats (w.weaponType)).dmg
+dmg (Creature c) (Just w@(Weapon _)) =
+    let maxDam = c.stats.str + weaponDamage (Just w)
     in generateInt 0 maxDam
 dmg (Creature c) _ =
     let maxDam = c.stats.str

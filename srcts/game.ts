@@ -217,24 +217,30 @@ class Game {
                     green = "%c{rgba(255,51,153,0.6)}";
                     brown = "%c{rgba(0,255,0,0.8)}";
                 }
-                let seed = new Date().getTime();
-                let result = PS["Rogue"].attack(seed)(this.gameState)(creature)(blocking);
+
+                let hitChance = PS["Rogue"].creatureHitChance(this.gameState)(creature);
                 let name = PS["Data.Show"].show(PS["Rogue"].showCreature)(creature);
                 name = name.charAt(0).toUpperCase() + name.slice(1);
                 let blockname = PS["Data.Show"].show(PS["Rogue"].showCreature)(blocking);
-                //blockname = blockname.charAt(0).toUpperCase() + blockname.slice(1);
-                this.add2ActnLog(green+name+"%c{} hit "+brown+PS["Data.Show"].show(PS["Rogue"].showCreature)(blocking)+"%c{} for %c{rgba(255,0,0,0.8)}"+String(blocking.stats.hp-result.stats.hp)+"%c{} damage.");
-                if(result.stats.hp <=0) {
-                    this.add2ActnLog(green+name+"%c{} killed the "+brown+blockname+"%c{}.");
+                if (ROT.RNG.getUniformInt(0, 100) < hitChance) {
+                    let seed = new Date().getTime();
+                    let result = PS["Rogue"].attack(seed)(this.gameState)(creature)(blocking);
+                    this.add2ActnLog(green+name+"%c{} hit "+brown+PS["Data.Show"].show(PS["Rogue"].showCreature)(blocking)+"%c{} for %c{rgba(255,0,0,0.8)}"+String(blocking.stats.hp-result.stats.hp)+"%c{} damage.");
+                    if(result.stats.hp <=0) {
+                        this.add2ActnLog(green+name+"%c{} killed the "+brown+blockname+"%c{}.");
 
-                    if (blockname == "evil wizard") {
-                        this.wizardDead = true;
+                        if (blockname == "evil wizard") {
+                            this.wizardDead = true;
+                        }
+                    }
+                    blocking.stats.hp = result.stats.hp;
+
+                    if (blocking.stats.hp <= 0 && !PS["Rogue"].isPlayer(blocking)) {
+                        delete this.gameState.level.enemies[blockingId];
                     }
                 }
-                blocking.stats.hp = result.stats.hp;
-
-                if (blocking.stats.hp <= 0 && !PS["Rogue"].isPlayer(blocking)) {
-                    delete this.gameState.level.enemies[blockingId];
+                else {
+                    this.add2ActnLog(green+name+"%c{} tried to hit "+brown+blockname+"%c{}, but missed!");
                 }
             }
             return true;
@@ -330,6 +336,7 @@ class Game {
                     }
                 }
 
+                // Equip item
                 if (this.invState == InventoryState.Equip) {
                     let rogue = PS["Rogue"];
                     let maybe = PS["Data.Maybe"];
@@ -556,7 +563,6 @@ class Game {
     increaseCold() {
         let dungeonWarmth = this.currentDungeon == "worldmap" ? 0 : 3;
         let coldResistance = dungeonWarmth + PS["Rogue"].playerColdRes(this.gameState);
-        console.log(this.gameState.coldStep, coldResistance);
         this.gameState.coldStep++;
         if (this.gameState.coldStep > coldResistance) {
             this.gameState.coldStatus++;
@@ -729,17 +735,17 @@ class Game {
         text[InventoryState.Drop] = "Select item to drop:";
         text[InventoryState.Use] = "Select item to use:";
 
-        let maybeItemName = function(maybeItem) {
+        let maybeItemName = function(maybeItem, nothingName) {
             let maybe = PS["Data.Maybe"];
             let rogue = PS["Rogue"];
-            return maybe.maybe("nothing")(rogue.itemName)(maybeItem);
+            return maybe.maybe(nothingName)(rogue.itemName)(maybeItem);
         };
 
         let drawEquipment = function(sx: number, sy: number) {
-            this.display.drawText(sx+1, sy+2, "cloak  - " + maybeItemName(this.gameState.equipment.cloak));
-            this.display.drawText(sx+1, sy+3, "torso  - " + maybeItemName(this.gameState.equipment.chest));
-            this.display.drawText(sx+1, sy+4, "gloves - " + maybeItemName(this.gameState.equipment.hands));
-            this.display.drawText(sx+1, sy+5, "weapon - " + maybeItemName(this.gameState.equipment.weapon));
+            this.display.drawText(sx+1, sy+2, "cloak  - " + maybeItemName(this.gameState.equipment.cloak, "nothing"));
+            this.display.drawText(sx+1, sy+3, "torso  - " + maybeItemName(this.gameState.equipment.chest, "nothing"));
+            this.display.drawText(sx+1, sy+4, "gloves - " + maybeItemName(this.gameState.equipment.hands, "nothing"));
+            this.display.drawText(sx+1, sy+5, "weapon - " + maybeItemName(this.gameState.equipment.weapon, "fists"));
         }
 
         if (this.invState !== InventoryState.Unequip) {
@@ -750,6 +756,16 @@ class Game {
                 let key = String.fromCharCode(65 + i);
                 this.display.drawText(3, 4 + i, key + " - " + PS["Rogue"].itemName(item));
             }
+
+            let ap = PS["Rogue"].playerArmour(this.gameState);
+            let cr = PS["Rogue"].playerColdRes(this.gameState);
+            let maxDam = this.gameState.player.stats.str + PS["Rogue"].weaponDamage(this.gameState.equipment.weapon);
+            let hit = PS["Rogue"].creatureHitChance(this.gameState)(this.gameState.player);
+
+            this.display.drawText(35, 12, "Armour points    : " + ap);
+            this.display.drawText(35, 13, "Cold resistance  : " + cr);
+            this.display.drawText(35, 14, "Weapon damage    : 0 - " + maxDam);
+            this.display.drawText(35, 15, "Weapon hit chance: " + hit + "%");
 
             this.display.drawText(2, 28, "Space or return - cancel");
             
