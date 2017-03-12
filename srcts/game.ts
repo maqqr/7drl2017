@@ -319,10 +319,18 @@ class Game {
                         this.add2ActnLog("You can't make a campfire here, find a sheltered location.");
                     }
                     else if(PS["Rogue"].itemName(item) == "wood"){
-                        this.gameState.player.inv.splice(itemIndex, 1);
-                        this.add2ActnLog("You make a campfire.");
-                        let index = this.gameState.player.pos.y * this.gameState.level.width + this.gameState.player.pos.x;
-                        this.gameState.level.tiles[index] = new PS["Rogue"].Fire();
+                        let tile = PS["Rogue"].getTile(this.gameState)(this.gameState.player.pos);
+                        let tileName = PS["Data.Show"].show(PS["Rogue"].showTile)(tile);
+                        if (tileName == "Ground") {
+                            this.gameState.player.inv.splice(itemIndex, 1);
+                            this.add2ActnLog("You make a campfire.");
+                            let index = this.gameState.player.pos.y * this.gameState.level.width + this.gameState.player.pos.x;
+                            this.gameState.level.tiles[index] = new PS["Rogue"].Fire();
+                        }
+                        else {
+                            this.add2ActnLog("You can't light a fire here.");
+                        }
+
                     }
                     else if(PS["Rogue"].itemName(item) == "healing potion") {
                         this.gameState.player.inv.splice(itemIndex, 1);
@@ -515,7 +523,11 @@ class Game {
                 this.gameState.player.inv.push(item.item);
             }
             else if (itemsAtPlayer.length > 1) {
-                // TODO pick up one of several items
+                let item = itemsAtPlayer[itemsAtPlayer.length-1];
+                let index = this.gameState.level.items.indexOf(item);
+                this.gameState.level.items.splice(index, 1);
+                this.add2ActnLog(PS["Data.Show"].show(PS["Rogue"].showCreature)(this.gameState.player)+ " picked up %c{rgba(0,255,0,1.0)}"+PS["Rogue"].itemName(item.item)+"%c{}!")
+                this.gameState.player.inv.push(item.item);
             }
 
             this.nextTurn();
@@ -541,6 +553,13 @@ class Game {
                 }
                 if (tileName == "Hideout") {
                     this.add2ActnLog("You see an entrance to the evil wizard's hideout here.");
+                }
+                if(this.gameState.player.pos.x != oldX || this.gameState.player.pos.y !=oldY) {
+                    for (let i = 0; i< this.gameState.level.items.length;i++) {
+                        if (this.gameState.level.items[i].pos.x == this.gameState.player.pos.x && this.gameState.level.items[i].pos.y == this.gameState.player.pos.y) {
+                            this.add2ActnLog("You step on %c{rgba(0,255,0,0.8)}"+PS["Rogue"].itemName(this.gameState.level.items[i].item) +"%c{}.")
+                        }
+                }
                 }
                 this.nextTurn();
             }
