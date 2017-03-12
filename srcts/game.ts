@@ -26,7 +26,8 @@ const enum InventoryState {
     Show,
     Drop,
     Equip,
-    Unequip
+    Unequip,
+    Use
 }
 
 class Game {
@@ -277,11 +278,24 @@ class Game {
         else {
             let itemIndex = code - 65;
             if (itemIndex >= 0 && itemIndex < this.gameState.player.inv.length) {
+                let item = this.gameState.player.inv[itemIndex];
+
                 if (this.invState == InventoryState.Drop) {
-                    let item = this.gameState.player.inv[itemIndex];
                     this.gameState.player.inv.splice(itemIndex, 1);
                     this.gameState.level.items.push({ pos: this.gameState.player.pos, item: item });
                     this.add2ActnLog("You drop " + PS["Rogue"].itemName(item) + ".");
+                }
+
+                if (this.invState == InventoryState.Use) {
+                    if (this.currentDungeon == "worldmap") {
+                        this.add2ActnLog("You can't make a campfire here, find a sheltered location.");
+                    }
+                    else {
+                        this.gameState.player.inv.splice(itemIndex, 1);
+                        this.add2ActnLog("You make a campfire.");
+                        let index = this.gameState.player.pos.y * this.gameState.level.width + this.gameState.player.pos.x;
+                        this.gameState.level.tiles[index] = new PS["Rogue"].Fire();
+                    }
                 }
 
                 this.state = State.InGame;
@@ -370,13 +384,15 @@ class Game {
             return;
         }
 
-        // Show inventory, equip, drop
-        if (code == ROT.VK_I || code == ROT.VK_E || code == ROT.VK_D) {
+        // Show inventory, equip, drop, use, etc.
+        let invStates = {};
+        invStates[ROT.VK_I] = InventoryState.Show;
+        invStates[ROT.VK_E] = InventoryState.Equip;
+        invStates[ROT.VK_T] = InventoryState.Unequip;
+        invStates[ROT.VK_D] = InventoryState.Drop;
+        invStates[ROT.VK_U] = InventoryState.Use;
+        if (code in invStates) {
             this.state = State.Inventory;
-            let invStates = {};
-            invStates[ROT.VK_I] = InventoryState.Show;
-            invStates[ROT.VK_E] = InventoryState.Equip;
-            invStates[ROT.VK_D] = InventoryState.Drop;
             this.invState = invStates[code];
             this.drawInventory();
             return;
@@ -439,8 +455,22 @@ class Game {
         }
     }
 
+    checkWarm() {
+        for (let y=-1; y<2; y++) {
+            for (let x=-1; x<2; x++) {
+                let pos = { x: this.gameState.player.pos.x + x, y: this.gameState.player.pos.y + y };
+                let tile = PS["Rogue"].getTile(this.gameState)(pos);
+                let tileName = PS["Data.Show"].show(PS["Rogue"].showTile)(tile);
+                if (tileName == "Fire") {
+                    this.gameState.coldStatus = Math.max(0, this.gameState.coldStatus - 1);
+                }
+            }
+        }
+    }
+
     nextTurn() {
         this.increaseCold();
+        this.checkWarm();
         window.removeEventListener("keydown", this);
         let deltaTime = PS["Rogue"].creatureSpeed(this.gameState.player);
         this.updateLoop(deltaTime);
@@ -573,14 +603,15 @@ class Game {
         this.display.clear();
 
         console.log(this.invState);
+        let text = {};
+        text[InventoryState.Show] = "Inventory";
+        text[InventoryState.Equip] = "Select item to equip:";
+        text[InventoryState.Unequip] = "Select item to take off:";
+        text[InventoryState.Drop] = "Select item to drop:";
+        text[InventoryState.Use] = "Select item to use:";
 
-        if (this.invState == InventoryState.Show || this.invState == InventoryState.Equip || this.invState == InventoryState.Drop) {
-            if (this.invState == InventoryState.Show)
-                this.display.drawText(2, 2, "Inventory");
-            if (this.invState == InventoryState.Equip)
-                this.display.drawText(2, 2, "Select item to equip");
-            if (this.invState == InventoryState.Drop)
-                this.display.drawText(2, 2, "Select item to drop");
+        if (this.invState !== InventoryState.Unequip) {
+            this.display.drawText(2, 2, text[this.invState]);
 
             for (let i=0; i<this.gameState.player.inv.length; i++) {
                 let item = this.gameState.player.inv[i];

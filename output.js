@@ -1704,7 +1704,7 @@ var PS = {};
           return "rgba(10, 10, 125, 0.6)";
       };
       if (v instanceof Fire) {
-          return "rgba(240, 100, 30, 0.6)";
+          return "rgba(250, 70, 30, 0.9)";
       };
       return "rgba(120, 120, 120, 0.6)";
   };
