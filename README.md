@@ -16,7 +16,9 @@ Frostlike is a seven day roguelike challenge 2017 entry made using Typescript an
 
 The game focuses on cold environments and the player has to fight against monsters and crawl through dungeons, but also keep themselves warm.
 
-Status: *Working on it* :snowflake:
+Status: **Done** :white_check_mark:
+
+You can play the game here: https://drl2017-fa07d.firebaseapp.com/
 
 ### Build instructions
 
