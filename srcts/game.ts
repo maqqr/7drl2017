@@ -1047,6 +1047,24 @@ class Game {
         return level;
     }
 
+    createWizDungeon(width: number, height: number, level: Rogue.Level): Rogue.Level {
+        for (let y=0; y<height; y++) {
+            for (let x=0; x<width; x++) {
+                level = PS["Rogue"].setLevelTile(level)(PS["Rogue"].WizardWall.create({frozen: false}))({ x: x, y: y});
+            }
+        }
+        let digger = new ROT.Map.Digger(width, height);
+        let digCallback = function(x, y, value) {
+            if (value === 1) { return; }
+            let position = { x: x, y: y };
+            let floor = PS["Rogue"].Ground.create({ frozen: false });
+
+            level = PS["Rogue"].setLevelTile(level)(floor)(position);
+        }
+        digger.create(digCallback.bind(this));
+        return level;
+    }
+
     generateLevel(): Rogue.Level {
         let width = 75;
         let height = 23;
@@ -1061,6 +1079,9 @@ class Game {
         }
         else if (theme instanceof PS["Rogue"].IceCave) {
             level = this.createIceCave(width, height, level);
+        }
+        else if (PS["Rogue"].themeName(theme) == "wizard's hideout") {
+            level = this.createWizDungeon(width, height, level);
         }
         else {
             level = this.createDungeon(width, height, level);
