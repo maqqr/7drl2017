@@ -11,6 +11,7 @@
         body {
             background-color: #000000;
         }
+        @media(min-width: 1500px) {
         canvas {
             padding-left: 0;
             padding-right: 0;
@@ -18,6 +19,19 @@
             margin-right: auto;
             display: block;
             border: 1px solid lightslategray;
+        }
+        }
+        @media(max-width: 1500px) {
+            canvas {
+            padding-left: 0;
+            padding-right: 0;
+            margin-left: auto;
+            margin-right: auto;
+            width: 1366px;
+            height: 768px;
+            display: block;
+            border: 1px solid lightslategray;
+        }
         }
         p, ul, li{
             font-family: monospace;
