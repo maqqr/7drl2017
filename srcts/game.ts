@@ -321,6 +321,7 @@ class Game {
                 if (code == ROT.VK_B) {
                     if (maybe.isJust(this.gameState.equipment.chest)) {
                         let equipped = this.gameState.equipment.chest.value0;
+                        this.gameState.equipment.chest = new maybe.Nothing();
                         this.gameState.player.inv.push(equipped);
                         this.add2ActnLog("You take off the " + rogue.itemName(equipped) + ".");
                     }
@@ -332,6 +333,7 @@ class Game {
                 if (code == ROT.VK_C) {
                     if (maybe.isJust(this.gameState.equipment.hands)) {
                         let equipped = this.gameState.equipment.hands.value0;
+                        this.gameState.equipment.hands = new maybe.Nothing();
                         this.gameState.player.inv.push(equipped);
                         this.add2ActnLog("You take off the " + rogue.itemName(equipped) + ".");
                     }
@@ -343,6 +345,7 @@ class Game {
                 if (code == ROT.VK_D) {
                     if (maybe.isJust(this.gameState.equipment.weapon)) {
                         let equipped = this.gameState.equipment.weapon.value0;
+                        this.gameState.equipment.weapon = new maybe.Nothing();
                         this.gameState.player.inv.push(equipped);
                         this.add2ActnLog("You take off the " + rogue.itemName(equipped) + ".");
                     }
