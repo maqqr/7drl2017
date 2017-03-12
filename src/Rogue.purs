@@ -72,6 +72,7 @@ data CreatureType = Player { name :: String }
                   | DwarfGhost
                   | Snake
                   | GiantSnake
+                  | Bat
 
 instance showCreature :: Show Creature where
     show (Creature { creatureType: Player p })          = p.name
@@ -86,7 +87,8 @@ instance showCreature :: Show Creature where
     show (Creature { creatureType: GiantIceElemental }) = "giant ice elemental"
     show (Creature { creatureType: DwarfGhost })        = "dwarf spirit"
     show (Creature { creatureType: Snake })             = "snake"
-    show (Creature { creatureType: GiantSnake })             = "giant snake"
+    show (Creature { creatureType: GiantSnake })        = "giant snake"
+    show (Creature { creatureType: Bat })               = "small bat"
 
 createWizard :: Unit -> Creature
 createWizard _ = Creature { creatureType: Tim, stats: { hpMax: 20, hp: 20, str: 10, dex: 10, int: 10 }, inv: [], pos: { x: 0, y: 0 }, time: 0.0}
@@ -108,6 +110,7 @@ creatureIcon (Creature { creatureType: GiantIceElemental }) = '\165'
 creatureIcon (Creature { creatureType: DwarfGhost })        = '\002'
 creatureIcon (Creature { creatureType: Snake })             = 's'
 creatureIcon (Creature { creatureType: GiantSnake })        = 'S'
+creatureIcon (Creature { creatureType: Bat })               = 'b'
 
 
 creatureColor :: Creature -> String
@@ -124,6 +127,7 @@ creatureColor (Creature { creatureType: GiantIceElemental }) = "rgba(250, 250, 2
 creatureColor (Creature { creatureType: DwarfGhost })        = "rgba(100, 100, 100, 0.5)"
 creatureColor (Creature { creatureType: Snake })             = "rgba(0, 120, 0, 0.6)"
 creatureColor (Creature { creatureType: GiantSnake })        = "rgba(0, 120, 0, 0.6)"
+creatureColor (Creature { creatureType: Bat })               = "rgba(120, 120, 120, 0.6)"
 
 creatureTypeStats :: CreatureType -> Stats
 creatureTypeStats AlphaWolf         = { hpMax: 12, hp: 12, str: 12, dex: 12, int:  9 }
@@ -138,6 +142,7 @@ creatureTypeStats GiantIceElemental = { hpMax: 15, hp: 15, str: 14, dex: 10, int
 creatureTypeStats Snake             = { hpMax:  6, hp:  6, str:  6, dex: 13, int: 10 }
 creatureTypeStats GiantSnake        = { hpMax: 12, hp: 12, str: 10, dex:  9, int: 10 }
 creatureTypeStats DwarfGhost        = { hpMax: 12, hp: 12, str: 12, dex: 10, int: 10 }
+creatureTypeStats Bat               = { hpMax:  4, hp:  4, str:  4, dex: 15, int: 10 }
 creatureTypeStats (Player _)        = { hpMax: 12, hp: 12, str: 12, dex: 10, int: 10 }
 
 -- creatureBaseDmg :: Creature -> Int
