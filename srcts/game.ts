@@ -570,19 +570,17 @@ class Game {
                 }
             }
 
-            if (itemsAtPlayer.length == 1) {
-                let item = itemsAtPlayer[0];
-                let index = this.gameState.level.items.indexOf(item);
-                this.gameState.level.items.splice(index, 1);
-                this.add2ActnLog(PS["Data.Show"].show(PS["Rogue"].showCreature)(this.gameState.player)+ " picked up %c{rgba(0,255,0,1.0)}"+PS["Rogue"].itemName(item.item)+"%c{}!")
-                this.gameState.player.inv.push(item.item);
-            }
-            else if (itemsAtPlayer.length > 1) {
+            if (itemsAtPlayer.length > 0) {
                 let item = itemsAtPlayer[itemsAtPlayer.length-1];
                 let index = this.gameState.level.items.indexOf(item);
-                this.gameState.level.items.splice(index, 1);
-                this.add2ActnLog(PS["Data.Show"].show(PS["Rogue"].showCreature)(this.gameState.player)+ " picked up %c{rgba(0,255,0,1.0)}"+PS["Rogue"].itemName(item.item)+"%c{}!")
-                this.gameState.player.inv.push(item.item);
+                if (PS["Rogue"].totalEnc(this.gameState) + PS["Rogue"].itemWeight(item.item) <= this.gameState.maxEnc) {
+                    this.gameState.level.items.splice(index, 1);
+                    this.add2ActnLog(PS["Data.Show"].show(PS["Rogue"].showCreature)(this.gameState.player)+ " picked up %c{rgba(0,255,0,1.0)}"+PS["Rogue"].itemName(item.item)+"%c{}!")
+                    this.gameState.player.inv.push(item.item);
+                }
+                else {
+                    this.add2ActnLog("You can't pick up the " + PS["Rogue"].itemName(item.item) + ". You are carrying too much.")
+                }
             }
 
             this.nextTurn();
@@ -828,7 +826,8 @@ class Game {
             for (let i=0; i<this.gameState.player.inv.length; i++) {
                 let item = this.gameState.player.inv[i];
                 let key = String.fromCharCode(65 + i);
-                this.display.drawText(3, 4 + i, key + " - " + PS["Rogue"].itemName(item));
+                let weight = PS["Rogue"].itemWeight(item);
+                this.display.drawText(3, 4 + i, key + " - " + PS["Rogue"].itemName(item) + " (" + weight + " lbs)");
             }
 
             let ap = PS["Rogue"].playerArmour(this.gameState);
@@ -840,6 +839,8 @@ class Game {
             this.display.drawText(35, 13, "Cold resistance  : " + cr);
             this.display.drawText(35, 14, "Weapon damage    : 0 - " + maxDam);
             this.display.drawText(35, 15, "Weapon hit chance: " + hit + "%");
+
+            this.display.drawText(35, 28, "Total encumbrance: " + PS["Rogue"].totalEnc(this.gameState) + " / " + this.gameState.maxEnc + " lbs.");
 
             this.display.drawText(2, 28, "Space or return - cancel");
             

@@ -3,7 +3,8 @@ module Rogue where
 import Prelude
 import Data.Array (index, updateAt, snoc, deleteAt, replicate)
 import Data.Int (toNumber)
-import Data.Maybe (Maybe(..), fromMaybe)
+import Data.Maybe (Maybe(..), fromMaybe, maybe)
+import Data.Traversable (foldl)
 import Data.StrMap (StrMap, empty)
 import Random (Random, Seed, generateInt, runRandom)
 
@@ -26,6 +27,7 @@ newtype GameState = GameState
     , player     :: Creature
     , coldStatus :: Int
     , coldStep   :: Int
+    , maxEnc     :: Int
     , equipment  :: { cloak :: Maybe Item , chest :: Maybe Item , hands :: Maybe Item , weapon :: Maybe Item }
     }
 
@@ -35,8 +37,19 @@ initialGameState _ = GameState
     , player:     Creature {creatureType: Player {name: "Frozty"}, pos: {x: 0, y: 11}, stats: defaultStats unit, inv: [Wood, Wood, Armour { armourType: Cloak, prefix: CommonA }, Weapon { weaponType: Dagger, prefix: Rusty }], time: 0.0 }
     , coldStatus: 0
     , coldStep: 0
+    , maxEnc: 70
     , equipment:  { cloak: Nothing, chest: Nothing, hands: Nothing, weapon: Nothing }
     }
+
+totalEnc :: GameState -> Int
+totalEnc (GameState gs@{ player: Creature player}) =
+    cloak + chest + hands + weapon + inv
+    where
+        inv = foldl (+) 0 $ map itemWeight player.inv
+        cloak = maybe 0 itemWeight gs.equipment.cloak
+        chest = maybe 0 itemWeight gs.equipment.chest
+        hands = maybe 0 itemWeight gs.equipment.hands
+        weapon = maybe 0 itemWeight gs.equipment.weapon
 
 newtype Creature = Creature
     { creatureType :: CreatureType
@@ -391,10 +404,10 @@ potionEffect gs _ = gs
 
 
 itemWeight :: Item -> Int
-itemWeight (Weapon w) = ((weaponTypeStats w.weaponType).weight) + ((weaponPrefixStats w.prefix).weight)
-itemWeight (Armour a) = ((armourTypeStats a.armourType).weight) + ((armourPrefixStats a.prefix).weight)
-itemWeight Wood       = 10
-itemWeight _          = 2
+itemWeight (Weapon w) = max' 1 $ ((weaponTypeStats w.weaponType).weight) + ((weaponPrefixStats w.prefix).weight)
+itemWeight (Armour a) = max' 1 $  ((armourTypeStats a.armourType).weight) + ((armourPrefixStats a.prefix).weight)
+itemWeight (Potion _) = 1
+itemWeight Wood       = 5
 
 addItem :: Creature -> Maybe Item -> Creature
 addItem (Creature c) (Just i) = Creature ( c { inv = snoc (c.inv) i } )
