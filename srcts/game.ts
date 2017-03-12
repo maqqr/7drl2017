@@ -19,7 +19,8 @@ const enum State {
     InGame,
     Inventory,
     MessageBuffer,
-    GitGud
+    GitGud,
+    Victory
 }
 
 const enum InventoryState {
@@ -47,6 +48,7 @@ class Game {
     invState: InventoryState;
     handlers: { [id: number]: (e: KeyboardEvent) => void } = {};
     themes: { [id: string]: Rogue.Theme } = {};
+    wizardDead: boolean;
 
     actionlog: Array<string>;
  
@@ -122,6 +124,7 @@ class Game {
         this.handlers[State.Inventory] = this.handleInventory.bind(this);
         this.handlers[State.MessageBuffer] = this.handleMessageBuffer.bind(this);
         this.handlers[State.GitGud] = this.handleGitGud.bind(this);
+        this.handlers[State.Victory] = this.handleVictory.bind(this);
 
         this.fov = new ROT.FOV.PreciseShadowcasting(this.isTransparent.bind(this));
 
@@ -223,6 +226,10 @@ class Game {
                 this.add2ActnLog(green+name+"%c{} hit "+brown+PS["Data.Show"].show(PS["Rogue"].showCreature)(blocking)+"%c{} for %c{rgba(255,0,0,0.8)}"+String(blocking.stats.hp-result.stats.hp)+"%c{} damage.");
                 if(result.stats.hp <=0) {
                     this.add2ActnLog(green+name+"%c{} killed the "+brown+blockname+"%c{}.");
+
+                    if (blockname == "evil wizard") {
+                        this.wizardDead = true;
+                    }
                 }
                 blocking.stats.hp = result.stats.hp;
 
@@ -376,12 +383,24 @@ class Game {
        }
     }
 
+    handleVictory(e: KeyboardEvent) {
+       var code = e.keyCode;
+       if (code == ROT.VK_RETURN) {
+           this.startNewGame();
+       }
+    }
+
     handleInGame(e: KeyboardEvent) {
         var code = e.keyCode;
         //console.log(code);
 
         if(this.checkAliveStatus() == false) {
             this.state = State.GitGud;
+            return;
+        }
+
+        if (this.wizardDead) {
+            this.victory();
             return;
         }
 
@@ -517,6 +536,12 @@ class Game {
         }
     }
 
+    victory() {
+        this.state = State.Victory;
+        this.display.clear();
+        this.display.drawText(5, 5, "You're a winner.");
+    }
+
     increaseCold() {
         let dungeonWarmth = this.currentDungeon == "worldmap" ? 0 : 3;
         let coldResistance = dungeonWarmth + PS["Rogue"].playerColdRes(this.gameState);
@@ -621,6 +646,7 @@ class Game {
     }
 
     startNewGame() {
+        this.wizardDead = false;
         this.currentDungeon = "worldmap";
         this.dungeonDepth = -1;
         this.rememberTile = {};

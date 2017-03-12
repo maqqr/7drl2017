@@ -2,7 +2,6 @@ module Rogue where
 
 import Prelude
 import Data.Array (index, updateAt, snoc, deleteAt, replicate)
-import Data.Generic (GenericSpine(..))
 import Data.Maybe (Maybe(..), fromMaybe)
 import Data.StrMap (StrMap, empty)
 import Random (Random, Seed, generateInt, runRandom)
