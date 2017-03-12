@@ -64,8 +64,11 @@ instance showCreature :: Show Creature where
     show (Creature { creatureType: Goblin })    = "goblin"
     show (Creature { creatureType: Snowman })   = "snowman"
     show (Creature { creatureType: IceCorpse }) = "frozen zombie"
-    show (Creature { creatureType: Tim })       = "evil sorcerer"
+    show (Creature { creatureType: Tim })       = "evil wizard"
     show _                                      = "Ismo"
+
+createWizard :: Unit -> Creature
+createWizard _ = Creature { creatureType: Tim, stats: { hpMax: 20, hp: 20, str: 10, dex: 10, int: 10 }, inv: [], pos: { x: 0, y: 0 }, time: 0.0}
 
 creatureSpeed :: Creature -> Number
 creatureSpeed _ = 500.0
@@ -99,7 +102,7 @@ creatureTypeStats Bear       = { hpMax: 20, hp: 20, str: 20, dex: 10, int:  9 }
 creatureTypeStats Goblin     = { hpMax: 10, hp: 10, str:  8, dex: 10, int:  8 }
 creatureTypeStats Snowman    = { hpMax: 15, hp: 15, str: 18, dex: 16, int:  9 }
 creatureTypeStats IceCorpse  = { hpMax: 25, hp: 25, str: 12, dex:  8, int:  9 }
-creatureTypeStats Tim        = { hpMax: 99, hp: 99, str: 10, dex: 15, int: 50 }
+creatureTypeStats Tim        = { hpMax: 20, hp: 20, str: 10, dex: 10, int: 50 }
 creatureTypeStats _          = { hpMax: 10, hp: 10, str: 10, dex: 10, int: 10 }
 
 creatureBaseDmg :: Creature -> Int
@@ -146,6 +149,7 @@ data Tile = Ground Frozen
           | StairsUp
           | StairsDown
           | DungeonEntrance
+          | Hideout
           | Fire
           | ErrorTile
 
@@ -161,6 +165,7 @@ instance showTile :: Show Tile where
     show StairsUp        = "StairsUp"
     show StairsDown      = "StairsDown"
     show DungeonEntrance = "DungeonEntrance"
+    show Hideout         = "Hideout"
     show Fire            = "Fire"
     show ErrorTile       = "ErrorTile"
 
@@ -170,6 +175,7 @@ isTileSolid (Forest _)      = false
 isTileSolid (Water t)       = not t.frozen
 isTileSolid (Puddle t)      = t.frozen
 isTileSolid DungeonEntrance = false
+isTileSolid Hideout         = false
 isTileSolid StairsUp        = false
 isTileSolid StairsDown      = false
 isTileSolid Fire            = false
@@ -193,6 +199,7 @@ tileIcon River             = '~'
 tileIcon StairsUp          = '<'
 tileIcon StairsDown        = '>'
 tileIcon DungeonEntrance   = 'o'
+tileIcon Hideout           = 'O'
 tileIcon Fire              = '\015'
 tileIcon _                 = '?'
 
@@ -209,6 +216,7 @@ tileColor (Water t)    = "rgba(20, 20, 250, " <> frozenColor t
 tileColor (Puddle t)   = "rgba(20, 20, 250, " <> frozenColor t
 tileColor (Door t)     = "rgba(200, 180, 50, " <> frozenColor t
 tileColor River        = "rgba(10, 10, 125, 0.6)"
+tileColor Hideout      = "rgba(100, 50, 125, 0.6)"
 tileColor Fire         = "rgba(250, 70, 30, 0.9)"
 tileColor _            = "rgba(120, 120, 120, 0.6)"
 
@@ -217,7 +225,7 @@ data Theme = DwarvenMine | GoblinCave | Cave | IceCave | WizardTower
 derive instance eqTheme :: Eq Theme
 
 themeName :: Theme -> String
-themeName DwarvenMine = "dwarven mines"
+themeName DwarvenMine = "abandoned dwarven mines"
 themeName GoblinCave = "goblin caves"
 themeName Cave = "caves"
 themeName WizardTower = "wizard's hideout"
