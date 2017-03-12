@@ -360,8 +360,6 @@ class Game {
             var newX = oldX + diff[0];
             var newY = oldY + diff[1];
 
-            this.gameState = PS["Rogue"].cold(this.gameState);
-
             let success = this.moveCreature(this.gameState.player, { x: diff[0], y: diff[1] });
             if (success) {
                 this.nextTurn();
@@ -375,7 +373,19 @@ class Game {
         }
     }
 
+    increaseCold() {
+        let dungeonWarmth = this.currentDungeon == "worldmap" ? 0 : 3;
+        let coldResistance = dungeonWarmth + PS["Rogue"].playerColdRes(this.gameState);
+        console.log(this.gameState.coldStep, coldResistance);
+        this.gameState.coldStep++;
+        if (this.gameState.coldStep > coldResistance) {
+            this.gameState.coldStatus++;
+            this.gameState.coldStep = 0;
+        }
+    }
+
     nextTurn() {
+        this.increaseCold();
         window.removeEventListener("keydown", this);
         let deltaTime = PS["Rogue"].creatureSpeed(this.gameState.player);
         this.updateLoop(deltaTime);
