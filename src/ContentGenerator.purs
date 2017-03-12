@@ -116,8 +116,8 @@ randomEnemy theme depth = randomCreature
                              ,{ item: IceCorpse,         weight: if theme == IceCave || theme == WizardTower then 200 else 5 }
                              ,{ item: IceElemental,      weight: if theme == IceCave || theme == WizardTower then 200 else 5 }
                              ,{ item: GiantIceElemental, weight: if theme == WizardTower then 200 else 0 }
-                             ,{ item: Snake,             weight: if theme == Cave then 300 else 0 }
-                             ,{ item: GiantSnake,        weight: if theme == Cave then 100 else 0 }
+                             ,{ item: Snake,             weight: if theme == Cave then 400 else 0 }
+                             ,{ item: GiantSnake,        weight: if theme == Cave then 200 else 0 }
                              ,{ item: DwarfGhost,        weight: if theme == DwarvenMine then 600 else 0 }
                              ]
 

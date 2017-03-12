@@ -2658,7 +2658,7 @@ var PS = {};
           return "s";
       };
       if (v.creatureType instanceof GiantSnake) {
-          return "s";
+          return "S";
       };
       throw new Error("Failed pattern match at Rogue line 98, column 1 - line 99, column 1: " + [ v.constructor.name ]);
   };
@@ -3381,7 +3381,7 @@ var PS = {};
               weight: (function () {
                   var $23 = Data_Eq.eq(Rogue.eqTheme)(theme)(Rogue.Cave.value);
                   if ($23) {
-                      return 300;
+                      return 400;
                   };
                   if (!$23) {
                       return 0;
@@ -3393,7 +3393,7 @@ var PS = {};
               weight: (function () {
                   var $24 = Data_Eq.eq(Rogue.eqTheme)(theme)(Rogue.Cave.value);
                   if ($24) {
-                      return 100;
+                      return 200;
                   };
                   if (!$24) {
                       return 0;
