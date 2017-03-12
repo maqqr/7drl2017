@@ -309,14 +309,24 @@ class Game {
 
                 // Use item
                 if (this.invState == InventoryState.Use) {
-                    if (this.currentDungeon == "worldmap") {
+                    if (this.currentDungeon == "worldmap" && PS["Rogue"].itemName(item) == "wood") {
                         this.add2ActnLog("You can't make a campfire here, find a sheltered location.");
                     }
-                    else {
+                    else if(PS["Rogue"].itemName(item) == "wood"){
                         this.gameState.player.inv.splice(itemIndex, 1);
                         this.add2ActnLog("You make a campfire.");
                         let index = this.gameState.player.pos.y * this.gameState.level.width + this.gameState.player.pos.x;
                         this.gameState.level.tiles[index] = new PS["Rogue"].Fire();
+                    }
+                    else if(PS["Rogue"].itemName(item) == "healing potion") {
+                        this.gameState.player.inv.splice(itemIndex, 1);
+                        this.add2ActnLog("You drink the %c{rgba(0,255,0,0.8)}healing potion%c{}. You feel %c{rgba(102,255,102,0.8)}a bit better%c{}.");
+                        this.gameState.player.stats.hp = Math.min(this.gameState.player.stats.hp+20, this.gameState.player.stats.hpMax);
+                    }
+                    else if(PS["Rogue"].itemName(item) == "liquid fire") {
+                        this.gameState.player.inv.splice(itemIndex, 1);
+                        this.add2ActnLog("You drink the %c{rgba(0,255,0,0.8)}liquid fire.%c{} You feel a %c{rgba(255,128,0,0.8)}fire%c{} burning inside you.");
+                        this.gameState.coldStatus = Math.max(0,this.gameState.coldStatus-25);
                     }
                 }
 
@@ -539,7 +549,8 @@ class Game {
     victory() {
         this.state = State.Victory;
         this.display.clear();
-        this.display.drawText(5, 5, "You're a winner.");
+        this.display.drawText(6, 10, "You, "+PS["Data.Show"].show(PS["Rogue"].showCreature)(this.gameState.player)+" the fearless peasant, have defeated the evil wizard!");
+        this.display.drawText(6, 12, "With this great deed you saved the world of 7drl2017 from an awful pumpkin harvest!");
     }
 
     increaseCold() {
