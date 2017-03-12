@@ -313,10 +313,18 @@ class Game {
                         this.add2ActnLog("You can't make a campfire here, find a sheltered location.");
                     }
                     else if(PS["Rogue"].itemName(item) == "wood"){
-                        this.gameState.player.inv.splice(itemIndex, 1);
-                        this.add2ActnLog("You make a campfire.");
-                        let index = this.gameState.player.pos.y * this.gameState.level.width + this.gameState.player.pos.x;
-                        this.gameState.level.tiles[index] = new PS["Rogue"].Fire();
+                        let tile = PS["Rogue"].getTile(this.gameState)(this.gameState.player.pos);
+                        let tileName = PS["Data.Show"].show(PS["Rogue"].showTile)(tile);
+                        if (tileName == "Ground") {
+                            this.gameState.player.inv.splice(itemIndex, 1);
+                            this.add2ActnLog("You make a campfire.");
+                            let index = this.gameState.player.pos.y * this.gameState.level.width + this.gameState.player.pos.x;
+                            this.gameState.level.tiles[index] = new PS["Rogue"].Fire();
+                        }
+                        else {
+                            this.add2ActnLog("You can't light a fire here.");
+                        }
+
                     }
                     else if(PS["Rogue"].itemName(item) == "healing potion") {
                         this.gameState.player.inv.splice(itemIndex, 1);
