@@ -294,7 +294,8 @@ class Game {
                     else {
                         this.gameState.player.inv.splice(itemIndex, 1);
                         this.add2ActnLog("You make a campfire.");
-                        this.gameState.level = PS["Rogue"].setLevelTile(this.gameState.level)(new PS["Rogue"].Fire())(this.gameState.player.pos);
+                        let index = this.gameState.player.pos.y * this.gameState.level.width + this.gameState.player.pos.x;
+                        this.gameState.level.tiles[index] = new PS["Rogue"].Fire();
                     }
                 }
 
