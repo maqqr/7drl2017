@@ -141,7 +141,7 @@ creatureTypeStats IceElemental      = { hpMax: 10, hp: 10, str:  8, dex: 10, int
 creatureTypeStats GiantIceElemental = { hpMax: 15, hp: 15, str: 14, dex: 10, int: 10 }
 creatureTypeStats Snake             = { hpMax:  6, hp:  6, str:  6, dex: 13, int: 10 }
 creatureTypeStats GiantSnake        = { hpMax: 12, hp: 12, str: 10, dex:  9, int: 10 }
-creatureTypeStats DwarfGhost        = { hpMax: 12, hp: 12, str: 12, dex: 10, int: 10 }
+creatureTypeStats DwarfGhost        = { hpMax:  8, hp:  8, str:  8, dex:  8, int: 10 }
 creatureTypeStats Bat               = { hpMax:  4, hp:  4, str:  4, dex: 13, int: 10 }
 creatureTypeStats (Player _)        = { hpMax: 12, hp: 12, str: 12, dex: 10, int: 10 }
 

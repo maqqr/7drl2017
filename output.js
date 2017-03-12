@@ -2626,10 +2626,10 @@ var PS = {};
       };
       if (v instanceof DwarfGhost) {
           return {
-              hpMax: 12, 
-              hp: 12, 
-              str: 12, 
-              dex: 10, 
+              hpMax: 8, 
+              hp: 8, 
+              str: 8, 
+              dex: 8, 
               "int": 10
           };
       };
@@ -3530,7 +3530,7 @@ var PS = {};
               weight: (function () {
                   var $29 = Data_Eq.eq(Rogue.eqTheme)(theme)(Rogue.DwarvenMine.value);
                   if ($29) {
-                      return 100;
+                      return 200;
                   };
                   if (!$29) {
                       return 10;
@@ -3551,7 +3551,7 @@ var PS = {};
               weight: (function () {
                   var $30 = Data_Eq.eq(Rogue.eqTheme)(theme)(Rogue.DwarvenMine.value);
                   if ($30) {
-                      return 100;
+                      return 200;
                   };
                   if (!$30) {
                       return 5;

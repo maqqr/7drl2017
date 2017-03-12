@@ -50,11 +50,11 @@ randomItem theme depth = do
         ------------ Weapon generation ------------
 
         weaponTypeWeights :: Array (Weighted WeaponType)
-        weaponTypeWeights = [{ item: Axe,     weight: if theme == DwarvenMine then 100 else 10 }
+        weaponTypeWeights = [{ item: Axe,     weight: if theme == DwarvenMine then 200 else 10 }
                             ,{ item: Dagger,  weight: 40 }
                             ,{ item: Sword,   weight: 20 }
                             ,{ item: Spear,   weight: 20 }
-                            ,{ item: Halberd, weight: if theme == DwarvenMine then 100 else 5 }
+                            ,{ item: Halberd, weight: if theme == DwarvenMine then 200 else 5 }
                             ]
 
         weaponPrefixWeights :: Array (Weighted WeaponPrefix)
