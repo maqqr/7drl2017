@@ -539,7 +539,8 @@ class Game {
     victory() {
         this.state = State.Victory;
         this.display.clear();
-        this.display.drawText(5, 5, "You're a winner.");
+        this.display.drawText(6, 10, "You, "+PS["Data.Show"].show(PS["Rogue"].showCreature)(this.gameState.player)+" the fearless peasant, have defeated the evil wizard!");
+        this.display.drawText(6, 12, "With this great deed you saved the world of 7drl2017 from an awful pumpkin harvest!");
     }
 
     increaseCold() {
