@@ -321,33 +321,41 @@ class Game {
                             this.gameState.player.inv.push(equipped);
                         }
                         this.gameState.equipment.cloak = maybe.Just.create(item);
+                        this.add2ActnLog("You equip the " + rogue.itemName(item) + ".");
                     }
 
-                    if (rogue.isArmourOfType(item)(new rogue.Chest())) {
+                    else if (rogue.isArmourOfType(item)(new rogue.Chest())) {
                         this.gameState.player.inv.splice(itemIndex, 1);
                         if (maybe.isJust(this.gameState.equipment.chest)) {
                             let equipped = this.gameState.equipment.chest.value0;
                             this.gameState.player.inv.push(equipped);
                         }
                         this.gameState.equipment.chest = maybe.Just.create(item);
+                        this.add2ActnLog("You equip the " + rogue.itemName(item) + ".");
                     }
 
-                    if (rogue.isArmourOfType(item)(new rogue.Gloves())) {
+                    else if (rogue.isArmourOfType(item)(new rogue.Gloves())) {
                         this.gameState.player.inv.splice(itemIndex, 1);
                         if (maybe.isJust(this.gameState.equipment.hands)) {
                             let equipped = this.gameState.equipment.hands.value0;
                             this.gameState.player.inv.push(equipped);
                         }
                         this.gameState.equipment.hands = maybe.Just.create(item);
+                        this.add2ActnLog("You equip the " + rogue.itemName(item) + ".");
                     }
 
-                    if (rogue.isWeapon(item)) {
+                    else if (rogue.isWeapon(item)) {
                         this.gameState.player.inv.splice(itemIndex, 1);
                         if (maybe.isJust(this.gameState.equipment.weapon)) {
                             let equipped = this.gameState.equipment.weapon.value0;
                             this.gameState.player.inv.push(equipped);
                         }
                         this.gameState.equipment.weapon = maybe.Just.create(item);
+                        this.add2ActnLog("You equip the " + rogue.itemName(item) + ".");
+                    }
+
+                    else {
+                        this.add2ActnLog("You can't equip " + rogue.itemName(item) + ".");
                     }
                 }
 
