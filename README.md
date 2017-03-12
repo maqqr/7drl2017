@@ -20,6 +20,10 @@ Status: **Done** :white_check_mark:
 
 You can play the game here: https://drl2017-fa07d.firebaseapp.com/
 
+### Screenshot
+
+![Screenshot](/screenshot/shot.png)
+
 ### Build instructions
 
 ```
