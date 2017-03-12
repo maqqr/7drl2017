@@ -2276,7 +2276,7 @@ var PS = {};
           return "rgba(20, 240, 30, " + frozenColor(v.value0);
       };
       if (v instanceof Water) {
-          return "rgba(20, 20, 250, " + frozenColor(v.value0);
+          return "rgba(10, 10, 125, " + frozenColor(v.value0);
       };
       if (v instanceof Puddle) {
           return "rgba(20, 20, 250, " + frozenColor(v.value0);
@@ -3144,7 +3144,7 @@ var PS = {};
                   if (!$15) {
                       return 5;
                   };
-                  throw new Error("Failed pattern match at ContentGenerator line 110, column 58 - line 110, column 91: " + [ $15.constructor.name ]);
+                  throw new Error("Failed pattern match at ContentGenerator line 111, column 58 - line 111, column 91: " + [ $15.constructor.name ]);
               })()
           }, {
               item: Rogue.Wolf.value, 
@@ -3156,7 +3156,7 @@ var PS = {};
                   if (!$16) {
                       return 30;
                   };
-                  throw new Error("Failed pattern match at ContentGenerator line 111, column 58 - line 111, column 92: " + [ $16.constructor.name ]);
+                  throw new Error("Failed pattern match at ContentGenerator line 112, column 58 - line 112, column 92: " + [ $16.constructor.name ]);
               })()
           }, {
               item: Rogue.Bear.value, 
@@ -3168,7 +3168,7 @@ var PS = {};
                   if (!$17) {
                       return 30;
                   };
-                  throw new Error("Failed pattern match at ContentGenerator line 112, column 58 - line 112, column 92: " + [ $17.constructor.name ]);
+                  throw new Error("Failed pattern match at ContentGenerator line 113, column 58 - line 113, column 92: " + [ $17.constructor.name ]);
               })()
           }, {
               item: Rogue.Goblin.value, 
@@ -3180,7 +3180,7 @@ var PS = {};
                   if (!$18) {
                       return 10;
                   };
-                  throw new Error("Failed pattern match at ContentGenerator line 113, column 58 - line 113, column 98: " + [ $18.constructor.name ]);
+                  throw new Error("Failed pattern match at ContentGenerator line 114, column 58 - line 114, column 98: " + [ $18.constructor.name ]);
               })()
           }, {
               item: Rogue.Snowman.value, 
@@ -3192,7 +3192,7 @@ var PS = {};
                   if (!$19) {
                       return 5;
                   };
-                  throw new Error("Failed pattern match at ContentGenerator line 114, column 58 - line 114, column 94: " + [ $19.constructor.name ]);
+                  throw new Error("Failed pattern match at ContentGenerator line 115, column 58 - line 115, column 94: " + [ $19.constructor.name ]);
               })()
           }, {
               item: Rogue.IceCorpse.value, 
@@ -3204,7 +3204,7 @@ var PS = {};
                   if (!$20) {
                       return 5;
                   };
-                  throw new Error("Failed pattern match at ContentGenerator line 115, column 58 - line 115, column 94: " + [ $20.constructor.name ]);
+                  throw new Error("Failed pattern match at ContentGenerator line 116, column 58 - line 116, column 94: " + [ $20.constructor.name ]);
               })()
           } ];
           var randomCreatureStats = [ {
@@ -3280,6 +3280,9 @@ var PS = {};
               weight: 40
           }, {
               item: Rogue.Sword.value, 
+              weight: 20
+          }, {
+              item: Rogue.Spear.value, 
               weight: 20
           } ];
           var weaponPrefixWeights = [ {

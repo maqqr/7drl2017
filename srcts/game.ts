@@ -522,6 +522,9 @@ class Game {
         this.display.drawText(3,11,"%c{rgba(245, 65, 241, 0.6)}An evil wizard%c{} has cast a spell that covered the world in %c{rgba(153,255,255,0.8)}everfrost%c{}.");
         this.display.drawText(10,12,"%c{rgba(153,255,255,0.8)}The everfrost%c{} is damaging your %c{rgba(255,128,0,0.8)}pumpkin%c{} harvest.");
         this.display.drawText(22,13,"%c{rgba(245, 65, 241, 0.6)}The wizard%c{} has to %c{rgba(255, 0, 0, 1)}die%c{}.");
+
+        this.display.drawText(17, 17, "You have travelled to a faraway valley.");
+        this.display.drawText(16, 19, "%c{rgba(245, 65, 241, 0.6)}The wizard's%c{} hideout is somewhere here...");
     }
 
     handleInGame(e: KeyboardEvent) {
@@ -854,7 +857,7 @@ class Game {
     drawEncouragement() {
         this.display.clear();
         this.display.drawText(26,12,PS["Data.Show"].show(PS["Rogue"].showCreature)(this.gameState.player)+" has died :(");
-        this.display.drawText(20,13,"Press Enter to start a new game");
+        this.display.drawText(20,14,"Press Enter to start a new game");
     }
 
     drawInventory() {
