@@ -24,6 +24,7 @@ newtype GameState = GameState
     { level      :: Level
     , player     :: Creature
     , coldStatus :: Int
+    , coldStep   :: Int
     , equipment  :: { cloak :: Maybe Item , chest :: Maybe Item , hands :: Maybe Item , weapon :: Maybe Item }
     }
 
@@ -32,6 +33,7 @@ initialGameState _ = GameState
     { level:      createLevel 75 25 (Ground { frozen: false })
     , player:     Creature {creatureType: Player {name: "Frozty"}, pos: {x: 0, y: 11}, stats: defaultStats unit, inv: [Wood, Wood], time: 0.0 }
     , coldStatus: 0
+    , coldStep: 0
     , equipment:  { cloak: Nothing, chest: Nothing, hands: Nothing, weapon: Nothing }
     }
 
@@ -143,6 +145,7 @@ data Tile = Ground Frozen
           | StairsUp
           | StairsDown
           | DungeonEntrance
+          | Fire
           | ErrorTile
 
 instance showTile :: Show Tile where
@@ -157,6 +160,7 @@ instance showTile :: Show Tile where
     show StairsUp        = "StairsUp"
     show StairsDown      = "StairsDown"
     show DungeonEntrance = "DungeonEntrance"
+    show Fire            = "Fire"
     show ErrorTile       = "ErrorTile"
 
 isTileSolid :: Tile -> Boolean
@@ -167,6 +171,7 @@ isTileSolid (Puddle t)      = t.frozen
 isTileSolid DungeonEntrance = false
 isTileSolid StairsUp        = false
 isTileSolid StairsDown      = false
+isTileSolid Fire            = false
 isTileSolid _               = true
 
 isTileTransparent :: Tile -> Boolean
@@ -183,10 +188,11 @@ tileIcon (Forest _)        = '\005'
 tileIcon (Water _)         = '\247'
 tileIcon (Puddle t)        = if t.frozen then '#' else '.'
 tileIcon (Door _)          = '+'
-tileIcon (River)           = '~'
-tileIcon (StairsUp)        = '<'
-tileIcon (StairsDown)      = '>'
-tileIcon (DungeonEntrance) = 'o'
+tileIcon River             = '~'
+tileIcon StairsUp          = '<'
+tileIcon StairsDown        = '>'
+tileIcon DungeonEntrance   = 'o'
+tileIcon Fire              = '\015'
 tileIcon _                 = '?'
 
 frozenColor :: Frozen -> String
@@ -202,6 +208,7 @@ tileColor (Water t)    = "rgba(20, 20, 250, " <> frozenColor t
 tileColor (Puddle t)   = "rgba(20, 20, 250, " <> frozenColor t
 tileColor (Door t)     = "rgba(200, 180, 50, " <> frozenColor t
 tileColor River        = "rgba(10, 10, 125, 0.6)"
+tileColor Fire         = "rgba(240, 100, 30, 0.6)"
 tileColor _            = "rgba(120, 120, 120, 0.6)"
 
 data Theme = DwarvenMine | GoblinCave | Cave | IceCave | WizardTower
@@ -391,5 +398,5 @@ attack seed _ ac (Creature dc) =
     let d = (runRandom (dmg ac Nothing) seed).value
     in Creature dc { stats { hp = dc.stats.hp - d } }
 
-cold :: GameState -> GameState
-cold (GameState gs) = GameState gs { coldStatus = gs.coldStatus + 1 - playerColdRes (GameState gs) }
+-- cold :: GameState -> GameState
+-- cold (GameState gs) = GameState gs { coldStatus = gs.coldStatus + 1 - playerColdRes (GameState gs) }

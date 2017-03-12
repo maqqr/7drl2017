@@ -175,10 +175,11 @@ class Game {
             }
         }
 
+        this.drawMap();
         this.playerTurn();
     }
 
-    moveCreature(creature: any, delta: { x: number, y: number }) {
+    moveCreature(creature: any, delta: { x: number, y: number }): boolean {
         var newPos = { x: creature.pos.x + delta.x, y: creature.pos.y + delta.y };
 
         // Check if there is anyone at newPos
@@ -216,15 +217,16 @@ class Game {
                     delete this.gameState.level.enemies[blockingId];
                 }
             }
-            return;
+            return true;
         }
 
         // Tile is free of creatures, attempt to move there
         let tile = PS["Rogue"].getTile(this.gameState)(newPos);
         if (!PS["Rogue"].isTileSolid(tile) && !(newPos.x < 0 || newPos.x >74) && !(newPos.y < 0 || newPos.y > 24) ) {
             creature.pos = newPos;
+            return true;
         }
-        return creature;
+        return false;
     }
 
     updateAI(id: string, creature: any) {
@@ -285,6 +287,7 @@ class Game {
 
                 this.state = State.InGame;
                 this.refreshDisplay();
+                this.nextTurn();
             }
         }
     }
@@ -399,8 +402,12 @@ class Game {
             else if (itemsAtPlayer.length > 1) {
                 // TODO pick up one of several items
             }
+
+            this.nextTurn();
+            return;
         }
 
+        // Check if player pressed numpad keys
         if (code in Game.keyMap) {
             var oldX = this.gameState.player.pos.x;
             var oldY = this.gameState.player.pos.y;
@@ -409,16 +416,35 @@ class Game {
             var newX = oldX + diff[0];
             var newY = oldY + diff[1];
 
-            this.gameState = PS["Rogue"].cold(this.gameState);
-
-            this.moveCreature(this.gameState.player, { x: diff[0], y: diff[1] });
-            this.drawMap();
-
-            window.removeEventListener("keydown", this);
-
-            let deltaTime = PS["Rogue"].creatureSpeed(this.gameState.player);
-            this.updateLoop(deltaTime);
+            let success = this.moveCreature(this.gameState.player, { x: diff[0], y: diff[1] });
+            if (success) {
+                this.nextTurn();
+            }
+            return;
         }
+
+        // Wait for one turn
+        if (code == ROT.VK_NUMPAD5) {
+            this.nextTurn();
+        }
+    }
+
+    increaseCold() {
+        let dungeonWarmth = this.currentDungeon == "worldmap" ? 0 : 3;
+        let coldResistance = dungeonWarmth + PS["Rogue"].playerColdRes(this.gameState);
+        console.log(this.gameState.coldStep, coldResistance);
+        this.gameState.coldStep++;
+        if (this.gameState.coldStep > coldResistance) {
+            this.gameState.coldStatus++;
+            this.gameState.coldStep = 0;
+        }
+    }
+
+    nextTurn() {
+        this.increaseCold();
+        window.removeEventListener("keydown", this);
+        let deltaTime = PS["Rogue"].creatureSpeed(this.gameState.player);
+        this.updateLoop(deltaTime);
     }
 
     add2ActnLog(message:string) {
