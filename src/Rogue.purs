@@ -2,6 +2,7 @@ module Rogue where
 
 import Prelude
 import Data.Array (index, updateAt, snoc, deleteAt, replicate)
+import Data.Int (toNumber)
 import Data.Maybe (Maybe(..), fromMaybe)
 import Data.StrMap (StrMap, empty)
 import Random (Random, Seed, generateInt, runRandom)
@@ -70,7 +71,7 @@ createWizard :: Unit -> Creature
 createWizard _ = Creature { creatureType: Tim, stats: { hpMax: 20, hp: 20, str: 10, dex: 10, int: 10 }, inv: [], pos: { x: 0, y: 0 }, time: 0.0}
 
 creatureSpeed :: Creature -> Number
-creatureSpeed _ = 500.0
+creatureSpeed (Creature c) = toNumber $ 300 - c.stats.dex * 10
 
 creatureIcon :: Creature -> Char
 creatureIcon (Creature { creatureType: Player p })  = '@'
