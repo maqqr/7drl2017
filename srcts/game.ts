@@ -582,10 +582,6 @@ class Game {
             }
         }
 
-        if (code == ROT.VK_MULTIPLY) {
-            this.add2ActnLog("Ilmoitus: "+this.actionlog.length);
-        }
-
         // Show message buffer
         if (code == ROT.VK_M) {
             this.drawmMsgbuFF();
