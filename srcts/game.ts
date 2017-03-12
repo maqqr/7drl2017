@@ -516,7 +516,11 @@ class Game {
                 this.gameState.player.inv.push(item.item);
             }
             else if (itemsAtPlayer.length > 1) {
-                // TODO pick up one of several items
+                let item = itemsAtPlayer[itemsAtPlayer.length-1];
+                let index = this.gameState.level.items.indexOf(item);
+                this.gameState.level.items.splice(index, 1);
+                this.add2ActnLog(PS["Data.Show"].show(PS["Rogue"].showCreature)(this.gameState.player)+ " picked up %c{rgba(0,255,0,1.0)}"+PS["Rogue"].itemName(item.item)+"%c{}!")
+                this.gameState.player.inv.push(item.item);
             }
 
             this.nextTurn();
