@@ -386,7 +386,7 @@ class Game {
             let playerPos = {x: this.gameState.player.pos.x, y: this.gameState.player.pos.y};
             let potentialDoor = PS["Rogue"].getTile(this.gameState)(playerPos);
             let tileName = PS["Data.Show"].show(PS["Rogue"].showTile)(potentialDoor);
-            if (tileName == "DungeonEntrance") {
+            if (tileName == "DungeonEntrance" || tileName == "Hideout") {
                 var key = "" + playerPos.x + "," + playerPos.y;
                 this.currentDungeon = key;
                 this.dungeonDepth = 0;
@@ -494,6 +494,15 @@ class Game {
 
             let success = this.moveCreature(this.gameState.player, { x: diff[0], y: diff[1] });
             if (success) {
+                let tile = PS["Rogue"].getTile(this.gameState)(this.gameState.player.pos);
+                let tileName = PS["Data.Show"].show(PS["Rogue"].showTile)(tile);
+                if (tileName == "DungeonEntrance") {
+                    let theme = this.themes[this.gameState.player.pos.x + "," + this.gameState.player.pos.y];
+                    this.add2ActnLog("You see an entrance to " + PS["Rogue"].themeName(theme) + " here.");
+                }
+                if (tileName == "Hideout") {
+                    this.add2ActnLog("You see an entrance to the evil wizard's hideout here.");
+                }
                 this.nextTurn();
             }
             return;
@@ -640,6 +649,8 @@ class Game {
     }
 
     checkAliveStatus() {
+        return true; // TODO: remove
+
         if(this.gameState.player.stats.hp <=0 || this.gameState.coldStatus >=100) {
             this.drawEncouragement();
             return false;
@@ -685,8 +696,8 @@ class Game {
         };
 
         let drawEquipment = function(sx: number, sy: number) {
-            this.display.drawText(sx+1, sy+2, "cloak - " + maybeItemName(this.gameState.equipment.cloak));
-            this.display.drawText(sx+1, sy+3, "torso - " + maybeItemName(this.gameState.equipment.chest));
+            this.display.drawText(sx+1, sy+2, "cloak  - " + maybeItemName(this.gameState.equipment.cloak));
+            this.display.drawText(sx+1, sy+3, "torso  - " + maybeItemName(this.gameState.equipment.chest));
             this.display.drawText(sx+1, sy+4, "gloves - " + maybeItemName(this.gameState.equipment.hands));
             this.display.drawText(sx+1, sy+5, "weapon - " + maybeItemName(this.gameState.equipment.weapon));
         }
@@ -900,7 +911,7 @@ class Game {
         let stairsUpPos = randomFreePosition();
         let stairsDownPos = randomFreePosition();
 
-        if (this.dungeonDepth <4) {
+        if (this.dungeonDepth < 4) {
             level = PS["Rogue"].setLevelTile(level)(new PS["Rogue"].StairsDown())(stairsDownPos);
             freePositions.splice(freePositions.indexOf(stairsDownPos), 1);
         }
@@ -926,6 +937,14 @@ class Game {
             let enemy = randomEnemy();
             enemy.pos = randomFreePosition();
             level.enemies[i] = enemy;
+        }
+
+        // Generate the evil wizard
+        // TODO: change dungeonDepth to 4
+        if (PS["Rogue"].themeName(theme) == "wizard's hideout" && this.dungeonDepth == 0) {
+            let wizard = PS["Rogue"].createWizard();
+            wizard.pos = randomFreePosition();
+            level.enemies[50] = wizard;
         }
 
         return level;

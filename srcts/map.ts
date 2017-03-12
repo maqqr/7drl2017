@@ -13,11 +13,11 @@ worldmap[10] = "vv,,tT,,T,,...^^^^^^^~^^^^^^^^T...T.TT......~....~....T^^..^...^
 worldmap[11] = ",,,,t,T,T,,,T.^^^^^^^~^^^^^^^^^.T.TTT......~.....~~..T^^^.^.^^^.^^.^.T^^^^^";
 worldmap[12] = "vv,,,,,T,,,T.T...^^^o~~^^^^^....T-T........~......~....T^^^.^^..^^....^^^^^";
 worldmap[13] = "vvv,,t,,t,TT.......^.~~.T.^....T.-.........~......~~......T^^..^..^.^^oT^^^";
-worldmap[14] = "vvv,t,tt,,,,,.......~T~T.T.....---.......---....^^.~.............^^^^^^^^^^";
-worldmap[15] = "^^^,,t,,,t,......~~~TT~TT....------..---------..o^.~~.............T.T^^T^^^";
+worldmap[14] = "vvv,t,tt,,,,,.......~T~T.T.....---.......---....^^^~.............^^^^^^^^^^";
+worldmap[15] = "^^^,,t,,,t,......~~~TT~TT....------..---------..o^^~~.............T.T^^T^^^";
 worldmap[16] = "^^^tt.t,,,,...T~~~TTTT.~.--------------------------.~....T.T.....TTT^.T.^^^";
 worldmap[17] = "^^^,,t,,,.....~~TT.....~.-------------TTTT-----------......T.T.....TTT.T^^^";
-worldmap[18] = "^^^tttt,,,,...~TT.--..--------------TTTTTTTT----------------TT...o..TT^^^^^";
+worldmap[18] = "^^^tttt,,,,...~TT.--..--------------TTTTTTTT----------------TT...O..TT^^^^^";
 worldmap[19] = "^^^tt,,,,,....~T.-----------------TTTTTTTTTTTT--------------TTT.....TTT^^^^";
 worldmap[20] = "^^,,t,,,,,,..o~.--------------------TTTTTTTTTT----------------TTTTTTTTTT.^^"; 
 worldmap[21] = "^^-----,,,,-----------------------------TTTT-------------------.TTTTTT.---^";
@@ -38,6 +38,7 @@ function pushToGamestate(game: Game, gameState, map) {
                 , '-': ps.Water.create({ frozen: false })
                 , '~': new ps.River()
                 , 'o': new ps.DungeonEntrance()
+                , 'O': new ps.Hideout()
             };
     
     let themes = [ new ps.DwarvenMine()
@@ -60,6 +61,9 @@ function pushToGamestate(game: Game, gameState, map) {
 
                 if (char === 'o') {
                     game.themes[x + "," + y] = nextTheme();
+                }
+                if (char === 'O') {
+                    game.themes[x + "," + y] = new ps.WizardTower();
                 }
             }
         }
