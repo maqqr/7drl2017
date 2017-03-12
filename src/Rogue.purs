@@ -109,13 +109,13 @@ creatureColor (Creature { creatureType: Tim })       = "rgba(245, 65, 241, 0.6)"
 creatureColor _                                      = "rgba(200, 200, 200, 0.6)"
 
 creatureTypeStats :: CreatureType -> Stats
-creatureTypeStats AlphaWolf  = { hpMax: 12, hp: 12, str: 10, dex: 12, int:  9 }
+creatureTypeStats AlphaWolf  = { hpMax: 12, hp: 12, str: 12, dex: 12, int:  9 }
 creatureTypeStats Wolf       = { hpMax:  8, hp:  8, str:  7, dex: 10, int:  9 }
-creatureTypeStats Bear       = { hpMax: 18, hp: 18, str: 10, dex:  6, int:  9 }
+creatureTypeStats Bear       = { hpMax: 18, hp: 18, str: 12, dex:  6, int:  9 }
 creatureTypeStats Goblin     = { hpMax:  6, hp:  6, str:  6, dex:  8, int:  8 }
-creatureTypeStats Snowman    = { hpMax: 10, hp: 10, str:  8, dex:  6, int:  9 }
+creatureTypeStats Snowman    = { hpMax: 10, hp: 10, str: 14, dex:  6, int:  9 }
 creatureTypeStats IceCorpse  = { hpMax:  6, hp:  6, str:  8, dex:  5, int:  9 }
-creatureTypeStats Tim        = { hpMax: 20, hp: 20, str: 12, dex: 10, int: 50 }
+creatureTypeStats Tim        = { hpMax: 20, hp: 20, str: 16, dex: 10, int: 50 }
 creatureTypeStats _          = { hpMax: 10, hp: 10, str: 10, dex: 10, int: 10 }
 
 -- creatureBaseDmg :: Creature -> Int
