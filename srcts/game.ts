@@ -65,58 +65,36 @@ class Game {
         });
         document.body.appendChild(this.display.getContainer());
 
+        let help = [ "NumPad numbers - move"
+                   , "arrow keys + DEL, END, INS, PGUP, PGDOWN - alternative movement keys"
+                   , "NumPad / (division) or HOME - move into dungeons and between floors"
+                   , "U - use items"
+                   , "M - message log"
+                   , "I - inventory"
+                   , "D - drop items"
+                   , "G - pick up items"
+                   , "E - equip items"
+                   , "T - take off (unequip) items"];
+
         let helpP = document.createElement("p");
-        let helpText = document.createTextNode("List of possible commands:")
+        let helpText = document.createTextNode("List of possible commands:");
         helpP.appendChild(helpText);
         document.body.appendChild(helpP);
-
         let helpUl = document.createElement("ul");
-        let moveLi = document.createElement("li");
-        let moveText = document.createTextNode("NumPad numbers or arrow keys + DEL, END, INS, PGUP, PGDOWN - move")
-        moveLi.appendChild(moveText);
-        helpUl.appendChild(moveLi);
 
-        let divLi = document.createElement("li");
-        let divText = document.createTextNode("NumPad / (division) or HOME - move into dungeons and between floors")
-        divLi.appendChild(divText);
-        helpUl.appendChild(divLi);
-
-        let useLi = document.createElement("li");
-        let useText = document.createTextNode("U - use items")
-        useLi.appendChild(useText);
-        helpUl.appendChild(useLi);
-
-        let messLi = document.createElement("li");
-        let messText = document.createTextNode("M - message log")
-        messLi.appendChild(messText);
-        helpUl.appendChild(messLi);
-
-        let invLi = document.createElement("li");
-        let invText = document.createTextNode("I - inventory")
-        invLi.appendChild(invText);
-        helpUl.appendChild(invLi);
-
-        let drpLi = document.createElement("li");
-        let drpText = document.createTextNode("D - drop items")
-        drpLi.appendChild(drpText);
-        helpUl.appendChild(drpLi);
-
-        let getLi = document.createElement("li");
-        let getText = document.createTextNode("G - pick up items")
-        getLi.appendChild(getText);
-        helpUl.appendChild(getLi);
-
-        let equLi = document.createElement("li");
-        let equText = document.createTextNode("E - equip items")
-        equLi.appendChild(equText);
-        helpUl.appendChild(equLi);
-
-        let uequLi = document.createElement("li");
-        let uequText = document.createTextNode("T - take off (unequip) items")
-        uequLi.appendChild(uequText);
-        helpUl.appendChild(uequLi);
+        for (let i=0; i<help.length; i++) {
+            let moveLi = document.createElement("li");
+            let moveText = document.createTextNode(help[i]);
+            moveLi.appendChild(moveText);
+            helpUl.appendChild(moveLi);
+        }
 
         document.body.appendChild(helpUl);
+
+        let tipsP = document.createElement("p");
+        let tipsText = document.createTextNode("Tips: Use wood to make a campfire. Press numpad 5 or END to wait near the campfire to warm up. Use healing potion to regain hit points. Liquid fire reduces coldness. Killing enemies does not benefit you so choose your fights wisely.");
+        tipsP.appendChild(tipsText);
+        document.body.appendChild(tipsP);
 
         this.handlers[State.InGame] = this.handleInGame.bind(this);
         this.handlers[State.Inventory] = this.handleInventory.bind(this);
@@ -224,7 +202,7 @@ class Game {
                 if (ROT.RNG.getUniformInt(0, 100) < hitChance) {
                     let seed = new Date().getTime();
                     let result = PS["Rogue"].attack(seed)(this.gameState)(creature)(blocking);
-                    this.add2ActnLog(green+name+"%c{} hit "+brown+PS["Data.Show"].show(PS["Rogue"].showCreature)(blocking)+"%c{} for %c{rgba(255,0,0,0.8)}"+String(blocking.stats.hp-result.stats.hp)+"%c{} damage.");
+                    this.add2ActnLog(green+name+"%c{} hit "+brown+PS["Data.Show"].show(PS["Rogue"].showCreature)(blocking)+"%c{} for %c{rgba(255,0,0,0.8)}"+String(blocking.stats.hp-result.stats.hp)+"%c{} points of damage.");
                     if(result.stats.hp <=0) {
                         this.add2ActnLog(green+name+"%c{} killed the "+brown+blockname+"%c{}.");
 
@@ -502,7 +480,7 @@ class Game {
             this.displayStory();
             if (code == ROT.VK_RETURN) {
                 this.state = State.InGame;
-                let storyText = document.createTextNode("You are a fearless peasant called "+PS["Data.Show"].show(PS["Rogue"].showCreature)(this.gameState.player)+". An evil wizard has cast a spell that covered the world in everfrost. The everfrost is damaging your pumpkin harvest. The wizard has to die.");
+                let storyText = document.createTextNode("You are a fearless peasant called "+PS["Data.Show"].show(PS["Rogue"].showCreature)(this.gameState.player)+". An evil wizard has cast a spell that has covered the world in everfrost. The everfrost is damaging your pumpkin harvest. The wizard has to die.");
                 let storyP = document.createElement("p");
                 storyP.setAttribute("id","story");
                 storyP.appendChild(storyText);
@@ -510,10 +488,7 @@ class Game {
                 
                 this.refreshDisplay();
             }
-
         }
-
-
     }
 
     displayStory() {
