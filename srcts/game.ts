@@ -518,7 +518,6 @@ class Game {
 
     handleInGame(e: KeyboardEvent) {
         var code = e.keyCode;
-        //console.log(code);
 
         if(this.checkAliveStatus() == false) {
             this.state = State.GitGud;
@@ -816,8 +815,6 @@ class Game {
     }
 
     checkAliveStatus() {
-        return true; // TODO: remove
-
         if(this.gameState.player.stats.hp <=0 || this.gameState.coldStatus >=100) {
             this.drawEncouragement();
             return false;
