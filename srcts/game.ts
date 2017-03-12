@@ -66,48 +66,47 @@ class Game {
 
         let helpUl = document.createElement("ul");
         let moveLi = document.createElement("li");
-        let moveText = document.createTextNode("NumPad numbers for moving")
+        let moveText = document.createTextNode("NumPad numbers - move")
         moveLi.appendChild(moveText);
         helpUl.appendChild(moveLi);
 
-
-        let useLi = document.createElement("li");
-        let useText = document.createTextNode("U for using items")
-        useLi.appendChild(useText);
-        helpUl.appendChild(useLi);
-
         let divLi = document.createElement("li");
-        let divText = document.createTextNode("/ (division) for moving into dungeons and between floors")
+        let divText = document.createTextNode("NumPad / (division) - move into dungeons and between floors")
         divLi.appendChild(divText);
         helpUl.appendChild(divLi);
 
+        let useLi = document.createElement("li");
+        let useText = document.createTextNode("U - use items")
+        useLi.appendChild(useText);
+        helpUl.appendChild(useLi);
+
         let messLi = document.createElement("li");
-        let messText = document.createTextNode("M for message log")
+        let messText = document.createTextNode("M - message log")
         messLi.appendChild(messText);
         helpUl.appendChild(messLi);
 
         let invLi = document.createElement("li");
-        let invText = document.createTextNode("I for inventory")
+        let invText = document.createTextNode("I - inventory")
         invLi.appendChild(invText);
         helpUl.appendChild(invLi);
 
         let drpLi = document.createElement("li");
-        let drpText = document.createTextNode("D for dropping items")
+        let drpText = document.createTextNode("D - drop items")
         drpLi.appendChild(drpText);
         helpUl.appendChild(drpLi);
 
         let getLi = document.createElement("li");
-        let getText = document.createTextNode("G for picking up items")
+        let getText = document.createTextNode("G - pick up items")
         getLi.appendChild(getText);
         helpUl.appendChild(getLi);
 
         let equLi = document.createElement("li");
-        let equText = document.createTextNode("E for equipping items")
+        let equText = document.createTextNode("E - equip items")
         equLi.appendChild(equText);
         helpUl.appendChild(equLi);
 
         let uequLi = document.createElement("li");
-        let uequText = document.createTextNode("T for taking off (unequip) items")
+        let uequText = document.createTextNode("T - take off (unequip) items")
         uequLi.appendChild(uequText);
         helpUl.appendChild(uequLi);
 
