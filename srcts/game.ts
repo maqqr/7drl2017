@@ -302,6 +302,61 @@ class Game {
             this.refreshDisplay();
         }
         else {
+            // Unequip item
+            if (this.invState == InventoryState.Unequip) {
+                let rogue = PS["Rogue"];
+                let maybe = PS["Data.Maybe"];
+
+                if (code == ROT.VK_A) {
+                    if (maybe.isJust(this.gameState.equipment.cloak)) {
+                        let equipped = this.gameState.equipment.cloak.value0;
+                        this.gameState.equipment.cloak = new maybe.Nothing();
+                        this.gameState.player.inv.push(equipped);
+                        this.add2ActnLog("You take off the " + rogue.itemName(equipped) + ".");
+                    }
+                    else {
+                        this.add2ActnLog("You don't have a cloak.");
+                    }
+                }
+
+                if (code == ROT.VK_B) {
+                    if (maybe.isJust(this.gameState.equipment.chest)) {
+                        let equipped = this.gameState.equipment.chest.value0;
+                        this.gameState.player.inv.push(equipped);
+                        this.add2ActnLog("You take off the " + rogue.itemName(equipped) + ".");
+                    }
+                    else {
+                        this.add2ActnLog("You don't have anything on your torso.");
+                    }
+                }
+
+                if (code == ROT.VK_C) {
+                    if (maybe.isJust(this.gameState.equipment.hands)) {
+                        let equipped = this.gameState.equipment.hands.value0;
+                        this.gameState.player.inv.push(equipped);
+                        this.add2ActnLog("You take off the " + rogue.itemName(equipped) + ".");
+                    }
+                    else {
+                        this.add2ActnLog("You don't have gloves.");
+                    }
+                }
+
+                if (code == ROT.VK_D) {
+                    if (maybe.isJust(this.gameState.equipment.weapon)) {
+                        let equipped = this.gameState.equipment.weapon.value0;
+                        this.gameState.player.inv.push(equipped);
+                        this.add2ActnLog("You take off the " + rogue.itemName(equipped) + ".");
+                    }
+                    else {
+                        this.add2ActnLog("You can't remove your fists.");
+                    }
+                }
+
+                this.state = State.InGame;
+                this.refreshDisplay();
+                this.nextTurn();
+            }
+
             let itemIndex = code - 65;
             if (itemIndex >= 0 && itemIndex < this.gameState.player.inv.length) {
                 let item = this.gameState.player.inv[itemIndex];
@@ -795,7 +850,7 @@ class Game {
             this.display.drawText(2, 2, text[this.invState]);
             this.display.drawText(3, 4, "A - cloak");
             this.display.drawText(3, 5, "B - torso");
-            this.display.drawText(3, 6, "C - torso");
+            this.display.drawText(3, 6, "C - gloves");
             this.display.drawText(3, 7, "D - weapon");
             
             this.display.drawText(35, 2, "Equipment");
