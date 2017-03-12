@@ -421,10 +421,9 @@ class Game {
                     let black = ROT.Color.fromString("rgb(0,0,0)");
                     let colorRot = ROT.Color.fromString("rgb"+nextLine.slice(cStartPos+4,commaPos)+")");
                     
-                    colorRot = ROT.Color.interpolate(colorRot, black,(1-(230+i*grayism)/230)*0.75); //TODO fix this
+                    colorRot = ROT.Color.interpolate(colorRot, black,(1-(230+i*grayism)/230)*0.75); 
                     
 
-                    //TODO: Replace the color
                     nextLine = nextLine.replace(nextLine.slice(cStartPos+3,cStartPos+cLength),"("+colorRot.toString());
 
 
@@ -702,13 +701,20 @@ class Game {
         // Generate stairs
         let stairsUpPos = randomFreePosition();
         let stairsDownPos = randomFreePosition();
-        level = PS["Rogue"].setLevelTile(level)(new PS["Rogue"].StairsDown())(stairsDownPos);
+
+        if (this.dungeonDepth <4) {
+            level = PS["Rogue"].setLevelTile(level)(new PS["Rogue"].StairsDown())(stairsDownPos);
+            freePositions.splice(freePositions.indexOf(stairsDownPos), 1);
+        }
+        else {
+            let stairsDownPos = {x:-1, y:-1};
+        }
+
         level = PS["Rogue"].setLevelTile(level)(new PS["Rogue"].StairsUp())(stairsUpPos);
         level = PS["Rogue"].setExits(level)(stairsUpPos)(stairsDownPos);
 
         // Remove stairs from free positions
         freePositions.splice(freePositions.indexOf(stairsUpPos), 1);
-        freePositions.splice(freePositions.indexOf(stairsDownPos), 1);
 
         // Generate random items
         for (let i=0; i < 10; i++) {
