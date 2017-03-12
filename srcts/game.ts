@@ -219,7 +219,7 @@ class Game {
                 //blockname = blockname.charAt(0).toUpperCase() + blockname.slice(1);
                 this.add2ActnLog(green+name+"%c{} hit "+brown+PS["Data.Show"].show(PS["Rogue"].showCreature)(blocking)+"%c{} for %c{rgba(255,0,0,0.8)}"+String(blocking.stats.hp-result.stats.hp)+"%c{} damage.");
                 if(result.stats.hp <=0) {
-                    this.add2ActnLog(green+name+"%c{} killed the "+brown+blockname+"%c{} ");
+                    this.add2ActnLog(green+name+"%c{} killed the "+brown+blockname+"%c{}.");
                 }
                 blocking.stats.hp = result.stats.hp;
 
@@ -613,8 +613,8 @@ class Game {
 
     drawEncouragement() {
         this.display.clear();
-        this.display.drawText(30,12,"Nigga you ded");
-        this.display.drawText(30,13,"Press Enter to git gud");
+        this.display.drawText(26,12,PS["Data.Show"].show(PS["Rogue"].showCreature)(this.gameState.player)+" has died :(");
+        this.display.drawText(20,13,"Press Enter to start a new game");
     }
 
     drawInventory() {
