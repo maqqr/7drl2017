@@ -67,18 +67,26 @@ data CreatureType = Player { name :: String }
                   | Snowman
                   | IceCorpse
                   | Tim
-                  | Ismo
+                  | IceElemental
+                  | GiantIceElemental
+                  | DwarfGhost
+                  | Snake
+                  | GiantSnake
 
 instance showCreature :: Show Creature where
-    show (Creature { creatureType: Player p })  = p.name
-    show (Creature { creatureType: AlphaWolf }) = "alpha wolf"
-    show (Creature { creatureType: Wolf })      = "wolf"
-    show (Creature { creatureType: Bear })      = "bear"
-    show (Creature { creatureType: Goblin })    = "goblin"
-    show (Creature { creatureType: Snowman })   = "snowman"
-    show (Creature { creatureType: IceCorpse }) = "frozen zombie"
-    show (Creature { creatureType: Tim })       = "evil wizard"
-    show _                                      = "Ismo"
+    show (Creature { creatureType: Player p })          = p.name
+    show (Creature { creatureType: AlphaWolf })         = "alpha wolf"
+    show (Creature { creatureType: Wolf })              = "wolf"
+    show (Creature { creatureType: Bear })              = "bear"
+    show (Creature { creatureType: Goblin })            = "goblin"
+    show (Creature { creatureType: Snowman })           = "snowman"
+    show (Creature { creatureType: IceCorpse })         = "frozen zombie"
+    show (Creature { creatureType: Tim })               = "evil wizard"
+    show (Creature { creatureType: IceElemental })      = "small ice elemental"
+    show (Creature { creatureType: GiantIceElemental }) = "giant ice elemental"
+    show (Creature { creatureType: DwarfGhost })        = "dwarf spirit"
+    show (Creature { creatureType: Snake })             = "snake"
+    show (Creature { creatureType: GiantSnake })             = "giant snake"
 
 createWizard :: Unit -> Creature
 createWizard _ = Creature { creatureType: Tim, stats: { hpMax: 20, hp: 20, str: 10, dex: 10, int: 10 }, inv: [], pos: { x: 0, y: 0 }, time: 0.0}
@@ -87,36 +95,50 @@ creatureSpeed :: Creature -> Number
 creatureSpeed (Creature c) = toNumber $ 300 - c.stats.dex * 10
 
 creatureIcon :: Creature -> Char
-creatureIcon (Creature { creatureType: Player p })  = '@'
-creatureIcon (Creature { creatureType: AlphaWolf }) = 'W'
-creatureIcon (Creature { creatureType: Wolf })      = 'w'
-creatureIcon (Creature { creatureType: Bear })      = 'B'
-creatureIcon (Creature { creatureType: Goblin })    = 'g'
-creatureIcon (Creature { creatureType: Snowman })   = '\234'
-creatureIcon (Creature { creatureType: IceCorpse }) = 'Z'
-creatureIcon (Creature { creatureType: Tim })       = '\001'
-creatureIcon _                                      = '?'
+creatureIcon (Creature { creatureType: Player p })          = '@'
+creatureIcon (Creature { creatureType: AlphaWolf })         = 'W'
+creatureIcon (Creature { creatureType: Wolf })              = 'w'
+creatureIcon (Creature { creatureType: Bear })              = 'B'
+creatureIcon (Creature { creatureType: Goblin })            = 'g'
+creatureIcon (Creature { creatureType: Snowman })           = '\234'
+creatureIcon (Creature { creatureType: IceCorpse })         = 'Z'
+creatureIcon (Creature { creatureType: Tim })               = '\143'
+creatureIcon (Creature { creatureType: IceElemental })      = '\164'
+creatureIcon (Creature { creatureType: GiantIceElemental }) = '\165'
+creatureIcon (Creature { creatureType: DwarfGhost })        = '\002'
+creatureIcon (Creature { creatureType: Snake })             = 's'
+creatureIcon (Creature { creatureType: GiantSnake })        = 's'
+
 
 creatureColor :: Creature -> String
-creatureColor (Creature { creatureType: Player p })  = "rgba(0, 200, 0, 0.6)"
-creatureColor (Creature { creatureType: AlphaWolf }) = "rgba(200, 200, 200, 0.6)"
-creatureColor (Creature { creatureType: Wolf })      = "rgba(100, 100, 100, 0.6)"
-creatureColor (Creature { creatureType: Bear })      = "rgba(156, 98, 66, 0.6)"
-creatureColor (Creature { creatureType: Goblin })    = "rgba(30, 150, 0, 0.6)"
-creatureColor (Creature { creatureType: Snowman })   = "rgba(200, 200, 200, 0.6)"
-creatureColor (Creature { creatureType: IceCorpse }) = "rgba(126, 121, 196, 0.6)"
-creatureColor (Creature { creatureType: Tim })       = "rgba(245, 65, 241, 0.6)"
-creatureColor _                                      = "rgba(200, 200, 200, 0.6)"
+creatureColor (Creature { creatureType: Player p })          = "rgba(0, 200, 0, 0.6)"
+creatureColor (Creature { creatureType: AlphaWolf })         = "rgba(200, 200, 200, 0.6)"
+creatureColor (Creature { creatureType: Wolf })              = "rgba(100, 100, 100, 0.6)"
+creatureColor (Creature { creatureType: Bear })              = "rgba(156, 98, 66, 0.6)"
+creatureColor (Creature { creatureType: Goblin })            = "rgba(30, 150, 0, 0.6)"
+creatureColor (Creature { creatureType: Snowman })           = "rgba(200, 200, 200, 0.6)"
+creatureColor (Creature { creatureType: IceCorpse })         = "rgba(126, 121, 196, 0.6)"
+creatureColor (Creature { creatureType: Tim })               = "rgba(245, 65, 241, 0.6)"
+creatureColor (Creature { creatureType: IceElemental })      = "rgba(250, 250, 250, 0.2)"
+creatureColor (Creature { creatureType: GiantIceElemental }) = "rgba(250, 250, 250, 0.2)"
+creatureColor (Creature { creatureType: DwarfGhost })        = "rgba(100, 100, 100, 0.5)"
+creatureColor (Creature { creatureType: Snake })             = "rgba(0, 120, 0, 0.6)"
+creatureColor (Creature { creatureType: GiantSnake })             = "rgba(0, 120, 0, 0.6)"
 
 creatureTypeStats :: CreatureType -> Stats
-creatureTypeStats AlphaWolf  = { hpMax: 12, hp: 12, str: 12, dex: 12, int:  9 }
-creatureTypeStats Wolf       = { hpMax:  8, hp:  8, str:  7, dex: 10, int:  9 }
-creatureTypeStats Bear       = { hpMax: 18, hp: 18, str: 12, dex:  6, int:  9 }
-creatureTypeStats Goblin     = { hpMax:  6, hp:  6, str:  6, dex:  8, int:  8 }
-creatureTypeStats Snowman    = { hpMax: 10, hp: 10, str: 14, dex:  6, int:  9 }
-creatureTypeStats IceCorpse  = { hpMax:  6, hp:  6, str:  8, dex:  5, int:  9 }
-creatureTypeStats Tim        = { hpMax: 20, hp: 20, str: 16, dex: 10, int: 50 }
-creatureTypeStats _          = { hpMax: 10, hp: 10, str: 10, dex: 10, int: 10 }
+creatureTypeStats AlphaWolf         = { hpMax: 12, hp: 12, str: 12, dex: 12, int:  9 }
+creatureTypeStats Wolf              = { hpMax:  8, hp:  8, str:  7, dex: 10, int:  9 }
+creatureTypeStats Bear              = { hpMax: 18, hp: 18, str: 12, dex:  6, int:  9 }
+creatureTypeStats Goblin            = { hpMax:  6, hp:  6, str:  6, dex:  8, int:  8 }
+creatureTypeStats Snowman           = { hpMax: 10, hp: 10, str: 14, dex:  6, int:  9 }
+creatureTypeStats IceCorpse         = { hpMax:  6, hp:  6, str:  8, dex:  5, int:  9 }
+creatureTypeStats Tim               = { hpMax: 20, hp: 20, str: 16, dex: 10, int: 50 }
+creatureTypeStats IceElemental      = { hpMax: 10, hp: 10, str:  8, dex: 10, int: 10 }
+creatureTypeStats GiantIceElemental = { hpMax: 15, hp: 15, str: 14, dex: 10, int: 10 }
+creatureTypeStats Snake             = { hpMax:  6, hp:  6, str:  6, dex: 13, int: 10 }
+creatureTypeStats GiantSnake        = { hpMax: 12, hp: 12, str: 10, dex:  9, int: 10 }
+creatureTypeStats DwarfGhost        = { hpMax: 12, hp: 12, str: 12, dex: 10, int: 10 }
+creatureTypeStats (Player _)        = { hpMax: 12, hp: 12, str: 12, dex: 10, int: 10 }
 
 -- creatureBaseDmg :: Creature -> Int
 -- creatureBaseDmg (Creature { creatureType: AlphaWolf }) = 2
@@ -164,6 +186,7 @@ data Tile = Ground Frozen
           | DungeonEntrance
           | Hideout
           | Fire
+          | WizardWall
           | ErrorTile
 
 instance showTile :: Show Tile where
@@ -180,6 +203,7 @@ instance showTile :: Show Tile where
     show DungeonEntrance = "DungeonEntrance"
     show Hideout         = "Hideout"
     show Fire            = "Fire"
+    show WizardWall      = "WizardWall"
     show ErrorTile       = "ErrorTile"
 
 isTileSolid :: Tile -> Boolean
@@ -195,10 +219,11 @@ isTileSolid Fire            = false
 isTileSolid _               = true
 
 isTileTransparent :: Tile -> Boolean
-isTileTransparent (Wall _)     = false
-isTileTransparent (Mountain _) = false
-isTileTransparent (Forest _)   = false
-isTileTransparent _            = true
+isTileTransparent (Wall _)       = false
+isTileTransparent (Mountain _)   = false
+isTileTransparent (Forest _)     = false
+isTileTransparent WizardWall     = false
+isTileTransparent _              = true
 
 tileIcon :: Tile -> Char
 tileIcon (Ground _)        = '.'
@@ -214,6 +239,7 @@ tileIcon StairsDown        = '>'
 tileIcon DungeonEntrance   = 'o'
 tileIcon Hideout           = 'O'
 tileIcon Fire              = '\015'
+tileIcon WizardWall        = '#'
 tileIcon _                 = '?'
 
 frozenColor :: Frozen -> String
@@ -231,6 +257,7 @@ tileColor (Door t)     = "rgba(200, 180, 50, " <> frozenColor t
 tileColor River        = "rgba(10, 10, 125, 0.6)"
 tileColor Hideout      = "rgba(100, 50, 125, 0.6)"
 tileColor Fire         = "rgba(250, 70, 30, 0.9)"
+tileColor WizardWall   = "rgba(245, 65, 241, 0.6)"
 tileColor _            = "rgba(120, 120, 120, 0.6)"
 
 data Theme = DwarvenMine | GoblinCave | Cave | IceCave | WizardTower
