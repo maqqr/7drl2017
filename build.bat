@@ -1,1 +1,1 @@
-pulp build --skip-entry-point --main Rogue --modules Rogue,Random,ContentGenerator --to output.js
+pulp build --skip-entry-point --main Rogue --modules Rogue,Random,ContentGenerator,Data.Maybe --to output.js

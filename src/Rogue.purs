@@ -2,6 +2,7 @@ module Rogue where
 
 import Prelude
 import Data.Array (index, updateAt, snoc, deleteAt, replicate)
+import Data.Generic (GenericSpine(..))
 import Data.Maybe (Maybe(..), fromMaybe)
 import Data.StrMap (StrMap, empty)
 import Random (Random, Seed, generateInt, runRandom)
@@ -31,7 +32,7 @@ newtype GameState = GameState
 initialGameState :: Unit -> GameState
 initialGameState _ = GameState
     { level:      createLevel 75 25 (Ground { frozen: false })
-    , player:     Creature {creatureType: Player {name: "Frozty"}, pos: {x: 0, y: 11}, stats: defaultStats unit, inv: [Wood, Wood], time: 0.0 }
+    , player:     Creature {creatureType: Player {name: "Frozty"}, pos: {x: 0, y: 11}, stats: defaultStats unit, inv: [Wood, Wood, Armour { armourType: Cloak, prefix: CommonA }, Armour { armourType: Cloak, prefix: MasterworkA }], time: 0.0 }
     , coldStatus: 0
     , coldStep: 0
     , equipment:  { cloak: Nothing, chest: Nothing, hands: Nothing, weapon: Nothing }
@@ -258,11 +259,17 @@ data Item = Weapon { weaponType :: WeaponType, prefix :: WeaponPrefix }
           | Potion { effect :: PotionEffect }    
           | Wood
 
+
+armourTypeName :: ArmourType -> String
+armourTypeName Cloak = "cloak"
+armourTypeName Gloves = "gloves"
+armourTypeName Chest = "coat"
+
 itemName :: Item -> String
-itemName (Weapon w) = "weapon"
-itemName (Armour a) = "armour"
+itemName (Weapon w) = weaponPrefixName w.prefix <> " " <> weaponTypeName w.weaponType
+itemName (Armour a) = armourPrefixName a.prefix <> " " <> armourTypeName a.armourType
 -- itemName (Scroll s) = "scroll"
-itemName (Potion p) = "potion"
+itemName (Potion p) = potionName p.effect
 itemName Wood       = "wood"
 
 itemIcon :: Item -> Char
@@ -274,8 +281,8 @@ itemIcon _          = '='
 itemColor :: Item -> String
 itemColor (Weapon w)                   = "rgba(102, 102, 153, 0.6)"
 itemColor (Armour a)                   = "rgba(102, 102, 143, 0.6)"
-itemColor (Potion { effect: Healing }) = "rgba(255, 0, 0, 0.6)"
-itemColor (Potion { effect: Warming }) = "rgba(0, 102, 0, 0.6)"
+itemColor (Potion { effect: Healing }) = "rgba(0, 102, 0, 0.6)"
+itemColor (Potion { effect: Warming }) = "rgba(255, 0, 0, 0.6)"
 itemColor _                            = "rgba(102, 51, 0, 0.6)"
 
 
@@ -283,12 +290,23 @@ type WeaponStats = { dmg :: Int, hit :: Int, weight :: Int }
 
 data WeaponType = Axe | Dagger | Sword
 
+weaponTypeName :: WeaponType -> String
+weaponTypeName Axe = "axe"
+weaponTypeName Dagger = "dagger"
+weaponTypeName Sword = "sword"
+
 weaponTypeStats :: WeaponType -> WeaponStats
 weaponTypeStats Axe    = { dmg: 5, hit: -3, weight: 12 }
 weaponTypeStats Dagger = { dmg: -5, hit: 5, weight: 4 }
 weaponTypeStats _      = { dmg: 2, hit: 0, weight: 10}
 
 data WeaponPrefix = Common | Rusty | Masterwork | Sharp
+
+weaponPrefixName :: WeaponPrefix -> String
+weaponPrefixName Common = "common"
+weaponPrefixName Rusty = "rusty"
+weaponPrefixName Masterwork = "masterwork"
+weaponPrefixName Sharp = "sharp"
 
 weaponPrefixStats :: WeaponPrefix -> WeaponStats
 weaponPrefixStats Rusty      = { dmg: -2, hit: 0, weight: -1 }
@@ -307,12 +325,24 @@ defaultArmourStats = { ap: 0, cr: 0, weight: 0 }
 
 data ArmourType = Cloak | Chest | Gloves
 
+derive instance showArmourType :: Eq ArmourType
+
+isArmourOfType :: Item -> ArmourType -> Boolean
+isArmourOfType (Armour a) armourType = a.armourType == armourType
+isArmourOfType _ _                   = false
+
 armourTypeStats :: ArmourType -> ArmourStats
 armourTypeStats Cloak  = { ap: 1, cr: 5, weight: 8 }
 armourTypeStats Gloves = { ap: 0, cr: 5, weight: 3 }
 armourTypeStats _      = { ap: 5, cr: 1, weight: 20 }
 
 data ArmourPrefix = CommonA | LightA | ThickA | MasterworkA
+
+armourPrefixName :: ArmourPrefix -> String
+armourPrefixName CommonA = "common"
+armourPrefixName LightA = "light"
+armourPrefixName ThickA = "thick"
+armourPrefixName MasterworkA = "masterwork"
 
 armourPrefixStats :: ArmourPrefix -> ArmourStats
 armourPrefixStats LightA      = { ap: 0, cr: 0, weight: -3 }
@@ -332,6 +362,9 @@ playerColdRes (GameState gs) = (armourStats $ fromMaybe Wood (gs.equipment.cloak
 
 data PotionEffect = Healing | Warming
 
+potionName :: PotionEffect -> String
+potionName Healing = "healing potion"
+potionName Warming = "liquid fire"
 
 potionEffect :: GameState -> Item -> GameState
 potionEffect (GameState gs) (Potion { effect: Healing }) = GameState (gs { player = heal (gs.player) })

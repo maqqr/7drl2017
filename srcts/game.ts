@@ -289,13 +289,15 @@ class Game {
             let itemIndex = code - 65;
             if (itemIndex >= 0 && itemIndex < this.gameState.player.inv.length) {
                 let item = this.gameState.player.inv[itemIndex];
-
+                
+                // Drop item
                 if (this.invState == InventoryState.Drop) {
                     this.gameState.player.inv.splice(itemIndex, 1);
                     this.gameState.level.items.push({ pos: this.gameState.player.pos, item: item });
                     this.add2ActnLog("You drop " + PS["Rogue"].itemName(item) + ".");
                 }
 
+                // Use item
                 if (this.invState == InventoryState.Use) {
                     if (this.currentDungeon == "worldmap") {
                         this.add2ActnLog("You can't make a campfire here, find a sheltered location.");
@@ -305,6 +307,38 @@ class Game {
                         this.add2ActnLog("You make a campfire.");
                         let index = this.gameState.player.pos.y * this.gameState.level.width + this.gameState.player.pos.x;
                         this.gameState.level.tiles[index] = new PS["Rogue"].Fire();
+                    }
+                }
+
+                if (this.invState == InventoryState.Equip) {
+                    let rogue = PS["Rogue"];
+                    let maybe = PS["Data.Maybe"];
+
+                    if (rogue.isArmourOfType(item)(new rogue.Cloak())) {
+                        this.gameState.player.inv.splice(itemIndex, 1);
+                        if (maybe.isJust(this.gameState.equipment.cloak)) {
+                            let equipped = this.gameState.equipment.cloak.value0;
+                            this.gameState.player.inv.push(equipped);
+                        }
+                        this.gameState.equipment.cloak = maybe.Just.create(item);
+                    }
+
+                    if (rogue.isArmourOfType(item)(new rogue.Chest())) {
+                        this.gameState.player.inv.splice(itemIndex, 1);
+                        if (maybe.isJust(this.gameState.equipment.chest)) {
+                            let equipped = this.gameState.equipment.chest.value0;
+                            this.gameState.player.inv.push(equipped);
+                        }
+                        this.gameState.equipment.chest = maybe.Just.create(item);
+                    }
+
+                    if (rogue.isArmourOfType(item)(new rogue.Gloves())) {
+                        this.gameState.player.inv.splice(itemIndex, 1);
+                        if (maybe.isJust(this.gameState.equipment.hands)) {
+                            let equipped = this.gameState.equipment.hands.value0;
+                            this.gameState.player.inv.push(equipped);
+                        }
+                        this.gameState.equipment.hands = maybe.Just.create(item);
                     }
                 }
 
@@ -620,13 +654,25 @@ class Game {
     drawInventory() {
         this.display.clear();
 
-        console.log(this.invState);
         let text = {};
         text[InventoryState.Show] = "Inventory";
         text[InventoryState.Equip] = "Select item to equip:";
         text[InventoryState.Unequip] = "Select item to take off:";
         text[InventoryState.Drop] = "Select item to drop:";
         text[InventoryState.Use] = "Select item to use:";
+
+        let maybeItemName = function(maybeItem) {
+            let maybe = PS["Data.Maybe"];
+            let rogue = PS["Rogue"];
+            return maybe.maybe("nothing")(rogue.itemName)(maybeItem);
+        };
+
+        let drawEquipment = function(sx: number, sy: number) {
+            this.display.drawText(sx+1, sy+2, "cloak - " + maybeItemName(this.gameState.equipment.cloak));
+            this.display.drawText(sx+1, sy+3, "torso - " + maybeItemName(this.gameState.equipment.chest));
+            this.display.drawText(sx+1, sy+4, "gloves - " + maybeItemName(this.gameState.equipment.hands));
+            this.display.drawText(sx+1, sy+5, "weapon - " + maybeItemName(this.gameState.equipment.weapon));
+        }
 
         if (this.invState !== InventoryState.Unequip) {
             this.display.drawText(2, 2, text[this.invState]);
@@ -636,6 +682,21 @@ class Game {
                 let key = String.fromCharCode(65 + i);
                 this.display.drawText(3, 4 + i, key + " - " + PS["Rogue"].itemName(item));
             }
+
+            this.display.drawText(2, 28, "Space or return - cancel");
+            
+            this.display.drawText(35, 2, "Equipment");
+            drawEquipment.bind(this)(35, 2);
+        }
+        else if (this.invState === InventoryState.Unequip) {
+            this.display.drawText(2, 2, text[this.invState]);
+            this.display.drawText(3, 4, "A - cloak");
+            this.display.drawText(3, 5, "B - torso");
+            this.display.drawText(3, 6, "C - torso");
+            this.display.drawText(3, 7, "D - weapon");
+            
+            this.display.drawText(35, 2, "Equipment");
+            drawEquipment.bind(this)(35, 2);
         }
     }
 
