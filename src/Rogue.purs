@@ -107,7 +107,7 @@ creatureIcon (Creature { creatureType: IceElemental })      = '\164'
 creatureIcon (Creature { creatureType: GiantIceElemental }) = '\165'
 creatureIcon (Creature { creatureType: DwarfGhost })        = '\002'
 creatureIcon (Creature { creatureType: Snake })             = 's'
-creatureIcon (Creature { creatureType: GiantSnake })        = 's'
+creatureIcon (Creature { creatureType: GiantSnake })        = 'S'
 
 
 creatureColor :: Creature -> String
@@ -123,7 +123,7 @@ creatureColor (Creature { creatureType: IceElemental })      = "rgba(250, 250, 2
 creatureColor (Creature { creatureType: GiantIceElemental }) = "rgba(250, 250, 250, 0.2)"
 creatureColor (Creature { creatureType: DwarfGhost })        = "rgba(100, 100, 100, 0.5)"
 creatureColor (Creature { creatureType: Snake })             = "rgba(0, 120, 0, 0.6)"
-creatureColor (Creature { creatureType: GiantSnake })             = "rgba(0, 120, 0, 0.6)"
+creatureColor (Creature { creatureType: GiantSnake })        = "rgba(0, 120, 0, 0.6)"
 
 creatureTypeStats :: CreatureType -> Stats
 creatureTypeStats AlphaWolf         = { hpMax: 12, hp: 12, str: 12, dex: 12, int:  9 }

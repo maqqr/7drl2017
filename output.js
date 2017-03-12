@@ -3297,7 +3297,7 @@ var PS = {};
               weight: (function () {
                   var $16 = Data_Eq.eq(Rogue.eqTheme)(theme)(Rogue.Cave.value);
                   if ($16) {
-                      return 300;
+                      return 200;
                   };
                   if (!$16) {
                       return 30;
@@ -3309,7 +3309,7 @@ var PS = {};
               weight: (function () {
                   var $17 = Data_Eq.eq(Rogue.eqTheme)(theme)(Rogue.Cave.value);
                   if ($17) {
-                      return 300;
+                      return 150;
                   };
                   if (!$17) {
                       return 30;
