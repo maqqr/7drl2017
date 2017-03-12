@@ -31,7 +31,7 @@ newtype GameState = GameState
 initialGameState :: Unit -> GameState
 initialGameState _ = GameState
     { level:      createLevel 75 25 (Ground { frozen: false })
-    , player:     Creature {creatureType: Player {name: "Frozty"}, pos: {x: 0, y: 11}, stats: defaultStats unit, inv: [Wood, Wood, Armour { armourType: Cloak, prefix: CommonA }, Armour { armourType: Cloak, prefix: MasterworkA }], time: 0.0 }
+    , player:     Creature {creatureType: Player {name: "Frozty"}, pos: {x: 0, y: 11}, stats: defaultStats unit, inv: [Wood, Wood, Armour { armourType: Cloak, prefix: CommonA }, Weapon { weaponType: Dagger, prefix: Rusty }], time: 0.0 }
     , coldStatus: 0
     , coldStep: 0
     , equipment:  { cloak: Nothing, chest: Nothing, hands: Nothing, weapon: Nothing }
@@ -95,21 +95,21 @@ creatureColor (Creature { creatureType: Tim })       = "rgba(245, 65, 241, 0.6)"
 creatureColor _                                      = "rgba(200, 200, 200, 0.6)"
 
 creatureTypeStats :: CreatureType -> Stats
-creatureTypeStats AlphaWolf  = { hpMax: 16, hp: 16, str: 15, dex: 17, int:  9 }
-creatureTypeStats Wolf       = { hpMax: 10, hp: 10, str: 10, dex: 12, int:  9 }
-creatureTypeStats Bear       = { hpMax: 20, hp: 20, str: 20, dex: 10, int:  9 }
-creatureTypeStats Goblin     = { hpMax: 10, hp: 10, str:  8, dex: 10, int:  8 }
-creatureTypeStats Snowman    = { hpMax: 15, hp: 15, str: 18, dex: 16, int:  9 }
-creatureTypeStats IceCorpse  = { hpMax: 25, hp: 25, str: 12, dex:  8, int:  9 }
-creatureTypeStats Tim        = { hpMax: 20, hp: 20, str: 10, dex: 10, int: 50 }
+creatureTypeStats AlphaWolf  = { hpMax: 12, hp: 12, str: 10, dex: 12, int:  9 }
+creatureTypeStats Wolf       = { hpMax:  8, hp:  8, str:  7, dex: 10, int:  9 }
+creatureTypeStats Bear       = { hpMax: 18, hp: 18, str: 10, dex:  6, int:  9 }
+creatureTypeStats Goblin     = { hpMax:  6, hp:  6, str:  6, dex:  8, int:  8 }
+creatureTypeStats Snowman    = { hpMax: 10, hp: 10, str:  8, dex:  6, int:  9 }
+creatureTypeStats IceCorpse  = { hpMax:  6, hp:  6, str:  8, dex:  5, int:  9 }
+creatureTypeStats Tim        = { hpMax: 20, hp: 20, str: 12, dex: 10, int: 50 }
 creatureTypeStats _          = { hpMax: 10, hp: 10, str: 10, dex: 10, int: 10 }
 
-creatureBaseDmg :: Creature -> Int
-creatureBaseDmg (Creature { creatureType: AlphaWolf }) = 2
-creatureBaseDmg (Creature { creatureType: Bear })      = 3
-creatureBaseDmg (Creature { creatureType: Snowman })   = 4
-creatureBaseDmg (Creature { creatureType: Tim })       = 10
-creatureBaseDmg _                                      = 1
+-- creatureBaseDmg :: Creature -> Int
+-- creatureBaseDmg (Creature { creatureType: AlphaWolf }) = 2
+-- creatureBaseDmg (Creature { creatureType: Bear })      = 3
+-- creatureBaseDmg (Creature { creatureType: Snowman })   = 4
+-- creatureBaseDmg (Creature { creatureType: Tim })       = 10
+-- creatureBaseDmg _                                      = 1
 
 setPlayer :: GameState -> Creature -> GameState
 setPlayer (GameState gs) pl = GameState gs { player = pl }
@@ -130,7 +130,7 @@ type Stats =
     }
 
 defaultStats :: Unit -> Stats
-defaultStats _ = { hpMax: 200, hp: 200, str: 10, dex: 10, int: 10 }
+defaultStats _ = { hpMax: 50, hp: 50, str: 6, dex: 10, int: 10 }
 
 addStats :: Stats -> Stats -> Stats
 addStats a b = { hpMax: a.hpMax + b.hpMax, hp: a.hp + b.hp, str: a.str + b.str, dex: a.dex + b.dex, int: a.int + b.int }
@@ -303,9 +303,9 @@ weaponTypeName Dagger = "dagger"
 weaponTypeName Sword = "sword"
 
 weaponTypeStats :: WeaponType -> WeaponStats
-weaponTypeStats Axe    = { dmg: 5, hit: -3, weight: 12 }
-weaponTypeStats Dagger = { dmg: -5, hit: 5, weight: 4 }
-weaponTypeStats _      = { dmg: 2, hit: 0, weight: 10}
+weaponTypeStats Axe    = { dmg:  6, hit: -3, weight:  6 }
+weaponTypeStats Dagger = { dmg: -2, hit:  2, weight:  2 }
+weaponTypeStats _      = { dmg:  2, hit:  0, weight:  4 }
 
 data WeaponPrefix = Common | Rusty | Masterwork | Sharp
 
@@ -317,9 +317,9 @@ weaponPrefixName Sharp = "sharp"
 
 weaponPrefixStats :: WeaponPrefix -> WeaponStats
 weaponPrefixStats Rusty      = { dmg: -2, hit: 0, weight: -1 }
-weaponPrefixStats Masterwork = { dmg: 5, hit: 2, weight: 0 }
-weaponPrefixStats Sharp      = { dmg: 2, hit: 0, weight: 0 }
-weaponPrefixStats _          = { dmg: 0, hit: 0, weight: 0 }
+weaponPrefixStats Masterwork = { dmg:  4, hit: 2, weight:  0 }
+weaponPrefixStats Sharp      = { dmg:  2, hit: 0, weight:  0 }
+weaponPrefixStats _          = { dmg:  0, hit: 0, weight:  0 }
 
 
 type ArmourStats = { ap :: Int, cr :: Int, weight :: Int }
@@ -344,8 +344,8 @@ isWeapon _          = false
 
 armourTypeStats :: ArmourType -> ArmourStats
 armourTypeStats Cloak  = { ap: 1, cr: 5, weight: 8 }
-armourTypeStats Gloves = { ap: 0, cr: 5, weight: 3 }
-armourTypeStats _      = { ap: 5, cr: 1, weight: 20 }
+armourTypeStats Gloves = { ap: 0, cr: 2, weight: 2 }
+armourTypeStats Chest  = { ap: 2, cr: 4, weight: 6 }
 
 data ArmourPrefix = CommonA | LightA | ThickA | MasterworkA
 
@@ -358,7 +358,7 @@ armourPrefixName MasterworkA = "masterwork"
 armourPrefixStats :: ArmourPrefix -> ArmourStats
 armourPrefixStats LightA      = { ap: 0, cr: 0, weight: -3 }
 armourPrefixStats ThickA      = { ap: 1, cr: 3, weight: 5 }
-armourPrefixStats MasterworkA = { ap: 4, cr: 1, weight: 0 }
+armourPrefixStats MasterworkA = { ap: 3, cr: 1, weight: 1 }
 armourPrefixStats _           = { ap: 0, cr: 0, weight: 0 }
 
 armourStats :: Item -> ArmourStats
@@ -428,15 +428,25 @@ dmg (Creature c) (Just (Weapon w)) =
     let maxDam = c.stats.str + (weaponPrefixStats (w.prefix)).dmg + (weaponTypeStats (w.weaponType)).dmg
     in generateInt 0 maxDam
 dmg (Creature c) _ =
-    let maxDam = c.stats.str * creatureBaseDmg (Creature c)
+    let maxDam = c.stats.str
     in generateInt 0 maxDam
+
+min' :: Int -> Int -> Int
+min' x y
+    | x < y     = x
+    | otherwise = y
+
+max' :: Int -> Int -> Int
+max' x y
+    | x > y     = x
+    | otherwise = y
 
 attack :: Seed -> GameState -> Creature -> Creature -> Creature
 attack seed (GameState gs) ap@(Creature { creatureType: Player _ }) (Creature dc) =
     let d = (runRandom (dmg ap (gs.equipment.weapon)) seed).value
     in Creature dc { stats { hp = dc.stats.hp - d } }
 attack seed gs ac (Creature dp@{ creatureType: Player _ }) =
-    let d = (runRandom (dmg ac Nothing) seed).value - playerArmour gs
+    let d = max' 0 $ (runRandom (dmg ac Nothing) seed).value - playerArmour gs
     in Creature dp { stats { hp = dp.stats.hp - d } }
 attack seed _ ac (Creature dc) =
     let d = (runRandom (dmg ac Nothing) seed).value

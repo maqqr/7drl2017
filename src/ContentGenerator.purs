@@ -116,10 +116,10 @@ randomEnemy theme depth = randomCreature
                              ]
 
         randomCreatureStats :: Array (Weighted Stats)
-        randomCreatureStats = [{ item: { hpMax: 14, hp: 14, str: 11, dex: 10, int:  9 }, weight: 10 }
-                              ,{ item: { hpMax: 12, hp: 12, str: 10, dex: 11, int: 13 }, weight: 20 }
-                              ,{ item: { hpMax: 10, hp: 10, str: 10, dex: 10, int: 10 }, weight: 60 }
-                              ,{ item: { hpMax:  8, hp:  8, str:  8, dex:  8, int:  8 }, weight: 50 }
+        randomCreatureStats = [{ item: { hpMax:  3, hp:  3, str:  2, dex:  2, int:  0 }, weight: 10 }
+                              ,{ item: { hpMax:  2, hp:  2, str:  1, dex:  1, int:  0 }, weight: 20 }
+                              ,{ item: { hpMax:  1, hp:  1, str:  1, dex:  1, int:  0 }, weight: 60 }
+                              ,{ item: { hpMax:  0, hp:  0, str:  0, dex:  0, int:  0 }, weight: 50 }
                               ]
 
         randomCreature :: Random Creature
