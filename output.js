@@ -1368,6 +1368,13 @@ var PS = {};
       Sword.value = new Sword();
       return Sword;
   })();
+  var Spear = (function () {
+      function Spear() {
+
+      };
+      Spear.value = new Spear();
+      return Spear;
+  })();
   var Common = (function () {
       function Common() {
 
@@ -1733,7 +1740,14 @@ var PS = {};
               weight: 4
           };
       };
-      throw new Error("Failed pattern match at Rogue line 320, column 1 - line 320, column 59: " + [ v.constructor.name ]);
+      if (v instanceof Spear) {
+          return {
+              dmg: 2, 
+              hit: 10, 
+              weight: 3
+          };
+      };
+      throw new Error("Failed pattern match at Rogue line 321, column 1 - line 321, column 59: " + [ v.constructor.name ]);
   };
   var weaponTypeName = function (v) {
       if (v instanceof Axe) {
@@ -1744,6 +1758,9 @@ var PS = {};
       };
       if (v instanceof Sword) {
           return "sword";
+      };
+      if (v instanceof Spear) {
+          return "spear";
       };
       throw new Error("Failed pattern match at Rogue line 315, column 1 - line 316, column 1: " + [ v.constructor.name ]);
   };
@@ -1788,7 +1805,7 @@ var PS = {};
       if (v instanceof Sharp) {
           return "sharp";
       };
-      throw new Error("Failed pattern match at Rogue line 327, column 1 - line 328, column 1: " + [ v.constructor.name ]);
+      throw new Error("Failed pattern match at Rogue line 329, column 1 - line 330, column 1: " + [ v.constructor.name ]);
   };
   var weaponHitChance = function (v) {
       if (v instanceof Data_Maybe.Just && v.value0 instanceof Weapon) {
@@ -1800,7 +1817,7 @@ var PS = {};
       if (v instanceof Data_Maybe.Just && v.value0 instanceof Weapon) {
           return (weaponPrefixStats(v.value0.value0.prefix)).dmg + (weaponTypeStats(v.value0.value0.weaponType)).dmg | 0;
       };
-      return 1;
+      return -3 | 0;
   };
   var tileIcon = function (v) {
       if (v instanceof Ground) {
@@ -2028,7 +2045,7 @@ var PS = {};
       if (v instanceof Warming) {
           return "liquid fire";
       };
-      throw new Error("Failed pattern match at Rogue line 391, column 1 - line 392, column 1: " + [ v.constructor.name ]);
+      throw new Error("Failed pattern match at Rogue line 393, column 1 - line 394, column 1: " + [ v.constructor.name ]);
   };
   var potionEffect = function (v) {
       return function (v1) {
@@ -2104,7 +2121,7 @@ var PS = {};
           if (Data_Boolean.otherwise) {
               return y;
           };
-          throw new Error("Failed pattern match at Rogue line 461, column 1 - line 463, column 20: " + [ x.constructor.name, y.constructor.name ]);
+          throw new Error("Failed pattern match at Rogue line 463, column 1 - line 465, column 20: " + [ x.constructor.name, y.constructor.name ]);
       };
   };
   var max$prime = function (x) {
@@ -2115,7 +2132,7 @@ var PS = {};
           if (Data_Boolean.otherwise) {
               return y;
           };
-          throw new Error("Failed pattern match at Rogue line 466, column 1 - line 468, column 20: " + [ x.constructor.name, y.constructor.name ]);
+          throw new Error("Failed pattern match at Rogue line 468, column 1 - line 470, column 20: " + [ x.constructor.name, y.constructor.name ]);
       };
   };
   var itemIcon = function (v) {
@@ -2423,7 +2440,7 @@ var PS = {};
           return {
               hpMax: 12, 
               hp: 12, 
-              str: 10, 
+              str: 12, 
               dex: 12, 
               "int": 9
           };
@@ -2441,7 +2458,7 @@ var PS = {};
           return {
               hpMax: 18, 
               hp: 18, 
-              str: 10, 
+              str: 12, 
               dex: 6, 
               "int": 9
           };
@@ -2459,7 +2476,7 @@ var PS = {};
           return {
               hpMax: 10, 
               hp: 10, 
-              str: 8, 
+              str: 14, 
               dex: 6, 
               "int": 9
           };
@@ -2477,7 +2494,7 @@ var PS = {};
           return {
               hpMax: 20, 
               hp: 20, 
-              str: 12, 
+              str: 16, 
               dex: 10, 
               "int": 50
           };
@@ -2648,7 +2665,7 @@ var PS = {};
               weight: 6
           };
       };
-      throw new Error("Failed pattern match at Rogue line 360, column 1 - line 360, column 53: " + [ v.constructor.name ]);
+      throw new Error("Failed pattern match at Rogue line 362, column 1 - line 362, column 53: " + [ v.constructor.name ]);
   };
   var armourTypeName = function (v) {
       if (v instanceof Cloak) {
@@ -2674,7 +2691,7 @@ var PS = {};
           return {
               ap: 1, 
               cr: 3, 
-              weight: 5
+              weight: 4
           };
       };
       if (v instanceof MasterworkA) {
@@ -2703,7 +2720,7 @@ var PS = {};
       if (v instanceof Wood) {
           return 5;
       };
-      throw new Error("Failed pattern match at Rogue line 407, column 1 - line 407, column 113: " + [ v.constructor.name ]);
+      throw new Error("Failed pattern match at Rogue line 409, column 1 - line 409, column 113: " + [ v.constructor.name ]);
   };
   var totalEnc = function (v) {
       var weapon = Data_Maybe.maybe(0)(itemWeight)(v.equipment.weapon);
@@ -2726,7 +2743,7 @@ var PS = {};
       if (v instanceof MasterworkA) {
           return "masterwork";
       };
-      throw new Error("Failed pattern match at Rogue line 367, column 1 - line 368, column 1: " + [ v.constructor.name ]);
+      throw new Error("Failed pattern match at Rogue line 369, column 1 - line 370, column 1: " + [ v.constructor.name ]);
   };
   var itemName = function (v) {
       if (v instanceof Weapon) {
@@ -2991,6 +3008,7 @@ var PS = {};
   exports["Axe"] = Axe;
   exports["Dagger"] = Dagger;
   exports["Sword"] = Sword;
+  exports["Spear"] = Spear;
   exports["addArmourStats"] = addArmourStats;
   exports["addItem"] = addItem;
   exports["addStats"] = addStats;

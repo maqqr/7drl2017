@@ -309,17 +309,19 @@ itemColor _                            = "rgba(102, 51, 0, 0.6)"
 
 type WeaponStats = { dmg :: Int, hit :: Int, weight :: Int }
 
-data WeaponType = Axe | Dagger | Sword
+data WeaponType = Axe | Dagger | Sword | Spear
 
 weaponTypeName :: WeaponType -> String
 weaponTypeName Axe = "axe"
 weaponTypeName Dagger = "dagger"
 weaponTypeName Sword = "sword"
+weaponTypeName Spear = "spear"
 
 weaponTypeStats :: WeaponType -> WeaponStats
 weaponTypeStats Axe    = { dmg:  6, hit: -20, weight:  6 }
 weaponTypeStats Dagger = { dmg:  1, hit:  10, weight:  2 }
 weaponTypeStats Sword  = { dmg:  3, hit:   0, weight:  4 }
+weaponTypeStats Spear  = { dmg:  2, hit:  10, weight:  3 }
 
 data WeaponPrefix = Common | Rusty | Masterwork | Sharp
 
@@ -371,7 +373,7 @@ armourPrefixName MasterworkA = "masterwork"
 
 armourPrefixStats :: ArmourPrefix -> ArmourStats
 armourPrefixStats LightA      = { ap: 0, cr: 0, weight: -3 }
-armourPrefixStats ThickA      = { ap: 1, cr: 3, weight: 5 }
+armourPrefixStats ThickA      = { ap: 1, cr: 3, weight: 4 }
 armourPrefixStats MasterworkA = { ap: 3, cr: 1, weight: 1 }
 armourPrefixStats _           = { ap: 0, cr: 0, weight: 0 }
 
@@ -439,7 +441,7 @@ unEquip gs _             = gs
 
 weaponDamage :: Maybe Item -> Int
 weaponDamage (Just (Weapon w)) = (weaponPrefixStats (w.prefix)).dmg + (weaponTypeStats (w.weaponType)).dmg
-weaponDamage _                 = 1
+weaponDamage _                 = -3
 
 weaponHitChance :: Maybe Item -> Int
 weaponHitChance (Just (Weapon w)) = (weaponTypeStats w.weaponType).hit
