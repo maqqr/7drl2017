@@ -262,7 +262,7 @@ tileColor (Door t)     = "rgba(200, 180, 50, " <> frozenColor t
 tileColor River        = "rgba(10, 10, 125, 0.6)"
 tileColor Hideout      = "rgba(100, 50, 125, 0.6)"
 tileColor Fire         = "rgba(250, 70, 30, 0.9)"
-tileColor WizardWall   = "rgba(245, 65, 241, 0.6)"
+tileColor WizardWall   = "rgba(155, 35, 151, 0.5)"
 tileColor _            = "rgba(120, 120, 120, 0.6)"
 
 data Theme = DwarvenMine | GoblinCave | Cave | IceCave | WizardTower

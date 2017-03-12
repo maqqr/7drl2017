@@ -66,7 +66,7 @@ class Game {
         document.body.appendChild(this.display.getContainer());
 
         let helpP = document.createElement("p");
-        let helpText = document.createTextNode("List of possible button commands:")
+        let helpText = document.createTextNode("List of possible commands:")
         helpP.appendChild(helpText);
         document.body.appendChild(helpP);
 

@@ -2380,7 +2380,7 @@ var PS = {};
           return "rgba(250, 70, 30, 0.9)";
       };
       if (v instanceof WizardWall) {
-          return "rgba(245, 65, 241, 0.6)";
+          return "rgba(155, 35, 151, 0.5)";
       };
       return "rgba(120, 120, 120, 0.6)";
   };
