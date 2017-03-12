@@ -1050,7 +1050,7 @@ class Game {
     createWizDungeon(width: number, height: number, level: Rogue.Level): Rogue.Level {
         for (let y=0; y<height; y++) {
             for (let x=0; x<width; x++) {
-                level = PS["Rogue"].setLevelTile(level)(PS["Rogue"].WizardWall.create({frozen: false}))({ x: x, y: y});
+                level = PS["Rogue"].setLevelTile(level)(new PS["Rogue"].WizardWall())({ x: x, y: y});
             }
         }
         let digger = new ROT.Map.Digger(width, height);
