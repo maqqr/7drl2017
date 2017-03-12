@@ -674,8 +674,10 @@ class Game {
     victory() {
         this.state = State.Victory;
         this.display.clear();
-        this.display.drawText(6, 10, "You, "+PS["Data.Show"].show(PS["Rogue"].showCreature)(this.gameState.player)+" the fearless peasant, have defeated the evil wizard!");
-        this.display.drawText(6, 12, "With this great deed you saved the world of 7drl2017 from an awful pumpkin harvest!");
+        this.display.drawText(2, 10, "You, "+PS["Data.Show"].show(PS["Rogue"].showCreature)(this.gameState.player)+" the fearless peasant, have defeated the evil wizard!");
+        this.display.drawText(2, 12, "With this great deed you saved the world of 7drl2017 from an awful pumpkin harvest!");
+
+        this.display.drawText(2, 16, "Unfortunately melting the everfrost caused massive floods and drowned a lot of people.");
     }
 
     increaseCold() {
@@ -1121,8 +1123,7 @@ class Game {
         }
 
         // Generate the evil wizard
-        // TODO: change dungeonDepth to 4
-        if (PS["Rogue"].themeName(theme) == "wizard's hideout" && this.dungeonDepth == 0) {
+        if (PS["Rogue"].themeName(theme) == "wizard's hideout" && this.dungeonDepth == 4) {
             let wizard = PS["Rogue"].createWizard();
             wizard.pos = randomFreePosition();
             level.enemies[50] = wizard;
