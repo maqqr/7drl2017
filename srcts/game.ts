@@ -340,6 +340,15 @@ class Game {
                         }
                         this.gameState.equipment.hands = maybe.Just.create(item);
                     }
+
+                    if (rogue.isWeapon(item)) {
+                        this.gameState.player.inv.splice(itemIndex, 1);
+                        if (maybe.isJust(this.gameState.equipment.weapon)) {
+                            let equipped = this.gameState.equipment.weapon.value0;
+                            this.gameState.player.inv.push(equipped);
+                        }
+                        this.gameState.equipment.weapon = maybe.Just.create(item);
+                    }
                 }
 
                 this.state = State.InGame;

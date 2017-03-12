@@ -331,6 +331,10 @@ isArmourOfType :: Item -> ArmourType -> Boolean
 isArmourOfType (Armour a) armourType = a.armourType == armourType
 isArmourOfType _ _                   = false
 
+isWeapon :: Item -> Boolean
+isWeapon (Weapon _) = true
+isWeapon _          = false
+
 armourTypeStats :: ArmourType -> ArmourStats
 armourTypeStats Cloak  = { ap: 1, cr: 5, weight: 8 }
 armourTypeStats Gloves = { ap: 0, cr: 5, weight: 3 }
